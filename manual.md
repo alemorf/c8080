@@ -12,11 +12,11 @@ C8080 — кросс-компилятор языка C (с расширения�
 
 ```
 исходники .c ──► CParser (лексер/препроцессор/AST)
-              ──► Prepare (оптимизации дерева)
-              ──► Compile / CompileCmm (генерация ассемблера)
-              ──► asm-оптимизатор (peephole)
-              ──► .asm  ──sjasmplus──►  .bin / .lst
-              ──► MakeRKS (если -Orks)    .rks
+             ──► Prepare (оптимизации дерева)
+             ──► Compile / CompileCmm (генерация ассемблера)
+             ──► asm-оптимизатор (peephole)
+             ──► .asm ── sjasmplus ──► .bin / .lst
+             ──► MakeRKS (если -Orks) .rks
 ```
 
 Исходники компилятора (C++17) разбиты на:
