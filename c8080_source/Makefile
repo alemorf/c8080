@@ -6,14 +6,12 @@ W32_FILES=$(addprefix build.w32/,$(CPP_FILES:%.cpp=%.o))
 
 all: ../c8080 files
 
-public: ../c8080 ../c8080.exe ../c8080.win32.exe
-
 .PHONY: clean
 clean:
 	rm -r -f build build.w64 build.w32 c8080.creator.user c8080.files
 
 .PHONY: full
-full: c8080 c8080.exe c8080.win32.exe
+full: ../c8080 ../c8080.exe ../c8080.win32.exe
 
 .PHONY: files
 files:
