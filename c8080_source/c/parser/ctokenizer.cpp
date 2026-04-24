@@ -199,7 +199,7 @@ CToken CTokenizer::NextToken3() {
             }
             return CT_OPERATOR;
         case '.':
-            if (*cursor == '.' || cursor[1] == '.')  // ...
+            if (*cursor == '.' && cursor[1] == '.')  // ...
                 cursor += 2;
             return CT_OPERATOR;
         case '+':
