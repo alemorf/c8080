@@ -23,6 +23,7 @@
 #include "../cmm/prepare.h"
 #include "../../tools/strtouint64.h"
 #include "../../c/tools/cthrow.h"
+#include "../../c/tools/getnumberasuint64.h"
 #include "arg.h"
 
 namespace I8080 {
@@ -289,6 +290,8 @@ void Cmm::CompileAlu(CNodePtr &n, AsmAlu alu) {
 }
 
 void Cmm::CompileAlu(CNodePtr &n, AsmAlu alu, Arg &a, Arg &b) {
+    if (a.IsHl() && b.Is16Sp())
+        return out.add_hl_reg(b.reg);
     if (a.IsA()) {
         if (b.Is8M())
             return out.alu_a_reg(alu, b.reg);
@@ -459,6 +462,12 @@ void Cmm::CompileLine(CNodePtr &n, Arg &out_arg) {
         }
         case CNT_OPERATOR:
             CompileArg(n->a, out_arg);
+            if (n->operator_code == COP_SET_SHL && n->b->type == CNT_NUMBER) {
+                const uint64_t count = GetNumberAsUint64(n->b) % 64;
+                for (unsigned i = 0; i < count; i++)
+                    CompileAlu(n, ALU_ADD, out_arg, out_arg);
+                return;
+            }
             CompileArg(n->b, b);
             switch (n->operator_code) {
                 case COP_SET:
@@ -486,8 +495,6 @@ void Cmm::CompileLine(CNodePtr &n, Arg &out_arg) {
                         return out.ld_preg_a(out_arg.reg);
                     return CompileOperatorError(n, out_arg, b);
                 case COP_SET_ADD:
-                    if (out_arg.IsHl() && b.Is16Sp())
-                        return out.add_hl_reg(b.reg);
                     return CompileAlu(n, ALU_ADD, out_arg, b);
                 case COP_SET_AND:
                     return CompileAlu(n, ALU_AND, out_arg, b);
@@ -528,8 +535,7 @@ void Cmm::CompileLine(CNodePtr &n, Arg &out_arg) {
             }
             break;
         case CNT_LABEL:
-            if (n->variable->label_call_count > 0)  // No goto
-                out.label(n->variable->output_name);
+            out.label(n->variable->output_name);
             return;
         case CNT_GOTO:
             return out.jmp(n->variable->output_name);
@@ -553,13 +559,8 @@ void Cmm::CompileLevel(CNodePtr &n) {
 void Cmm::CompileDeclareVariable(CNodePtr &n) {
     CVariable &v = *n->variable;
 
-    if (n->extern_flag || (v.type.pointers.empty() && v.type.flag_const)) {
-        if (v.address_attribute.exists) {
-            out.source(n->e);
-            out.equ(v.output_name, std::to_string(v.address_attribute.value));
-        }
+    if (n->extern_flag || (v.type.pointers.empty() && v.type.flag_const))
         return;
-    }
 
     // The last command of the function calls the next function
     if (!out.lines.empty()) {
@@ -602,6 +603,16 @@ void Cmm::CompileDeclareVariable(CNodePtr &n) {
 }
 
 void Cmm::Compile(CString asm_file_name) {
+    // Write equs
+    for (auto &vd : p.all_top_variables) {
+        if (vd->address_attribute.exists) {
+            out.equ(vd->output_name.c_str(), vd->address_attribute.ToString());
+        } else if (!vd->only_extern && !vd->type.IsFunction() && vd->c.equ_enabled) {
+            if (p.asm_names.find(vd->output_name) == p.asm_names.end())
+                out.equ(vd->output_name.c_str(), vd->c.equ_text.c_str());
+        }
+    }
+
     for (CNodePtr i = p.first_node; i; i = i->next_node) {
         switch (i->type) {
             case CNT_TYPEDEF:
@@ -616,6 +627,12 @@ void Cmm::Compile(CString asm_file_name) {
                 p.Error(i->e, "can't compile node " + ToString(i->type));
         }
     }
+
+    // Write const strings
+    for (auto &i : p.const_strings)
+        if (i.second->c.IsUsed())
+            out.const_string(i.second->c.GetName(out.const_string_counter), i.first);
+
     out.MakeFile();
     out.SaveAsmFile(asm_file_name);
 }

@@ -4,11 +4,13 @@ OBJ_FILES=$(addprefix build/,$(CPP_FILES:%.cpp=%.o))
 W64_FILES=$(addprefix build.w64/,$(CPP_FILES:%.cpp=%.o))
 W32_FILES=$(addprefix build.w32/,$(CPP_FILES:%.cpp=%.o))
 
-all: c8080 files
+all: ../c8080 files
+
+public: ../c8080 ../c8080.exe ../c8080.win32.exe
 
 .PHONY: clean
 clean:
-	rm -r -f build build.w64 build.w32 c8080.creator.user c8080.files c8080 c8080.exe
+	rm -r -f build build.w64 build.w32 c8080.creator.user c8080.files
 
 .PHONY: full
 full: c8080 c8080.exe c8080.win32.exe
@@ -17,7 +19,7 @@ full: c8080 c8080.exe c8080.win32.exe
 files:
 	find . -type f >c8080.files
 
-c8080: ${OBJ_FILES}
+../c8080: ${OBJ_FILES}
 	g++ -s -Wall -Wno-switch -O2 -static --std=c++17 -o $@ $^
 
 build/%.o: %.cpp
@@ -26,7 +28,7 @@ build/%.o: %.cpp
 
 -include $(OBJ_FILES:.o=.d)
 
-c8080.exe: ${W64_FILES}
+../c8080.exe: ${W64_FILES}
 	x86_64-w64-mingw32-g++ -s -O2 -static --std=c++17 -o $@ $^
 
 build.w64/%.o: %.cpp
@@ -35,7 +37,7 @@ build.w64/%.o: %.cpp
 
 -include $(W64_FILES:.o=.d)
 
-c8080.win32.exe: ${W32_FILES}
+../c8080.win32.exe: ${W32_FILES}
 	i686-w64-mingw32-g++ -s -O2 -static --std=c++17 -o $@ $^
 
 build.w32/%.o: %.cpp

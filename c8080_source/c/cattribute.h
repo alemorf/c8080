@@ -20,8 +20,8 @@
 #include <string>
 #include <stdint.h>
 
-// Example: __link(0xF800) void reboot(void);
-// TODO: __address
+// Example: void reboot(void) __address(0xF800);
+// Example: extern int reboot __address("abc + 45");
 
 struct CAddressAttribute {
     bool exists{};
