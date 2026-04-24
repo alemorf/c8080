@@ -60,6 +60,10 @@ void CMacroizer::Throw(CString text) {
 
 void CMacroizer::Error(CString text) {
     CErrorPosition p(*this);
+    Error(text, p);
+}
+
+void CMacroizer::Error(CString text, CErrorPosition& p) {
     if (on_error)
         on_error(p, text);
     else

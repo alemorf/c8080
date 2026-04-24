@@ -41,9 +41,9 @@ void CProgramm::AddVariable(CVariablePtr a) {
         c = tolower(c);
 
     std::string alt_name = lo_name;
-    while (output_names.find(alt_name) != output_names.end())
-        alt_name = lo_name + "_" + std::to_string(unique_counter++);
-
+    if (!cmm || !a->is_label)
+        while (output_names.find(alt_name) != output_names.end())
+            alt_name = lo_name + "_" + std::to_string(unique_counter++);
     a->output_name = alt_name;
 
     output_names[alt_name] = 0;

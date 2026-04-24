@@ -76,6 +76,7 @@ public:
     void SyntaxError();
     void Throw(CString text);
     void Error(CString text);
+    void Error(CString text, CErrorPosition &p);
     bool FindDirective(std::string &out);
     bool ReadRaw(std::string &result, char terminator1, char terminator2, char open);
 };

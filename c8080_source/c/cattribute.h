@@ -25,10 +25,15 @@
 
 struct CAddressAttribute {
     bool exists{};
-    uint64_t value{};
+    uint64_t numeric_value{};
+    std::string string_value;
+
+    std::string ToString() {
+        return !string_value.empty() ? string_value : std::to_string(numeric_value);
+    }
 
     bool operator==(const CAddressAttribute &b) const {
-        return exists == b.exists && value == b.value;
+        return exists == b.exists && numeric_value == b.numeric_value && string_value == b.string_value;
     }
 
     bool operator!=(const CAddressAttribute &b) const {

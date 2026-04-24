@@ -192,7 +192,14 @@ void CParserFile::ParseAttributes(CNode &n) {
             CAddressAttribute a;
 
             if (l.WantToken("(")) {
-                a.value = ParseUint64();
+                if (l.IfString2(a.string_value)) {
+                    if (a.string_value.empty()) {
+                        l.Error("__address can't be empty", e);
+                        a.string_value = "0";
+                    }
+                } else{
+                    a.numeric_value = ParseUint64();
+                }
                 l.CloseToken(")", ")");
             }
 

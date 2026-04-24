@@ -129,7 +129,7 @@ void Compiler::Compile(CParser &c, OutputFormat output_format, CString output_fi
     for (auto &vd : p.all_top_variables) {
         if (vd->c.use_counter > 0) {
             if (vd->address_attribute.exists) {
-                out.equ(vd->output_name.c_str(), std::to_string(vd->address_attribute.value));
+                out.equ(vd->output_name.c_str(), vd->address_attribute.ToString());
             } else if (!vd->only_extern && !vd->type.IsFunction() && vd->c.equ_enabled) {
                 if (p.asm_names.find(vd->output_name) == p.asm_names.end())
                     out.equ(vd->output_name.c_str(), vd->c.equ_text.c_str());
