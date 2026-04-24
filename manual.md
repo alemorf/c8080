@@ -285,7 +285,7 @@ EXT=; ASM=
 - `replacedivmulwithshift.cpp` — `x*2^n` / `x/2^n` → сдвиги (для 8080 критично, «настоящего» `MUL` нет);
 - `jump.cpp` — свёртка переходов;
 - `localvariablesinit.cpp`;
-- `staticstack.cpp` (≈10 000 строк) — расчёт статического стека для `__global`-функций.
+- `staticstack.cpp` — расчёт статического стека для `__global`-функций.
 
 **Asm-уровень (`8080/asm/optimize/`):** `deadcode` (код после безусловного `jmp`/`ret`), `jumpjump` (устранение `jmp → jmp`), `loadsave` (слияние load/save), `index`, `common`. Добавлено в коммите `b1c8026` «Optimizer».
 
