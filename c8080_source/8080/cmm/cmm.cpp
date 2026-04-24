@@ -556,7 +556,7 @@ void Cmm::CompileDeclareVariable(CNodePtr &n) {
     if (n->extern_flag || (v.type.pointers.empty() && v.type.flag_const)) {
         if (v.address_attribute.exists) {
             out.source(n->e);
-            out.equ(v.output_name, std::to_string(v.address_attribute.value));
+            out.equ(v.output_name, v.address_attribute.ToString());
         }
         return;
     }
