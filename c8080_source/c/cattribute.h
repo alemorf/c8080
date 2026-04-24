@@ -73,4 +73,3 @@ struct CAlignAttribute {
         return !(*this == b);
     }
 };
-

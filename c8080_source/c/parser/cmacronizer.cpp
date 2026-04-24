@@ -63,7 +63,7 @@ void CMacroizer::Error(CString text) {
     Error(text, p);
 }
 
-void CMacroizer::Error(CString text, CErrorPosition& p) {
+void CMacroizer::Error(CString text, CErrorPosition &p) {
     if (on_error)
         on_error(p, text);
     else

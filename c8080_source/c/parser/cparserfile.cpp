@@ -101,9 +101,9 @@ void CParserFile::IgnoreInsideBrackets(size_t level) {
     }
 }
 
-void CParserFile::ParseGccAttributes(CAlignAttribute* a) {
+void CParserFile::ParseGccAttributes(CAlignAttribute *a) {
     for (;;) {
-        if (l.IfToken("__asm__")) { // gcc compatibility
+        if (l.IfToken("__asm__")) {  // gcc compatibility
             if (l.WantToken("("))
                 IgnoreInsideBrackets(1);
             continue;
@@ -123,7 +123,7 @@ void CParserFile::ParseGccAttributes(CAlignAttribute* a) {
                 l.NeedToken(")");
                 continue;
             }
-            IgnoreInsideBrackets(2); // gcc compatibility
+            IgnoreInsideBrackets(2);  // gcc compatibility
             continue;
         }
 
@@ -197,7 +197,7 @@ void CParserFile::ParseAttributes(CNode &n) {
                         l.Error("__address can't be empty", e);
                         a.string_value = "0";
                     }
-                } else{
+                } else {
                     a.numeric_value = ParseUint64();
                 }
                 l.CloseToken(")", ")");
