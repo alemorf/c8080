@@ -51,19 +51,19 @@ bool Compiler::Case_Operator32(CNodePtr &node, AsmRegister reg) {
             InternalCall(o.xor_32);
             break;
         case COP_MUL:
-            InternalCall(node->ctype.IsUnsigned() ? o.mul_u32 : o.mul_i32);
+            InternalCall(o.mul_32);
             break;
         case COP_DIV:
-            InternalCall(node->ctype.IsUnsigned() ? o.div_u32 : o.div_i32);
+            InternalCall(node->a->ctype.IsUnsigned() ? o.div_u32 : o.div_i32);
             break;
         case COP_MOD:
-            InternalCall(node->ctype.IsUnsigned() ? o.mod_u32 : o.mod_i32);
+            InternalCall(node->a->ctype.IsUnsigned() ? o.mod_u32 : o.mod_i32);
             break;
         case COP_SHL:
             InternalCall(o.shl_32);
             break;
         case COP_SHR:
-            InternalCall(node->ctype.IsUnsigned() ? o.shr_u32 : o.shr_i32);
+            InternalCall(node->a->ctype.IsUnsigned() ? o.shr_u32 : o.shr_i32);
             break;
         default:
             C_ERROR_UNSUPPORTED_OPERATOR(node);

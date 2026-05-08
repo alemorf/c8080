@@ -121,31 +121,21 @@ void __o_shr_i8() {
 // Input: a, d
 // Output: a
 
-void __o_mul_u8() {
+void __o_mul_8() {
     asm {
         ld   hl, 0
         ld   e, d  ; de=d
         ld   d, l
         ld   c, 8
-__o_mul_u8__l1:
+__o_mul_8__l1:
         add  hl, hl
         add  a
-        jp   nc, __o_mul_u8__l2
+        jp   nc, __o_mul_8__l2
         add  hl, de
-__o_mul_u8__l2:
+__o_mul_8__l2:
         dec  c
-        jp   nz, __o_mul_u8__l1
+        jp   nz, __o_mul_8__l1
         ld   a, l
-    }
-}
-
-// Example: int8_t a, d; a *= yd
-// Input: a, d
-// Output: a
-
-void __o_mul_i8() {
-    asm {
-        TODO
     }
 }
 
@@ -323,61 +313,22 @@ void __o_xor_16() {
 // Input: hl, de
 // Output: hl
 
-void __o_mul_u16() {
+void __o_mul_16() {
     asm {
         ld   b, h
         ld   c, l
         ld   hl, 0
         ld   a, 17
-__o_mul_u16_l1:
+__o_mul_16_l1:
         dec  a
         ret  z
         add  hl, hl
         ex   hl, de
         add  hl, hl
         ex   hl, de
-        jp   nc, __o_mul_u16_l1
+        jp   nc, __o_mul_16_l1
         add  hl, bc
-        jp   __o_mul_u16_l1
-    }
-}
-
-// Example: int16_t hl, de; hl *= de;
-// Input: hl, de
-// Output: hl
-
-void __o_mul_i16() {
-    (void)__o_minus_16;
-    (void)__o_mul_u16;
-    asm {
-        ld   a, h
-        add  a
-        jp   nc, __o_mul_i16_1  ; hl - positive
-
-        call __o_minus_16
-
-        ld   a, d
-        add  a
-        jp   nc, __o_mul_i16_2  ; hl - negative, de - positive
-
-        ex   hl, de
-        call __o_minus_16
-        ex   hl, de
-
-        jp   __o_mul_u16 ; hl & de - negative
-
-__o_mul_i16_1:
-        ld   a, d
-        add  a
-        jp   nc, __o_mul_u16  ; hl & de - positive
-
-        ex   hl, de
-        call __o_minus_16
-        ex   hl, de
-
-__o_mul_i16_2:
-        call __o_mul_u16
-        jp   __o_minus_16
+        jp   __o_mul_16_l1
     }
 }
 
@@ -790,7 +741,7 @@ void __o_xor_32() {
 // Input: de:hl, dword in stack
 // Output: de:hl
 
-void __o_mul_u32() {
+void __o_mul_32() {
     asm {
         ; save arg
         push de
@@ -803,18 +754,18 @@ void __o_mul_u32() {
 
         ; 32 bits
         ld   a, 32
-__o_mul_u32_l0:
+__o_mul_32_l0:
 
         ; result *= 2
         add  hl, hl
         ex   hl, de
-        jp   nc, __o_mul_u32_l2
+        jp   nc, __o_mul_32_l2
         add  hl, hl
         inc  hl
-        jp   __o_mul_u32_l3
-__o_mul_u32_l2:
+        jp   __o_mul_32_l3
+__o_mul_32_l2:
         add  hl, hl
-__o_mul_u32_l3:
+__o_mul_32_l3:
         ex   hl, de
 
         ; arg *= 2
@@ -839,15 +790,15 @@ __o_mul_u32_l3:
         ld   (hl), a
         pop  hl
 
-        jp   nc, __o_mul_u32_l1
+        jp   nc, __o_mul_32_l1
 
         ; result += (stack)
         pop  af
         pop  bc
         add  hl, bc
-        jp   nc, __o_mul_u32_l4
+        jp   nc, __o_mul_32_l4
         inc  de
-__o_mul_u32_l4:
+__o_mul_32_l4:
         ex   (sp), hl
         ex   hl, de
         add  hl, de
@@ -856,10 +807,10 @@ __o_mul_u32_l4:
         push bc
         push af
 
-__o_mul_u32_l1:
+__o_mul_32_l1:
         pop  af
         dec  a
-        jp   nz, __o_mul_u32_l0
+        jp   nz, __o_mul_32_l0
 
         pop  bc
         pop  bc
@@ -869,16 +820,6 @@ __o_mul_u32_l1:
         inc  sp
         inc  sp
         push bc
-    }
-}
-
-// Example: int32_t dehl, stack; dehl *= stack;
-// Input: de:hl, dword in stack
-// Output: de:hl
-
-void __o_mul_i32() {
-    asm {
-        TODO
     }
 }
 

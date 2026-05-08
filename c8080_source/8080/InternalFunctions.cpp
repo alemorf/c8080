@@ -23,8 +23,7 @@ namespace I8080 {
 void InternalFunctions::Init(CProgramm &p) {
     init = FindFunction(p, "__init");
     sub_16 = FindFunction(p, "__o_sub_16");
-    mul_u8 = FindFunction(p, "__o_mul_u8");
-    mul_i8 = FindFunction(p, "__o_mul_i8");
+    mul_8 = FindFunction(p, "__o_mul_8");
     div_u8 = FindFunction(p, "__o_div_u8");
     div_i8 = FindFunction(p, "__o_div_i8");
     mod_u8 = FindFunction(p, "__o_mod_u8");
@@ -35,8 +34,7 @@ void InternalFunctions::Init(CProgramm &p) {
     and_16 = FindFunction(p, "__o_and_16");
     or_16 = FindFunction(p, "__o_or_16");
     xor_16 = FindFunction(p, "__o_xor_16");
-    mul_u16 = FindFunction(p, "__o_mul_u16");
-    mul_i16 = FindFunction(p, "__o_mul_i16");
+    mul_16 = FindFunction(p, "__o_mul_16");
     div_u16 = FindFunction(p, "__o_div_u16");
     div_i16 = FindFunction(p, "__o_div_i16");
     mod_u16 = FindFunction(p, "__o_mod_u16");
@@ -57,8 +55,7 @@ void InternalFunctions::Init(CProgramm &p) {
     and_32 = FindFunction(p, "__o_and_32");
     or_32 = FindFunction(p, "__o_or_32");
     xor_32 = FindFunction(p, "__o_xor_32");
-    mul_u32 = FindFunction(p, "__o_mul_u32");
-    mul_i32 = FindFunction(p, "__o_mul_i32");
+    mul_32 = FindFunction(p, "__o_mul_32");
     div_u32 = FindFunction(p, "__o_div_u32");
     div_i32 = FindFunction(p, "__o_div_i32");
     mod_u32 = FindFunction(p, "__o_mod_u32");

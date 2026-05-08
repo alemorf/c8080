@@ -59,15 +59,15 @@ void Compiler::Alu16(CNodePtr &node) {
         case COP_XOR:
             return InternalCall(o.xor_16);
         case COP_MUL:
-            return InternalCall(node->ctype.IsUnsigned() ? o.mul_u16 : o.mul_i16);
+            return InternalCall(o.mul_16);
         case COP_DIV:
-            return InternalCall(node->ctype.IsUnsigned() ? o.div_u16 : o.div_i16);
+            return InternalCall(node->a->ctype.IsUnsigned() ? o.div_u16 : o.div_i16);
         case COP_MOD:
-            return InternalCall(node->ctype.IsUnsigned() ? o.mod_u16 : o.mod_i16);
+            return InternalCall(node->a->ctype.IsUnsigned() ? o.mod_u16 : o.mod_i16);
         case COP_SHL:
             return InternalCall(o.shl_16);
         case COP_SHR:
-            return InternalCall(node->ctype.IsUnsigned() ? o.shr_u16 : o.shr_i16);
+            return InternalCall(node->a->ctype.IsUnsigned() ? o.shr_u16 : o.shr_i16);
         default:
             C_ERROR_UNSUPPORTED_OPERATOR(node);
     }

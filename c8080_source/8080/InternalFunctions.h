@@ -30,8 +30,7 @@ public:
     CVariablePtr shl_8;   // 8 << 8
     CVariablePtr shr_u8;  // 8 >> 8
     CVariablePtr shr_i8;  // 8 >> 8 (signed)
-    CVariablePtr mul_u8;  // 8 * 8
-    CVariablePtr mul_i8;  // 8 * 8 (signed)
+    CVariablePtr mul_8;   // 8 * 8
     CVariablePtr div_u8;  // 8 / 8
     CVariablePtr div_i8;  // 8 / 8 (signed)
     CVariablePtr mod_u8;  // 8 % 8
@@ -48,8 +47,7 @@ public:
     CVariablePtr shl_16;     // 16 << 16
     CVariablePtr shr_u16;    // 16 >> 16
     CVariablePtr shr_i16;    // 16 >> 16 (signed)
-    CVariablePtr mul_u16;    // 16 * 16
-    CVariablePtr mul_i16;    // 16 * 16 (signed)
+    CVariablePtr mul_16;     // 16 * 16
     CVariablePtr div_u16;    // 16 / 16
     CVariablePtr div_i16;    // 16 / 16 (signed)
     CVariablePtr mod_u16;    // 16 % 16
@@ -69,8 +67,7 @@ public:
     CVariablePtr shl_32;      // 32 << 32
     CVariablePtr shr_u32;     // 32 >> 32
     CVariablePtr shr_i32;     // 32 >> 32 (signed)
-    CVariablePtr mul_u32;     // 32 * 32
-    CVariablePtr mul_i32;     // 32 * 32 (signed)
+    CVariablePtr mul_32;      // 32 * 32
     CVariablePtr div_u32;     // 32 / 32
     CVariablePtr div_i32;     // 32 / 32 (signed)
     CVariablePtr mod_u32;     // 32 % 32

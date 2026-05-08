@@ -85,15 +85,15 @@ void Compiler::Alu8D(CNodePtr &node) {
         case COP_XOR:
             return out.alu_a_reg(node->compiler.alu, R8_D);
         case COP_MUL:
-            return InternalCall(node->ctype.IsUnsigned() ? o.mul_u8 : o.mul_i8);
+            return InternalCall(o.mul_8);
         case COP_DIV:
-            return InternalCall(node->ctype.IsUnsigned() ? o.div_u8 : o.div_i8);
+            return InternalCall(node->a->ctype.IsUnsigned() ? o.div_u8 : o.div_i8);
         case COP_MOD:
-            return InternalCall(node->ctype.IsUnsigned() ? o.mod_u8 : o.mod_i8);
+            return InternalCall(node->a->ctype.IsUnsigned() ? o.mod_u8 : o.mod_i8);
         case COP_SHL:
             return InternalCall(o.shl_8);
         case COP_SHR:
-            return InternalCall(node->ctype.IsUnsigned() ? o.shr_u8 : o.shr_i8);
+            return InternalCall(node->a->ctype.IsUnsigned() ? o.shr_u8 : o.shr_i8);
         default:
             C_ERROR_UNSUPPORTED_OPERATOR(node);
     }
