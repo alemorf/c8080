@@ -69,7 +69,7 @@ void AsmBase::Write(const AsmArgument &argument) {
             Write(argument.number);
             break;
         case AAT_LABEL:
-            Write("l_");
+            Write("__l_");
             if (argument.label == nullptr)
                 throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + " Incorrect label");
             Write(argument.label->number);
@@ -206,11 +206,17 @@ void AsmBase::MakeFile() {
                 break;
             case AC_PUSH:
                 in_stack += 2;
-                Write("\tpush ", line.argument[0], "\n");
+                if (line.argument[0].type == AAT_REG && line.argument[0].reg == R8_A)
+                    Write("\tpush af\n");
+                else
+                    Write("\tpush ", line.argument[0], "\n");
                 break;
             case AC_POP:
                 in_stack -= 2;
-                Write("\tpop ", line.argument[0], "\n");
+                if (line.argument[0].type == AAT_REG && line.argument[0].reg == R8_A)
+                    Write("\tpop af\n");
+                else
+                    Write("\tpop ", line.argument[0], "\n");
                 break;
             case AC_RET:
                 // TODO: assert
