@@ -55,7 +55,9 @@ static void Usage(char **argv) {
               << "  -Ocpm      Make binary file for CP/M" << std::endl
               << "  -Oi1080    Make binary file for Iskra 1080 Tartu" << std::endl
               << "  -Orks      Make binary file for Specialist" << std::endl
-              << "  -D<define> Set #define" << std::endl
+              << "  -Da        Set #define a" << std::endl
+              << "  -Da=b      Set #define a b" << std::endl
+              << "  -Da(b)c    Set #define a(b) c" << std::endl
               << "  -o<file>   Set name for output binary file" << std::endl
               << "  -a<file>   Set name for output assembler file" << std::endl
               << "  -A<file>   Alternative assembler tool" << std::endl
@@ -100,9 +102,18 @@ static void ParseOptions(int argc, char **argv, Options &o, CParser &c) {
                     if (I8080::ParseOutputFormat(o.output_format, value))
                         continue;
                     break;
-                case 'D':
-                    c.default_defines.push_back(value);  // TODO: NAME=VALUE
+                case 'D': {
+                    static const char ids[] =
+                        "abcdefghijklmnopqrstuvwxyz"
+                        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                        "0123456789_";
+                    std::string v = std::string("#define ") + value;
+                    auto p = v.find_first_not_of(ids, 8);
+                    if (p != std::string::npos && v[p] == '=')
+                        v[p] = ' ';
+                    c.default_defines.push_back(v);
                     continue;
+                }
                 case 'o':
                     o.bin_file_name = value;
                     continue;
@@ -201,12 +212,11 @@ int main(int argc, char **argv) {
 
         std::string arch_inc1lude_dir = CatPath(std_include_dir, "arch");
         for (auto &i : c.default_defines) {
-            if (0 == strncmp(i.c_str(), "ARCH_", 5)) {
-                std::string dir = CatPath(arch_inc1lude_dir, ToLowerCase(i.substr(5)));
-                if (DirExists(dir)) {
+            static const char prefix[] = "#define ARCH_";
+            if (0 == strncmp(i.c_str(), prefix, sizeof(prefix) - 1)) {
+                std::string dir = CatPath(arch_inc1lude_dir, ToLowerCase(i.substr(sizeof(prefix) - 1)));
+                if (DirExists(dir))
                     c.include_dirs.push_back(dir);
-                    break;
-                }
             }
         }
 
@@ -224,7 +234,7 @@ int main(int argc, char **argv) {
 
         if (programm.cmm) {
             I8080::RegisterInternalCmmNames(programm);
-            c.default_defines.push_back("__CMM");
+            c.default_defines.push_back("#define __CMM");
         } else {
             I8080::RegisterProhibitedOutputNames(programm);
 

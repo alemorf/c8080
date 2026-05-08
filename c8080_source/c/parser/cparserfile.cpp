@@ -34,7 +34,7 @@ void CParserFile::Parse(CNodeList &node_list, CString file_name) {
     l.Open(contents, name);
     l.AddMacro("__C8080_COMPILER", "", 0);
     for (auto &i : cparser.default_defines)
-        l.AddMacro(i);  // TODO: value
+        l.Include(i.c_str(), "arguments");
     l.NextToken();
 
     while (!l.IfToken(CT_EOF))
