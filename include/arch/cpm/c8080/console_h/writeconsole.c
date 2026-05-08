@@ -16,17 +16,20 @@
  */
 
 #include <stdio.h>
+#include <stdint.h>
 #include <cpm.h>
 
-int __global putchar(int c) {
+void WriteConsole(const char *text) {
+    while (*text) {
 #ifdef ARCH_CPM_BIOS /* No BDOS in memory */
-    if ((uint8_t)c == 0x0A)
-        CpmBiosConOut(0x0D);
-    CpmBiosConOut(c);
+        if (*text == 0x0A)
+            CpmBiosConOut(0x0D);
+        CpmBiosConOut(*text);
 #else
-    if ((uint8_t)c == 0x0A)
-        CpmConsoleWrite(0x0D);
-    CpmConsoleWrite(c);
+        if (*text == 0x0A)
+            CpmConsoleWrite(0x0D);
+        CpmConsoleWrite(*text);
 #endif
-    return (uint8_t)c;
+        text++;
+    }
 }
