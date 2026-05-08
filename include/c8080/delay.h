@@ -19,7 +19,9 @@
 
 #include <stdint.h>
 #include <c8080/c8080.h>
+#ifndef __C8080_CPU_MHZ
 #include <c8080/cpumhz.h>
+#endif
 
 void __global Delay(uint16_t n) __link("c8080/delay.c");
 
