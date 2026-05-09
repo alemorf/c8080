@@ -23,7 +23,7 @@
 
 #define ISSPACE(C) ((C) == ' ' || ((C) >= 0x09 && (C) <= 0x0A))
 
-int strtoi(const char *str, char **endptr, int base) {
+static unsigned strtoui(const char *str, char **endptr, int base, bool signed_result) {
     if (endptr != NULL)
         *endptr = (char *)str;
 
@@ -50,7 +50,7 @@ int strtoi(const char *str, char **endptr, int base) {
         return 0;
     }
 
-    const unsigned limit = UINT_MAX / (unsigned)base;
+    const unsigned limit = (unsigned)UINT_MAX / (unsigned)base;
     unsigned result = 0;
     bool overflow = false;
     for (;;) {
@@ -78,19 +78,32 @@ int strtoi(const char *str, char **endptr, int base) {
             *endptr = (char *)str;
     }
 
-    if (neg) {
-        result = -result;
-        if ((int)result > 0)
-            overflow = true;
-    } else {
-        if ((int)result < 0)
-            overflow = true;
-    }
+    if (signed_result) {
+        if (neg) {
+            result = -result;
+            if ((int)result > 0)
+                overflow = true;
+        } else {
+            if ((int)result < 0)
+                overflow = true;
+        }
 
-    if (overflow) {
+        if (overflow) {
+            errno = ERANGE;
+            return INT_MAX;
+        }
+    } else if (neg || overflow) {
         errno = ERANGE;
-        return INT_MAX;
+        return UINT_MAX;
     }
 
     return result;
+}
+
+int strtoi(const char *str, char **endptr, int base) {
+    return (int)strtoui(str, endptr, base, true);
+}
+
+unsigned strtou(const char *str, char **endptr, int base) {
+    return strtoui(str, endptr, base, false);
 }
