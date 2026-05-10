@@ -36,42 +36,13 @@ __init_loop:
         jp   nc, __init_loop
     }
 
-    /* Init stack */
-#if __has_include(<c8080/initstack.inc>) && !defined(ARCH_CPM_CCP) && !defined(ARCH_CPM_BDOS) && !defined(ARCH_CPM_BIOS)
+#if __has_include(<c8080/initstack.inc>)
 #include <c8080/initstack.inc>
-#endif
-
-#ifdef ARCH_CPM_CCP /* CCP remains in memory */
-    // clang-format off
-    asm {
-        pop  de
-        ld   a, (7)
-        sub  8
-        ld   h, a
-        ld   l, 0
-        ld   sp, hl
-        push de
-    }
-    // clang-format on
-#endif
-
-#ifdef ARCH_CPM_BDOS /* BDOS remains in memory */
-    asm {
-        ld   a, (7)
-        ld   h, a
-        ld   l, 0
-        ld   sp, hl
-        ld   hl, 0
-        push hl
-    }
-#endif
-
-#ifdef ARCH_CPM_BIOS /* BIOS remains in memory */
-#error TODO
 #endif
 
     main(0, NULL);
 }
+
 
 // Example: void (*hl)(); hl();
 // Input: hl
