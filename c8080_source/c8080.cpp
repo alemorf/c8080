@@ -61,6 +61,8 @@ static void Usage(char **argv) {
               << "  -o<file>   Set name for output binary file" << std::endl
               << "  -a<file>   Set name for output assembler file" << std::endl
               << "  -A<file>   Alternative assembler tool" << std::endl
+              << "  -S         __stack by default" << std::endl
+              << "  -G         __global by default" << std::endl
               << "  -V         Print expression tree after parsing" << std::endl
               << "  -W         Print expression tree after compilation" << std::endl
               << "  --         Last option" << std::endl;
@@ -84,6 +86,12 @@ static void ParseOptions(int argc, char **argv, Options &o, CParser &c) {
                         continue;
                     case 'm':
                         c.programm.cmm = true;
+                        continue;
+                    case 'S':
+                        c.programm.default_variables_mode = CVM_STACK;
+                        continue;
+                    case 'G':
+                        c.programm.default_variables_mode = CVM_GLOBAL;
                         continue;
                 }
             }
