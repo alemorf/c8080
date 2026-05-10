@@ -36,8 +36,8 @@ typedef struct {
     long int quot, rem;
 } ldiv_t;
 
-int strtoi(const char *str, char **endptr, int base) __link("stdlib_h/strtoiu.c");
-unsigned strtou(const char *str, char **endptr, int base) __link("stdlib_h/strtoiu.c");
+long strtol(const char *str, char **endptr, int base) __link("stdlib_h/strtoiul.c");
+unsigned long strtoul(const char *str, char **endptr, int base) __link("stdlib_h/strtoiul.c");
 void srand(unsigned seed) __link("stdlib_h/rand.c");
 int rand(void) __link("stdlib_h/rand.c");
 int abs(int x) __link("stdlib_h/abs.c");

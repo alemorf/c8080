@@ -23,7 +23,7 @@
 
 #define ISSPACE(C) ((C) == ' ' || ((C) >= 0x09 && (C) <= 0x0A))
 
-static unsigned strtoui(const char *str, char **endptr, int base, bool signed_result) {
+static unsigned long strtouil(const char *str, char **endptr, int base, bool signed_result) {
     if (endptr != NULL)
         *endptr = (char *)str;
 
@@ -50,8 +50,8 @@ static unsigned strtoui(const char *str, char **endptr, int base, bool signed_re
         return 0;
     }
 
-    const unsigned limit = (unsigned)UINT_MAX / (unsigned)base;
-    unsigned result = 0;
+    const unsigned long limit = (unsigned long)LONG_MAX / (unsigned)base;
+    unsigned long result = 0;
     bool overflow = false;
     for (;;) {
         uint8_t c = *str;
@@ -81,29 +81,29 @@ static unsigned strtoui(const char *str, char **endptr, int base, bool signed_re
     if (signed_result) {
         if (neg) {
             result = -result;
-            if ((int)result > 0)
+            if ((long)result > 0)
                 overflow = true;
         } else {
-            if ((int)result < 0)
+            if ((long)result < 0)
                 overflow = true;
         }
 
         if (overflow) {
             errno = ERANGE;
-            return INT_MAX;
+            return LONG_MAX;
         }
     } else if (neg || overflow) {
         errno = ERANGE;
-        return UINT_MAX;
+        return ULONG_MAX;
     }
 
     return result;
 }
 
-int strtoi(const char *str, char **endptr, int base) {
-    return (int)strtoui(str, endptr, base, true);
+long strtol(const char *str, char **endptr, int base) {
+    return (long)strtouil(str, endptr, base, true);
 }
 
-unsigned strtou(const char *str, char **endptr, int base) {
-    return strtoui(str, endptr, base, false);
+unsigned long strtoul(const char *str, char **endptr, int base) {
+    return strtouil(str, endptr, base, false);
 }
