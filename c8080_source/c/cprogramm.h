@@ -39,6 +39,7 @@ public:
     bool error{};
     uint64_t unique_counter{};
     std::string last_error;
+    CVariableMode default_variables_mode = CVM_GLOBAL;
 
     CProgramm8080 c;
 
@@ -49,4 +50,8 @@ public:
     void Error(const CErrorPosition &e, CString text, const char *type = "error");
     void Note(const CErrorPosition &e, CString text);
     const char *SaveString(const char *data, size_t size);
+
+    CVariableMode GetVariableMode(CType &t) const {
+        return t.variables_mode == CVM_NOT_SET ? default_variables_mode : t.variables_mode;
+    }
 };

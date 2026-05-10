@@ -28,7 +28,7 @@ const CType CTYPE_FUNCTION{CBT_FUNCTION, function_args : {CStructItem{CBT_VOID}}
 
 bool CType::CompareNoStatic(const CType &b) const {
     if (base_type != b.base_type || flag_const != b.flag_const || flag_volatile != b.flag_volatile ||
-        GetVariableMode() != b.GetVariableMode() || pointers != b.pointers)
+        variables_mode != b.variables_mode || pointers != b.pointers)
         return false;
 
     switch (base_type) {

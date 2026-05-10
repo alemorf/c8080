@@ -315,7 +315,7 @@ CNodePtr CParserFile::ParseLine(bool *out_break, bool global) {
         v->align_attribute = align_attribute;
 
         node->variable = v;
-        CPrepareArgs(node);
+        CPrepareArgs(node, programm);
         if (init)
             v->body = init;
 
@@ -349,11 +349,11 @@ void CParserFile::ParseTypePointers(CType &out_type) {
         out_type.pointers.push_back(pointer);
     }
     for (;;) {
-        if (out_type.variables_mode == CVM_DEFAULT && l.IfToken("__global")) {
+        if (out_type.variables_mode == CVM_NOT_SET && l.IfToken("__global")) {
             out_type.variables_mode = CVM_GLOBAL;
             continue;
         }
-        if (out_type.variables_mode == CVM_DEFAULT && l.IfToken("__stack")) {
+        if (out_type.variables_mode == CVM_NOT_SET && l.IfToken("__stack")) {
             out_type.variables_mode = CVM_STACK;
             continue;
         }
@@ -408,12 +408,12 @@ void CParserFile::ParseFunctionTypeArgs(CErrorPosition &e, CType &return_type, s
     out_type.base_type = CBT_FUNCTION;
     out_type.flag_static = return_type.flag_static;
     return_type.flag_static = false;
-    if (return_type.variables_mode != CVM_DEFAULT) {
-        if (out_type.variables_mode != CVM_DEFAULT && out_type.variables_mode != return_type.variables_mode)
+    if (return_type.variables_mode != CVM_NOT_SET) {
+        if (out_type.variables_mode != CVM_NOT_SET && out_type.variables_mode != return_type.variables_mode)
             programm.Error(e, "previous declaration is different");
         out_type.variables_mode = return_type.variables_mode;
     }
-    return_type.variables_mode = CVM_DEFAULT;
+    return_type.variables_mode = CVM_NOT_SET;
     if (fp)
         for (auto &i : *fp)
             out_type.pointers.push_back(i);

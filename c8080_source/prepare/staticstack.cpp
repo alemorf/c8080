@@ -23,8 +23,8 @@
 // Calculate stack position at compile time
 // Replace stack variables with global variables
 
-static bool LastAgumentInCpuRegister(CVariable &f) {
-    if (f.type.GetVariableMode() == CVM_GLOBAL && f.type.function_args.size() >= 2u &&
+static bool LastAgumentInCpuRegister(Prepare &p, CVariable &f) {
+    if (p.programm.GetVariableMode(f.type) == CVM_GLOBAL && f.type.function_args.size() >= 2u &&
         !f.type.many_function_args) {  // Min 1 argument
         switch (f.type.function_args.back().type.GetAsmType()) {
             case CBT_CHAR:
@@ -40,7 +40,7 @@ static bool LastAgumentInCpuRegister(CVariable &f) {
 }
 
 static void PrepareFunctionStaticStack(Prepare &p, CVariable &f) {
-    if (f.type.GetVariableMode() != CVM_GLOBAL)
+    if (p.programm.GetVariableMode(f.type) != CVM_GLOBAL)
         return;  // Standard stack is used
 
     if (f.c.static_stack != nullptr)
@@ -87,7 +87,7 @@ static void PrepareFunctionStaticStack(Prepare &p, CVariable &f) {
 
 bool PrepareStaticArgumentsCall(Prepare &p, CNodePtr &node) {
     if (!p.programm.cmm && node->type == CNT_FUNCTION_CALL && node->a != nullptr &&
-        node->variable->type.GetVariableMode() == CVM_GLOBAL) {
+        p.programm.GetVariableMode(node->variable->type) == CVM_GLOBAL) {
         PrepareFunctionStaticStack(p, *node->variable);
 
         std::vector<CStructItem> &arg_list = node->variable->type.function_args;
@@ -107,7 +107,7 @@ bool PrepareStaticArgumentsCall(Prepare &p, CNodePtr &node) {
             arg->next_node = nullptr;
 
             CNodePtr command = nullptr;
-            if (arg_n + 1 == arg_list.size() && LastAgumentInCpuRegister(*node->variable) &&
+            if (arg_n + 1 == arg_list.size() && LastAgumentInCpuRegister(p, *node->variable) &&
                 !node->variable->type.many_function_args) {
                 command = CNODE({CNT_SAVE_TO_REGISTER, a : arg, ctype : arg_list[arg_n].type, e : arg->e});
             } else {
@@ -128,7 +128,11 @@ bool PrepareStaticArgumentsCall(Prepare &p, CNodePtr &node) {
                         arg_type.flag_const = false;
                     else
                         arg_type.pointers.back().flag_const = false;
-                    offset += arg_type.SizeOf(arg->e);
+                    size_t s = arg_type.SizeOf(arg->e);
+                    /* Для работы printf. В Си все аргументы выравниваются на int, в этом компиляторе только vararg. */
+                    if (s < C_SIZEOF_INT)
+                        s = C_SIZEOF_INT;
+                    offset += s;
                 }
 
                 assert(!arg_text.empty());
@@ -173,7 +177,8 @@ bool PrepareStaticLoadVariable(Prepare &p, CNodePtr &node) {
         assert(v != nullptr);
 
         // Replace stack variables with global variables if a static stack is used
-        if (v->is_stack_variable && p.function != nullptr && p.function->type.GetVariableMode() == CVM_GLOBAL) {
+        if (v->is_stack_variable && p.function != nullptr &&
+            p.programm.GetVariableMode(p.function->type) == CVM_GLOBAL) {
             assert(!v->is_function_argument);  // Replaced before in PrepareFunctionStaticStack()
             v->c.equ_enabled = true;
             v->c.equ_text = p.function->c.static_stack->output_name + " + " + std::to_string(v->stack_offset);
@@ -192,7 +197,8 @@ static void PrepareLastFunctionArgCode(Prepare &p) {
         return;
 
     CVariable &f = *p.function;
-    if (f.type.GetVariableMode() == CVM_GLOBAL && LastAgumentInCpuRegister(f) && !f.type.many_function_args) {
+    if (p.programm.GetVariableMode(f.type) == CVM_GLOBAL && LastAgumentInCpuRegister(p, f) &&
+        !f.type.many_function_args) {
         CVariablePtr &register_argument = p.function->function_arguments.back();
         if (p.programm.asm_names.find(register_argument->output_name) == p.programm.asm_names.end()) {
             CNodePtr a = CNODE({

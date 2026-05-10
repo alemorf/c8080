@@ -35,7 +35,7 @@ public:
     bool flag_const = false;
     bool flag_volatile = false;
     bool flag_static = false;
-    CVariableMode variables_mode = CVM_DEFAULT;
+    CVariableMode variables_mode = CVM_NOT_SET;
     std::vector<CPointer> pointers;
     std::vector<CStructItem> function_args;  // for CBT_FUNCTION
     bool many_function_args = false;         // for CBT_FUNCTION
@@ -91,11 +91,6 @@ public:
     uint64_t SizeOf(const CErrorPosition &e) const;
 
     uint64_t SizeOfBase(const CErrorPosition &e) const;
-
-    CVariableMode GetVariableMode() const {
-        static const CVariableMode default_memory = CVM_GLOBAL;
-        return variables_mode == CVM_DEFAULT ? default_memory : variables_mode;
-    }
 
     bool Is8BitType() const {
         return pointers.empty() &&

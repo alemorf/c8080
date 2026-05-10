@@ -18,5 +18,6 @@
 #pragma once
 
 #include "../cnode.h"
+#include "../cprogramm.h"
 
-void CPrepareArgs(CNodePtr node);
+void CPrepareArgs(CNodePtr node, CProgramm &programm);

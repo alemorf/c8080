@@ -18,7 +18,7 @@
 #include "cprepareargs.h"
 #include <map>
 
-void CPrepareArgs(CNodePtr node) {
+void CPrepareArgs(CNodePtr node, CProgramm &programm) {
     assert(node && node->variable);
 
     CVariable &v = *node->variable;
@@ -30,7 +30,7 @@ void CPrepareArgs(CNodePtr node) {
         return;  // Already created
 
     std::vector<CStructItem *> args;
-    if (v.type.GetVariableMode() == CVM_GLOBAL) {
+    if (programm.GetVariableMode(v.type) == CVM_GLOBAL) {
         for (size_t i = node->ctype.function_args.size(); i > 1; i--)
             args.push_back(&node->ctype.function_args[i - 1]);
     } else {
@@ -53,7 +53,7 @@ void CPrepareArgs(CNodePtr node) {
         a->stack_offset = offset;
         offset += argument_size;
 
-        if (v.type.GetVariableMode() == CVM_GLOBAL)
+        if (programm.GetVariableMode(v.type) == CVM_GLOBAL)
             v.function_arguments.insert(v.function_arguments.begin(), a);
         else
             v.function_arguments.push_back(a);

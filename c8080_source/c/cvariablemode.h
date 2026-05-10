@@ -17,4 +17,4 @@
 
 #pragma once
 
-enum CVariableMode { CVM_DEFAULT, CVM_STACK, CVM_GLOBAL };
+enum CVariableMode { CVM_NOT_SET, CVM_STACK, CVM_GLOBAL };

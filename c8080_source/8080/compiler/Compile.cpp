@@ -43,7 +43,7 @@ void Compiler::Compile(CParser &c, OutputFormat output_format, CString output_fi
         return_label = nullptr;
 
         // Alloc stack
-        if (fn->type.GetVariableMode() == CVM_STACK) {
+        if (p.GetVariableMode(fn->type) == CVM_STACK) {
             if (fn->function_stack_frame_size != 0)
                 OutSubSpN(fn->function_stack_frame_size);
             out.stack_correction_reset(2 + fn->function_stack_frame_size);

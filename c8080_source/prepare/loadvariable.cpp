@@ -27,7 +27,7 @@ bool PrepareLoadVariable(Prepare &p, CNodePtr &node) {
         CVariablePtr &v = node->variable;
         if (v->is_stack_variable) {
             assert(p.function != nullptr);
-            assert(p.function->type.GetVariableMode() == CVM_STACK);
+            assert(p.programm.GetVariableMode(p.function->type) == CVM_STACK);
             node->type = (v->is_function_argument ? CNT_ARG_STACK_ADDRESS : CNT_STACK_ADDRESS);
             node->number.u = v->stack_offset;
             bool a = !v->type.IsArray();
