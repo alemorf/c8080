@@ -1,0 +1,2 @@
+#/bin/bash
+../../c8080 -OCPM -DARCH_CPM -DARCH_VT100 -D__C8080_CPU_MHZ=2500000 -oschoolr.com schoolr.c
