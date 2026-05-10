@@ -18,4 +18,3 @@
 #pragma once
 
 int errno;
-

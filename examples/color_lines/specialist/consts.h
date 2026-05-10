@@ -89,4 +89,3 @@ static const uint8_t all_colors[] = {
 };
 
 #define BALL_COLOR(X) (all_colors[(X)])
-
