@@ -30,4 +30,4 @@ char *__global strchr(const char *string, char byte) __link("string_h/strchr.c")
 int8_t __global strcmp(const char *string1, const char *string2) __link("string_h/strcmp.c");
 char *__global strcpy(char *destination, const char *source) __link("string_h/strcpy.c");
 size_t __global strlen(const char *string) __link("string_h/strlen.c");
-char *strcat(char *destination, const char *source) __link("string_h/strcat.c");
+char *__global strcat(char *destination, const char *source) __link("string_h/strcat.c");
