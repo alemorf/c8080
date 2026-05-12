@@ -48,9 +48,9 @@ void CPrepareArgs(CNodePtr node, CProgramm &programm) {
         a->e = node->e;
 
         auto argument_size = a->type.SizeOf(a->e);
+        a->stack_offset = offset;
         if (argument_size == 1)
             offset++;  // The stack is word aligned
-        a->stack_offset = offset;
         offset += argument_size;
 
         if (programm.GetVariableMode(v.type) == CVM_GLOBAL)

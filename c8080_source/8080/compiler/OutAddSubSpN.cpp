@@ -67,6 +67,7 @@ void Compiler::OutAddSpN(AsmRegister save, size_t value) {
         out.ld_hl_number(value);  // 3 bytes, 16 ticks
         out.add_hl_sp();          // 1 byte, 10 ticks
         out.ld_sp_hl();           // 1 byte, 5 ticks
+        out.stack_correction(-value);
         if (need_ex)
             out.ex_hl_de();  // 1 byte, 4 ticks
     }

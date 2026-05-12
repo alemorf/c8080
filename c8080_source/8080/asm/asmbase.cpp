@@ -242,9 +242,13 @@ void AsmBase::MakeFile() {
                 break;
             case AC_INC:
                 Write("\tinc ", line.argument[0], "\n");
+                if (line.argument[0].type == AAT_REG && line.argument[0].reg == R16_SP)
+                    in_stack--;
                 break;
             case AC_DEC:
                 Write("\tdec ", line.argument[0], "\n");
+                if (line.argument[0].type == AAT_REG && line.argument[0].reg == R16_SP)
+                    in_stack++;
                 break;
             case AC_LDAX:
                 Write("\tld a, (", line.argument[0], ")\n");

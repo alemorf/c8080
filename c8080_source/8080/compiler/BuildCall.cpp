@@ -51,14 +51,16 @@ bool Compiler::Case_Call(CNodePtr &node, AsmRegister reg) {
         switch (i->ctype.GetAsmType()) {
             case CBT_CHAR:
             case CBT_UNSIGNED_CHAR:
-                if (!i->compiler.alt.able) {
-                    Build(i, R8_A);
-                    out.dec_reg(R16_SP);  // TODO: Remove
-                    out.push_af();
-                    out.inc_reg(R16_SP);  // TODO: Remove
-                } else {
+                if (i->compiler.alt.able && i->compiler.alt.metric < i->compiler.main.metric) {
                     Build(i, R8_D);
+                    out.dec_reg(R16_SP);
                     out.push_de();
+                    out.inc_reg(R16_SP);
+                } else {
+                    Build(i, R8_A);
+                    out.dec_reg(R16_SP);
+                    out.push_af();
+                    out.inc_reg(R16_SP);
                 }
                 used_stack_size += 2;
                 break;
