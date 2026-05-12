@@ -17,7 +17,7 @@
 
 #include <cpm.h>
 
-#ifdef ARCH_CPM_CCP
+#if !defined(ARCH_CPM_BIOS) && !defined(ARCH_CPM_BDOS)
 
 void __global CpmCommand(uint8_t drive_user, const char *text) {
     asm {
@@ -54,7 +54,7 @@ CpmCommand_1:
         ld   a, l
         sub  9
         ld   l, 7
-        ld   (hl), b
+        ld   (hl), a
 
         ; Передача активного накопителя и пользователя в C
 __a_1_cpmcommand = $ + 1

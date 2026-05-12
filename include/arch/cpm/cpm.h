@@ -205,7 +205,7 @@ uint8_t __global CpmResetDrives(uint16_t bitmap) __link("cpm_h/bdos.c");
 
 // *** CCP ***
 
-#ifdef ARCH_CPM_CCP
+#if !defined(ARCH_CPM_BIOS) && !defined(ARCH_CPM_BDOS)
 
 // Execute command
 void __global CpmCommand(uint8_t drive_user, const char *text) __link("cpm_h/cpmcommand.c");
