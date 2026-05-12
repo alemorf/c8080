@@ -18,6 +18,8 @@
 #include <stdint.h>
 #include <c8080/codepage/micro80.h>
 
+#define FEATURE_HAL_SAVE_SCREEN
+
 static uint8_t *const SCREEN = (uint8_t *)0xE800;
 static uint8_t *const SCREEN_ATTRIB = (uint8_t *)0xE000;
 static const uint16_t SCREEN_SIZE = 0x800;
