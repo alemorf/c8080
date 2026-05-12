@@ -25,25 +25,23 @@ void Compiler::BuildJumpIf(bool prepare, CNodePtr &node, bool jmp_if_true, AsmLa
         case CNT_MONO_OPERATOR:
             if (node->mono_operator_code == MOP_NOT) {
                 BuildJumpIf(prepare, node->a, !jmp_if_true, label);
-                if (prepare) {
-                    node->compiler.main.able = true;
-                    node->compiler.main.regs = U_ALL;  // TODO: Calculate used regs
-                }
+                node->compiler.main.able = true;
+                node->compiler.main.regs = node->a->compiler.main.regs;
                 return;
             }
             break;
         case CNT_OPERATOR:
             if (node->operator_code == COP_CMP_E || node->operator_code == COP_CMP_NE) {
                 if (NumberIsZero(node->b)) {
-                    BuildJumpIfZero(prepare, node->a, node->operator_code == COP_CMP_E, jmp_if_true, label);
+                    node->compiler.main.regs =
+                        BuildJumpIfZero(prepare, node->a, node->operator_code == COP_CMP_E, jmp_if_true, label);
                     node->compiler.main.able = true;
-                    node->compiler.main.regs = U_ALL;  // TODO: Calculate used regs
                     return;
                 }
                 if (NumberIsZero(node->a)) {
-                    BuildJumpIfZero(prepare, node->b, node->operator_code == COP_CMP_E, jmp_if_true, label);
+                    node->compiler.main.regs =
+                        BuildJumpIfZero(prepare, node->b, node->operator_code == COP_CMP_E, jmp_if_true, label);
                     node->compiler.main.able = true;
-                    node->compiler.main.regs = U_ALL;  // TODO: Calculate used regs
                     return;
                 }
             }
@@ -105,6 +103,8 @@ void Compiler::BuildJumpIf(bool prepare, CNodePtr &node, bool jmp_if_true, AsmLa
                         BuildJumpIf(prepare, node->a, false, label);
                         BuildJumpIf(prepare, node->b, false, label);
                     }
+                    node->compiler.main.able = true;
+                    node->compiler.main.regs = node->a->compiler.main.regs | node->b->compiler.main.regs;
                     return;
                 case COP_LOR:
                     if (jmp_if_true) {
@@ -117,6 +117,8 @@ void Compiler::BuildJumpIf(bool prepare, CNodePtr &node, bool jmp_if_true, AsmLa
                         if (!prepare)
                             out.label(label2);
                     }
+                    node->compiler.main.able = true;
+                    node->compiler.main.regs = node->a->compiler.main.regs | node->b->compiler.main.regs;
                     return;
             }
     }

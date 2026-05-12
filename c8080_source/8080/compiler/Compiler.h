@@ -57,7 +57,7 @@ protected:
 
     void Build(CNodePtr &node, AsmRegister reg = REG_PREPARE);
 
-    void BuildJumpIfZero(bool prepare, CNodePtr &node, bool jmp_if_not_zero, bool invert, AsmLabel *label);
+    uint32_t BuildJumpIfZero(bool prepare, CNodePtr &node, bool jmp_if_not_zero, bool invert, AsmLabel *label);
 
     void BuildJumpIf(bool prepare, CNodePtr &node, bool jmp_if_true, AsmLabel *label);
 

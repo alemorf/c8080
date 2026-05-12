@@ -80,6 +80,12 @@ bool Compiler::MeasureReset(CNodePtr &node, AsmRegister reg) {
     if (c.build == nullptr)
         C_ERROR_INTERNAL(node, "No compilation cases");
 
+    if (out.measure) {
+        out.measure_metric += c.metric;
+        out.measure_regs |= c.regs;
+        return true;
+    }
+
     (this->*(c.build))(node, reg);
     return true;
 }
