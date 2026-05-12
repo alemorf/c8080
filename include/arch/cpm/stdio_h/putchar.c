@@ -18,15 +18,9 @@
 #include <stdio.h>
 #include <cpm.h>
 
-int __global putchar(int c) {
-#ifdef ARCH_CPM_BIOS /* No BDOS in memory */
+int putchar(int c) {
     if ((uint8_t)c == 0x0A)
         CpmBiosConOut(0x0D);
     CpmBiosConOut(c);
-#else
-    if ((uint8_t)c == 0x0A)
-        CpmConsoleWrite(0x0D);
-    CpmConsoleWrite(c);
-#endif
     return (uint8_t)c;
 }
