@@ -132,6 +132,10 @@ void CParserBase::RegisterTypedef(CNodePtr node, CString name) {
 CVariablePtr CParserBase::RegisterVariable(bool extern_flag, CNodePtr node, bool global, CString name) {
     CVariablePtr v = FindVariableCurrentScope(name);
     if (v != nullptr) {
+        if (node->ctype.variables_mode != CVM_NOT_SET && v->type.variables_mode == CVM_NOT_SET)
+            v->type.variables_mode = node->ctype.variables_mode;
+        if (node->ctype.variables_mode == CVM_NOT_SET && v->type.variables_mode != CVM_NOT_SET)
+            node->ctype.variables_mode = v->type.variables_mode;
         if (v->type != node->ctype) {
             programm.Error(node->e,
                            "conflicting types for '" + name + "'; have '" + node->ctype.ToString() + "'");  // gcc
