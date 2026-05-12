@@ -22,5 +22,6 @@ int puts(const char *text) {
         putchar(*i);
         i++;
     }
+    putchar('\n');
     return i - text;
 }
