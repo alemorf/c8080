@@ -34,10 +34,9 @@ static CNodePtr ConvertToIntUint(CNodePtr &arg) {
 bool Prepare8BitVarArgs(Prepare &p, CNodePtr &node) {
     if (!p.programm.cmm && node->type == CNT_FUNCTION_CALL) {
         // 0 element of function_args is the return type
-        const size_t static_arg_count =
-                p.programm.GetVariableMode(node->variable->type) == CVM_GLOBAL
-                ? (node->variable->type.function_args.size() - 1)
-                : 0;
+        const size_t static_arg_count = p.programm.GetVariableMode(node->variable->type) == CVM_GLOBAL
+                                            ? (node->variable->type.function_args.size() - 1)
+                                            : 0;
 
         size_t arg_number = 0;
         bool changed = false;
