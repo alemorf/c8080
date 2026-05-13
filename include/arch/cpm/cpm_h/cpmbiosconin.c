@@ -20,7 +20,7 @@
 char __global CpmBiosConIn(void) {
     asm {
         ld   hl, (1)
-        ld   l, 7
+        ld   l, 9
         jp   hl
     }
 }
