@@ -33,6 +33,7 @@ bool DeleteNodeSaveType(CNodePtr &node, char c) {
 typedef bool (*PrepareFunctionType)(Prepare &p, CNodePtr &node);
 
 static const PrepareFunctionType prepare_function_list[] = {
+    Prepare8BitVarArgs,
     PrepareRemoveUselessOperations,
     PrepareReplaceDivMulWithShift,
     PrepareStructItem,
