@@ -19,5 +19,9 @@
 #include <cpm.h>
 
 int getchar(void) {
+#ifdef __C8080_USE_CPM_CONSOLE_IO /* Cannot use CpmBiosConSt() because symbols get stuck in CP/M */
+    return (uint8_t)CpmConsoleDirect(0xFF);
+#else
     return CpmBiosConIn();
+#endif
 }
