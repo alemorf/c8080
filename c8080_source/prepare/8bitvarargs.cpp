@@ -17,11 +17,12 @@
 
 #include "index.h"
 
-// Converts 8-bit variadic arguments to 16-bit:
+// Convert 8-bit variadic and stack function arguments to 16-bit.
+// from:
 //   char a;
 //   unsigned char b;
 //   printf("%i %u", a, b);
-// to
+// to:
 //   unsigned char b;
 //   printf("%i %u", (int)a, (usigned)b);
 
