@@ -1,6 +1,6 @@
 /*
  * c8080 stdlib
- * Copyright (c) 2025 Aleksey Morozov aleksey.f.morozov@gmail.com aleksey.f.morozov@yandex.ru
+ * Copyright (c) 2026 Aleksey Morozov aleksey.f.morozov@gmail.com aleksey.f.morozov@yandex.ru
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,25 +19,5 @@
 #include <stdio.h>
 
 int ReadAndDecodeConsoleKeys(void) {
-    char c = getchar();
-    if (c != 0x1B)
-        return c;
-    c = getchar();
-    if (c != '[') {
-        if (c == 0x1B)
-          return c;
-        return 0x100 | c;
-    }
-    c = getchar();
-    return 0x200 + c;
-
-    /* TODO: Other multi-byte key codes:
-     * [OP = F1
-     * [OQ = F2
-     * [OR = F3
-     * [2~ = INS
-     * [3~ = DEL
-     * [5~ = PAGE UP
-     * [6~ = PAGE DOWN
-     */
+    return getchar();
 }

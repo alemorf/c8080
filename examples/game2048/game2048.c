@@ -342,7 +342,7 @@ static bool getchar_y_n(void) {
 }
 
 int main(int argc, char *argv[]) {
-    char c;
+    int c;
     bool success;
 
     // TODO: if (argc == 2 && strcmp(argv[1],"test")==0) {
@@ -352,29 +352,7 @@ int main(int argc, char *argv[]) {
     initBoard();
 
     while (true) {
-        c = getchar();
-        if (c == 27) {
-            c = getchar();
-            if (c == '[') {
-                c = getchar();
-                switch (c) {
-                    case 'A':
-                        c = 'W';
-                        break;
-                    case 'B':
-                        c = 'S';
-                        break;
-                    case 'D':
-                        c = 'A';
-                        break;
-                    case 'C':
-                        c = 'D';
-                        break;
-                    default:
-                        continue;
-                }
-            }
-        }
+        c = ReadAndDecodeConsoleKeys();
         switch (c) {
             case 'a':
             case 'A':

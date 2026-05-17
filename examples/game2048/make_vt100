@@ -1,0 +1,2 @@
+#!/bin/bash
+../../c8080e -DARCH_CPM -DARCH_VT100 game2048.c -o game2048.vt100.com
