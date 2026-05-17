@@ -19,4 +19,4 @@
 
 #include <stddef.h>
 
-static constexpr size_t CHARS_IN_64_BIT_NUBMER = 20u;  // 19223372036854775807
+static constexpr size_t CHARS_IN_64_BIT_NUMBER = 20u;  // 19223372036854775807

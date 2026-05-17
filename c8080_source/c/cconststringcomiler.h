@@ -23,7 +23,7 @@
 #include "../tools/number_size.h"
 
 struct CConstStringCompiler {
-    char name[4u + CHARS_IN_64_BIT_NUBMER + 1u];  // "__c_12345\0"
+    char name[sizeof("__c_") + CHARS_IN_64_BIT_NUMBER];  // "__c_12345\0"
 
     CConstStringCompiler() {
         name[0] = 0;

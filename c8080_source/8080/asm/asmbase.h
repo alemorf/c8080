@@ -56,7 +56,7 @@ private:
     }
 
     void Write(uint64_t value) {
-        char str[CHARS_IN_64_BIT_NUBMER + 1u]{};
+        char str[CHARS_IN_64_BIT_NUMBER + 1u]{};
         int result = snprintf(str, sizeof(str), "%" PRIu64, value);
         if (result <= 0 || result >= (int)sizeof(str))
             throw std::runtime_error(__FUNCTION__);
