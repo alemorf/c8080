@@ -25,7 +25,7 @@ int ReadAndDecodeConsoleKeys(void) {
     c = getchar();
     if (c != '[') {
         if (c == 0x1B)
-          return c;
+            return c;
         return 0x100 | c;
     }
     c = getchar();

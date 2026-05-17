@@ -18,4 +18,3 @@
 #pragma once
 
 unsigned strtou(const char *str, char **endptr, int base) __link("strtou.c");
-

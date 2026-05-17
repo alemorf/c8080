@@ -108,5 +108,3 @@ int strtoi(const char *str, char **endptr, int base) {
 unsigned strtou(const char *str, char **endptr, int base) {
     return strtoui(str, endptr, base, false);
 }
-
-

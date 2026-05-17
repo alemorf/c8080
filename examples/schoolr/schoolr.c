@@ -506,7 +506,7 @@ int main(int argc, char **argv) {
         MoveCursor(23, 1);
         printf("Нажми любую клавишу...");
         getchar();
-lab1:;
+    lab1:;
     }
 
     ClearConsole();

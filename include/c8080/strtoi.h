@@ -18,4 +18,3 @@
 #pragma once
 
 int strtoi(const char *str, char **endptr, int base) __link("strtou.c");
-

@@ -43,7 +43,6 @@ __init_loop:
     main(0, NULL);
 }
 
-
 // Example: void (*hl)(); hl();
 // Input: hl
 

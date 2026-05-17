@@ -19,12 +19,12 @@
 
 #include <stdint.h>
 
-static const uint16_t KEY_UP = 0x200 | 'A';     /* ESC [ A */
-static const uint16_t KEY_DOWN = 0x200 | 'B';   /* ESC [ B */
-static const uint16_t KEY_RIGHT = 0x200 | 'C';  /* ESC [ C */
-static const uint16_t KEY_LEFT = 0x200 | 'D';   /* ESC [ D */
-static const uint16_t KEY_END = 0x200 | 'F';    /* ESC [ F */
-static const uint16_t KEY_HOME = 0x200 | 'H';   /* ESC [ H */
+static const uint16_t KEY_UP = 0x200 | 'A';    /* ESC [ A */
+static const uint16_t KEY_DOWN = 0x200 | 'B';  /* ESC [ B */
+static const uint16_t KEY_RIGHT = 0x200 | 'C'; /* ESC [ C */
+static const uint16_t KEY_LEFT = 0x200 | 'D';  /* ESC [ D */
+static const uint16_t KEY_END = 0x200 | 'F';   /* ESC [ F */
+static const uint16_t KEY_HOME = 0x200 | 'H';  /* ESC [ H */
 
 static const uint8_t KEY_ENTER = 0x0D;
 static const uint8_t KEY_SPACE = 0x20;
