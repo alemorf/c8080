@@ -1,6 +1,6 @@
 /*
  * c8080 compiler
- * Copyright (c) 2025 Aleksey Morozov aleksey.f.morozov@gmail.com aleksey.f.morozov@yandex.ru
+ * Copyright (c) 2026 Aleksey Morozov aleksey.f.morozov@gmail.com aleksey.f.morozov@yandex.ru
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,14 +46,14 @@ void Compiler::OutShl8(CNodePtr &node, AsmRegister reg) {
 
     if (value == 7) {
         out.cyclic_rotate_right();
-        out.and_number(0x01);
+        out.and_number(0x80);
         return;
     }
 
     if (value == 6) {
         out.cyclic_rotate_right();
         out.cyclic_rotate_right();
-        out.and_number(0x03);
+        out.and_number(0xC0);
         return;
     }
 
