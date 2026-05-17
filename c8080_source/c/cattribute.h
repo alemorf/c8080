@@ -18,22 +18,30 @@
 #pragma once
 
 #include <string>
+#include <variant>
 #include <stdint.h>
+#include <assert.h>
 
 // Example: void reboot(void) __address(0xF800);
 // Example: extern int reboot __address("abc + 45");
 
 struct CAddressAttribute {
-    bool exists{};
-    uint64_t numeric_value{};
-    std::string string_value;
+    std::variant<std::monostate, uint64_t, std::string> value{};
 
-    std::string ToString() {
-        return !string_value.empty() ? string_value : std::to_string(numeric_value);
+    bool exists() const {
+        return !std::holds_alternative<std::monostate>(value);
+    }
+
+    std::string ToString() const {
+        if (std::holds_alternative<std::string>(value))
+            return std::get<std::string>(value);
+        if (std::holds_alternative<uint64_t>(value))
+            return std::to_string(std::get<uint64_t>(value));
+        return "$notused$";
     }
 
     bool operator==(const CAddressAttribute &b) const {
-        return exists == b.exists && numeric_value == b.numeric_value && string_value == b.string_value;
+        return value == b.value;
     }
 
     bool operator!=(const CAddressAttribute &b) const {

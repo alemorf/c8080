@@ -21,7 +21,7 @@
 namespace I8080 {
 
 void CompileVariable(Asm &out, CProgramm &p, CVariablePtr &vd) {
-    assert(!vd->address_attribute.exists);
+    assert(!vd->address_attribute.exists());
 
     PrepareVariable(p, vd, out);
 

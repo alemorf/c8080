@@ -192,23 +192,22 @@ void CParserFile::ParseAttributes(CNode &n) {
             CAddressAttribute a;
 
             if (l.WantToken("(")) {
-                if (l.IfString2(a.string_value)) {
-                    if (a.string_value.empty()) {
+                std::string str;
+                if (l.IfString2(str)) {
+                    if (str.empty())
                         l.Error("__address can't be empty", e);
-                        a.string_value = "0";
-                    }
+                    else
+                        a.value = str;
                 } else {
-                    a.numeric_value = ParseUint64();
+                    a.value = ParseUint64();
                 }
                 l.CloseToken(")", ")");
             }
 
-            a.exists = true;
-
             if (!n.extern_flag)
                 programm.Error(e, "__address() can only be used with 'extern'");
 
-            if (n.variable->address_attribute.exists && n.variable->address_attribute != a)
+            if (n.variable->address_attribute.exists() && n.variable->address_attribute != a)
                 programm.Error(e, "previous declaration is different");
 
             n.variable->address_attribute = a;

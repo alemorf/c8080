@@ -19,6 +19,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include "cstructitem.h"
 #include "cerrorposition.h"
 
