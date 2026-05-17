@@ -155,7 +155,7 @@ const char *ToString(COperatorCode code) {
         case COP_AND:
             return "&";
         case COP_OR:
-            return "%";
+            return "|";
         case COP_XOR:
             return "^";
         case COP_LAND:
