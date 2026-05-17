@@ -207,7 +207,7 @@ void CParserFile::ParseAttributes(CNode &n) {
             if (!n.extern_flag)
                 programm.Error(e, "__address() can only be used with 'extern'");
 
-            if (n.variable->address_attribute.exists() && n.variable->address_attribute != a)
+            if (n.variable->address_attribute.Exists() && n.variable->address_attribute != a)
                 programm.Error(e, "previous declaration is different");
 
             n.variable->address_attribute = a;

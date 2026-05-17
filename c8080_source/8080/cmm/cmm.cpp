@@ -605,7 +605,7 @@ void Cmm::CompileDeclareVariable(CNodePtr &n) {
 void Cmm::Compile(CString asm_file_name) {
     // Write equs
     for (auto &vd : p.all_top_variables) {
-        if (vd->address_attribute.exists()) {
+        if (vd->address_attribute.Exists()) {
             out.equ(vd->output_name.c_str(), vd->address_attribute.ToString());
         } else if (!vd->only_extern && !vd->type.IsFunction() && vd->c.equ_enabled) {
             if (p.asm_names.find(vd->output_name) == p.asm_names.end())

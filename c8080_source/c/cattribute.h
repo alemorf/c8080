@@ -28,7 +28,7 @@
 struct CAddressAttribute {
     std::variant<std::monostate, uint64_t, std::string> value{};
 
-    bool exists() const {
+    bool Exists() const {
         return !std::holds_alternative<std::monostate>(value);
     }
 
