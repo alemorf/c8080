@@ -32,6 +32,8 @@
 
 #ifdef __MINGW32__
 static const char *ASSEMBLER = "sjasmplus.exe";
+#elif __APPLE__
+static const char *ASSEMBLER = "sjasmplus.macos";
 #else
 static const char *ASSEMBLER = "sjasmplus";
 #endif
