@@ -1,9 +1,9 @@
 #/bin/bash
 set -e
 
-make -C specialist/convert_png_to_specialist convert_png_to_specialist${EXT}
+make -C specialist/convert_png_to_specialist convert_png_to_specialist
 
-specialist/convert_png_to_specialist/convert_png_to_specialist${EXT} specialist
+specialist/convert_png_to_specialist/convert_png_to_specialist specialist
 
 ../../c8080e -ORKS -DARCH_SPECIALIST -Ispecialist -olines.specialist.rks \
  lines.c \

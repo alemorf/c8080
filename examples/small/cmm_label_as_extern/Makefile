@@ -5,4 +5,4 @@ clean:
 	rm test.bin test.lst test.asm
 
 test.bin: test.c Makefile
-	../../c8080${ext} ${asm} -m test.c
+	../../../c8080e -m test.c

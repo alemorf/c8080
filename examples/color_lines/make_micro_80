@@ -1,9 +1,9 @@
 #/bin/bash
 set -e
 
-make -C micro80/convert_png_to_micro80 convert_png_to_micro80$EXT
+make -C micro80/convert_png_to_micro80 convert_png_to_micro80
 
-micro80/convert_png_to_micro80/convert_png_to_micro80$EXT micro80
+micro80/convert_png_to_micro80/convert_png_to_micro80 micro80
 
 ../../c8080e -OCPM -DARCH_MICRO80_COLOR -Imicro80 -olines.micro80.com \
  lines.c \

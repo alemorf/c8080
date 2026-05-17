@@ -1,18 +1,11 @@
 #/bin/bash
-# set -e
-platform=$(uname -o)
-EXT=
-ASM=
-if [ "$platform" == "Darwin" ]; then
-    EXT=.macos
-    ASM=-A../../include/sjasmplus.macos
-fi
+set -e
 
-make -C specialist/convert_png_to_specialist convert_png_to_specialist$EXT
+make -C specialist/convert_png_to_specialist convert_png_to_specialist
 
-specialist/convert_png_to_specialist/convert_png_to_specialist$EXT specialist
+specialist/convert_png_to_specialist/convert_png_to_specialist specialist
 
-../../c8080$EXT $ASM -ORKS -DARCH_SPECIALIST -Ispecialist -okosoban.specialist.rks \
+../../c8080e -ORKS -DARCH_SPECIALIST -Ispecialist -okosoban.specialist.rks \
  kosoban.c \
  levels.c \
  specialist/resources.c

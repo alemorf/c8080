@@ -1,10 +1,14 @@
+# So that in 5 years you won't be looking for a version of libpng and a way to run it on your Linux
+static =
+ifneq ($(shell uname -o),Darwin)
+    static = -static
+endif
+
 all: convert_png_to_specialist
 
 convert_png_to_specialist: *.cpp *.h
-	g++ -std=c++17 -O2 -o$@ -static *.cpp -lpng -lz
+	g++ -O2 -std=c++17 -o$@ *.cpp $(static) -lpng -lz
 
 convert_png_to_specialist.exe: *.cpp *.h
-	x86_64-w64-mingw32-g++ -std=c++17 -o$@ -static *.cpp -lpng -lz
+	x86_64-w64-mingw32-g++ -std=c++17 -o$@ *.cpp -static -lpng -lz
 
-convert_png_to_specialist.macos: *.cpp *.h
-	g++ -std=c++17 -O2 -o$@ *.cpp -lpng -lz

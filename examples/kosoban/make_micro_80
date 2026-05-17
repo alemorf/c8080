@@ -1,8 +1,8 @@
 #/bin/bash
 set -e
 
-make -C micro80/convert_png_to_micro80 convert_png_to_micro80$EXT micro80
+make -C micro80/convert_png_to_micro80 convert_png_to_micro80
 
-micro80/convert_png_to_micro80/convert_png_to_micro80$EXT micro80
+micro80/convert_png_to_micro80/convert_png_to_micro80 micro80
 
 ../../c8080e -OCPM -DARCH_MICRO80_COLOR -Imicro80 -okosoban.micro80.com kosoban.c levels.c micro80/resources.c
