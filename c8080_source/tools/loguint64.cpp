@@ -20,135 +20,135 @@
 
 uint8_t LogUint64(uint64_t number) {
     switch (number) {
-        case 0x0001:
+        case 0x0001ULL:
             return 0;
-        case 0x0002:
+        case 0x0002ULL:
             return 1;
-        case 0x0004:
+        case 0x0004ULL:
             return 2;
-        case 0x0008:
+        case 0x0008ULL:
             return 3;
-        case 0x0010:
+        case 0x0010ULL:
             return 4;
-        case 0x0020:
+        case 0x0020ULL:
             return 5;
-        case 0x0040:
+        case 0x0040ULL:
             return 6;
-        case 0x0080:
+        case 0x0080ULL:
             return 7;
-        case 0x0100:
+        case 0x0100ULL:
             return 8;
-        case 0x0200:
+        case 0x0200ULL:
             return 9;
-        case 0x0400:
+        case 0x0400ULL:
             return 10;
-        case 0x0800:
+        case 0x0800ULL:
             return 11;
-        case 0x1000:
+        case 0x1000ULL:
             return 12;
-        case 0x2000:
+        case 0x2000ULL:
             return 13;
-        case 0x4000:
+        case 0x4000ULL:
             return 14;
-        case 0x8000:
+        case 0x8000ULL:
             return 15;
-        case 0x10000:
+        case 0x10000ULL:
             return 16;
-        case 0x20000:
+        case 0x20000ULL:
             return 17;
-        case 0x40000:
+        case 0x40000ULL:
             return 18;
-        case 0x80000:
+        case 0x80000ULL:
             return 19;
-        case 0x100000:
+        case 0x100000ULL:
             return 20;
-        case 0x200000:
+        case 0x200000ULL:
             return 21;
-        case 0x400000:
+        case 0x400000ULL:
             return 22;
-        case 0x800000:
+        case 0x800000ULL:
             return 23;
-        case 0x1000000:
+        case 0x1000000ULL:
             return 24;
-        case 0x2000000:
+        case 0x2000000ULL:
             return 25;
-        case 0x4000000:
+        case 0x4000000ULL:
             return 26;
-        case 0x8000000:
+        case 0x8000000ULL:
             return 27;
-        case 0x10000000:
+        case 0x10000000ULL:
             return 28;
-        case 0x20000000:
+        case 0x20000000ULL:
             return 29;
-        case 0x40000000:
+        case 0x40000000ULL:
             return 30;
-        case 0x80000000:
+        case 0x80000000ULL:
             return 31;
-        case 0x100000000:
+        case 0x100000000ULL:
             return 32;
-        case 0x200000000:
+        case 0x200000000ULL:
             return 33;
-        case 0x400000000:
+        case 0x400000000ULL:
             return 34;
-        case 0x800000000:
+        case 0x800000000ULL:
             return 35;
-        case 0x1000000000:
+        case 0x1000000000ULL:
             return 36;
-        case 0x2000000000:
+        case 0x2000000000ULL:
             return 37;
-        case 0x4000000000:
+        case 0x4000000000ULL:
             return 38;
-        case 0x8000000000:
+        case 0x8000000000ULL:
             return 39;
-        case 0x10000000000:
+        case 0x10000000000ULL:
             return 40;
-        case 0x20000000000:
+        case 0x20000000000ULL:
             return 41;
-        case 0x40000000000:
+        case 0x40000000000ULL:
             return 42;
-        case 0x80000000000:
+        case 0x80000000000ULL:
             return 43;
-        case 0x100000000000:
+        case 0x100000000000ULL:
             return 44;
-        case 0x200000000000:
+        case 0x200000000000ULL:
             return 45;
-        case 0x400000000000:
+        case 0x400000000000ULL:
             return 46;
-        case 0x800000000000:
+        case 0x800000000000ULL:
             return 47;
-        case 0x1000000000000:
+        case 0x1000000000000ULL:
             return 48;
-        case 0x2000000000000:
+        case 0x2000000000000ULL:
             return 49;
-        case 0x4000000000000:
+        case 0x4000000000000ULL:
             return 50;
-        case 0x8000000000000:
+        case 0x8000000000000ULL:
             return 51;
-        case 0x10000000000000:
+        case 0x10000000000000ULL:
             return 52;
-        case 0x20000000000000:
+        case 0x20000000000000ULL:
             return 53;
-        case 0x40000000000000:
+        case 0x40000000000000ULL:
             return 54;
-        case 0x80000000000000:
+        case 0x80000000000000ULL:
             return 55;
-        case 0x100000000000000:
+        case 0x100000000000000ULL:
             return 56;
-        case 0x200000000000000:
+        case 0x200000000000000ULL:
             return 57;
-        case 0x400000000000000:
+        case 0x400000000000000ULL:
             return 58;
-        case 0x800000000000000:
+        case 0x800000000000000ULL:
             return 59;
-        case 0x1000000000000000:
+        case 0x1000000000000000ULL:
             return 60;
-        case 0x2000000000000000:
+        case 0x2000000000000000ULL:
             return 61;
-        case 0x4000000000000000:
+        case 0x4000000000000000ULL:
             return 62;
-        case 0x8000000000000000:
+        case 0x8000000000000000ULL:
             return 63;
-        // TODO: __builtin_clzll
+        // TODOULL: __builtin_clzll
         default:
             return UINT8_MAX;
     }
