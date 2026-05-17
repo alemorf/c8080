@@ -1,0 +1,7 @@
+#!/bin/bash
+platform=$(uname -o)
+if [ "$platform" == "Darwin" ]; then
+    $(dirname "$0")/c8080.14-08-2025.macos $*
+else
+    $(dirname "$0")/c8080 $*
+fi
