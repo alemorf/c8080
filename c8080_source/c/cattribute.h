@@ -70,11 +70,18 @@ struct CLinkAttribute {
 // Example: int data[256] __attribute__((aligned(8)));
 
 struct CAlignAttribute {
-    bool exists{};
-    uint64_t value{};
+    std::variant<std::monostate, uint64_t> value{};
+
+    bool Exists() const {
+        return !std::holds_alternative<std::monostate>(value);
+    }
+
+    uint64_t Get() const {
+        return std::get<uint64_t>(value);
+    }
 
     bool operator==(const CAlignAttribute &b) const {
-        return exists == b.exists && value == b.value;
+        return value == b.value;
     }
 
     bool operator!=(const CAlignAttribute &b) const {

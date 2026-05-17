@@ -25,8 +25,8 @@ void CompileVariable(Asm &out, CProgramm &p, CVariablePtr &vd) {
 
     PrepareVariable(p, vd, out);
 
-    if (vd->align_attribute.exists)
-        out.align(vd->align_attribute.value);
+    if (vd->align_attribute.Exists())
+        out.align(vd->align_attribute.Get());
 
     out.variable(vd->output_name);
 

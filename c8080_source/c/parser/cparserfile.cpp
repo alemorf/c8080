@@ -113,10 +113,9 @@ void CParserFile::ParseGccAttributes(CAlignAttribute *a) {
             l.NeedToken("(");
             l.NeedToken("(");
             if (a && l.IfToken("aligned")) {
-                if (a->exists)
+                if (a->Exists())
                     l.Error(std::string("already defined"));
                 l.NeedToken("(");
-                a->exists = true;
                 a->value = ParseUint64();
                 l.NeedToken(")");
                 l.NeedToken(")");
