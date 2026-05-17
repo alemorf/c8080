@@ -1,10 +1,3 @@
 #/bin/bash
 set -e
-platform=$(uname -o)
-EXT=
-ASM=
-if [ "$platform" == "Darwin" ]; then
-    EXT=.macos
-    ASM=-A../../include/sjasmplus.macos
-fi
-../../c8080$EXT $ASM -ORKS -DARCH_SPECIALIST -Ispecialist -ogame2048.specialist.rks game2048.c
+../../c8080e -ORKS -DARCH_SPECIALIST -Ispecialist -ogame2048.specialist.rks game2048.c

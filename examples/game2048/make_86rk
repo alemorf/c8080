@@ -1,9 +1,2 @@
 #/bin/bash
-platform=$(uname -o)
-EXT=
-ASM=
-if [ "$platform" == "Darwin" ]; then
-    EXT=.macos
-    ASM=-A../../include/sjasmplus.macos
-fi
-../../c8080$EXT $ASM -ORKS -DARCH_86RK game2048.c -o game2048.86rk.rk
+../../c8080e -ORKS -DARCH_86RK game2048.c -o game2048.86rk.rk

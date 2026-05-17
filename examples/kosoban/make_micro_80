@@ -1,14 +1,8 @@
 #/bin/bash
-platform=$(uname -o)
-EXT=
-ASM=
-if [ "$platform" == "Darwin" ]; then
-    EXT=.macos
-    ASM=-A../../include/sjasmplus.macos
-fi
+set -e
 
 make -C micro80/convert_png_to_micro80 convert_png_to_micro80$EXT micro80
 
 micro80/convert_png_to_micro80/convert_png_to_micro80$EXT micro80
 
-../../c8080$EXT $ASM -OCPM -DARCH_MICRO80_COLOR -Imicro80 -okosoban.micro80.com kosoban.c levels.c micro80/resources.c
+../../c8080e -OCPM -DARCH_MICRO80_COLOR -Imicro80 -okosoban.micro80.com kosoban.c levels.c micro80/resources.c
