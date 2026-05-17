@@ -16,16 +16,16 @@
  */
 
 #include "cparser.h"
+#include <filesystem>
 #include "cparserfile.h"
 #include "../cnodelist.h"
 #include "../../tools/fs_tools.h"
 #include "../../tools/catpath.h"
 #include "../../tools/getpath.h"
-#include "../../tools/fileexists.h"
 
 static bool FindIncludeFile(CString path, CString base_name, std::string &result) {
     result = CatPath(path, base_name);
-    return FileExists(result);
+    return std::filesystem::is_regular_file(result);
 }
 
 bool CParser::GetFirstSourceFile(std::string &out_file_name) {

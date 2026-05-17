@@ -18,10 +18,9 @@
 #include <iostream>
 #include <assert.h>
 #include <unistd.h>
+#include <filesystem>
 #include "tools/catpath.h"
 #include "tools/getpath.h"
-#include "tools/direxists.h"
-#include "tools/fileexists.h"
 #include "tools/removeextension.h"
 #include "8080/Compile.h"
 #include "c/tools/dump.h"
@@ -197,7 +196,7 @@ int main(int argc, char **argv) {
         CParser c(programm);
 
         std::string std_include_dir = CatPath(GetPath(argv[0]), "include");
-        if (DirExists(std_include_dir))
+        if (std::filesystem::is_directory(std_include_dir))
             c.include_dirs.push_back(std_include_dir);
 
         Options o;
@@ -222,14 +221,14 @@ int main(int argc, char **argv) {
             static const char prefix[] = "#define ARCH_";
             if (0 == strncmp(i.c_str(), prefix, sizeof(prefix) - 1)) {
                 std::string dir = CatPath(arch_inc1lude_dir, ToLowerCase(i.substr(sizeof(prefix) - 1)));
-                if (DirExists(dir))
+                if (std::filesystem::is_directory(dir))
                     c.include_dirs.push_back(dir);
             }
         }
 
         if (o.assembler_need_path) {
             std::string assembler1 = CatPath(GetPath(argv[0]), o.assembler);
-            if (FileExists(assembler1)) {
+            if (std::filesystem::is_regular_file(assembler1)) {
                 o.assembler = assembler1;
             } else if (!c.include_dirs.empty()) {
                 o.assembler = CatPath(c.include_dirs[0], o.assembler);
