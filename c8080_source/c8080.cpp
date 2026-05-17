@@ -73,7 +73,7 @@ static void ParseOptions(int argc, char **argv, Options &o, CParser &c) {
     for (int i = 1; i < argc; i++) {
         char *s = argv[i];
         if (s[0] == '-' && !disable_options) {
-            if (s[2] == 0) {
+            if (s[1] != 0 && s[2] == 0) {
                 switch (s[1]) {
                     case 'V':
                         o.print_expression_tree = true;
@@ -95,7 +95,7 @@ static void ParseOptions(int argc, char **argv, Options &o, CParser &c) {
                         continue;
                 }
             }
-            const char *value = s + 2;
+            const char *value = s[1] != 0 ? s + 2 : "";
             if (value[0] == 0) {
                 if (i + 1 >= argc)
                     throw std::runtime_error(std::string("missing value after '") + s + "'");  // gcc
@@ -143,7 +143,6 @@ static int BadExit(const char *text = nullptr) {
     if (text)
         std::cerr << text << std::endl;
     std::cerr << "Compilation terminated due to error" << std::endl;
-    usleep(500 * 1000);
     return 1;
 }
 
