@@ -16,7 +16,6 @@
  */
 
 #include "nodeisnumber.h"
-#include "cthrow.h"
 
 bool NodeIsNumber1(CConstNodePtr node) {
     assert(node != nullptr);
@@ -32,13 +31,13 @@ bool NodeIsNumber1(CConstNodePtr node) {
             case CBT_UNSIGNED_SHORT:
             case CBT_UNSIGNED_LONG:
             case CBT_UNSIGNED_LONG_LONG:
-                return node->number.u == 1;
+                return node->number.u == 1u;
             case CBT_FLOAT:
-                return node->number.f == 1;
+                return node->number.f == 1.0f;
             case CBT_DOUBLE:
-                return node->number.d == 1;
+                return node->number.d == 1.0;
             case CBT_LONG_DOUBLE:
-                return node->number.ld == 1;
+                return node->number.ld == 1.0L;
         }
     }
 
@@ -59,13 +58,13 @@ bool NodeIsNumber0(CConstNodePtr node) {
             case CBT_UNSIGNED_SHORT:
             case CBT_UNSIGNED_LONG:
             case CBT_UNSIGNED_LONG_LONG:
-                return node->number.u == 0;
+                return node->number.u == 0u;
             case CBT_FLOAT:
-                return node->number.f == 0;
+                return node->number.f == 0.0f;
             case CBT_DOUBLE:
-                return node->number.d == 0;
+                return node->number.d == 0.0;
             case CBT_LONG_DOUBLE:
-                return node->number.ld == 0;
+                return node->number.ld == 0.0L;
         }
     }
 
@@ -86,13 +85,13 @@ bool NodeIsNumberNot0(CConstNodePtr node) {
             case CBT_UNSIGNED_SHORT:
             case CBT_UNSIGNED_LONG:
             case CBT_UNSIGNED_LONG_LONG:
-                return node->number.u != 0;
+                return node->number.u != 0u;
             case CBT_FLOAT:
-                return node->number.f != 0;
+                return node->number.f != 0.0f;
             case CBT_DOUBLE:
-                return node->number.d != 0;
+                return node->number.d != 0.0;
             case CBT_LONG_DOUBLE:
-                return node->number.ld != 0;
+                return node->number.ld != 0.0L;
         }
     }
 

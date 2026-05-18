@@ -169,7 +169,7 @@ std::string CType::ToString() const {
 }
 
 CBaseType CType::GetAsmType() const {
-    if (pointers.size() != 0)
+    if (!pointers.empty())
         return CBT_UNSIGNED_SHORT;
 
     switch (base_type) {
