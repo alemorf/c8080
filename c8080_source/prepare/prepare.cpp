@@ -46,7 +46,7 @@ static const PrepareFunctionType prepare_function_list[] = {
     PrepareAddWithStackAddress,
     PrepareDoubleConvert,
     PrepareCompareOperators,
-    nullptr
+    nullptr,
 };
 
 enum { PREPARE_CHANGED = 1, PREPARE_LABEL = 2 };
