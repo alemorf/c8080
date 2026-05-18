@@ -216,13 +216,13 @@ void Cmm::CompileInternalFunctionCall(CNodePtr &n, Arg &result_value) {
             CompileArgs_Empty(n);
             return out.daa();
         case CMM_NAME_CYCLIC_ROTATE_LEFT:
-            return CompileRotate(n, AC_RLCA);
+            return CompileRotate(n, AC_RLC);
         case CMM_NAME_CYCLIC_ROTATE_RIGHT:
-            return CompileRotate(n, AC_RRCA);
+            return CompileRotate(n, AC_RRC);
         case CMM_NAME_CARRY_ROTATE_LEFT:
-            return CompileRotate(n, AC_RLA);
+            return CompileRotate(n, AC_RAL);
         case CMM_NAME_CARRY_ROTATE_RIGHT:
-            return CompileRotate(n, AC_RRA);
+            return CompileRotate(n, AC_RAR);
         case CMM_NAME_COMPARE:
             return CompileAlu(n, ALU_CMP);
         case CMM_NAME_CARRY_ADD:

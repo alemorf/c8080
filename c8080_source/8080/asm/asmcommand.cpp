@@ -1,6 +1,6 @@
 /*
  * c8080 compiler
- * Copyright (c) 2025 Aleksey Morozov aleksey.f.morozov@gmail.com aleksey.f.morozov@yandex.ru
+ * Copyright (c) 2026 Aleksey Morozov aleksey.f.morozov@gmail.com aleksey.f.morozov@yandex.ru
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,13 +47,13 @@ int GetAsmCommandSize(enum AssemblerCommand c) {
             return 1;
         case AC_XTHL:
             return 1;
-        case AC_RLA:
+        case AC_RAL:
             return 1;
-        case AC_RRA:
+        case AC_RAR:
             return 1;
-        case AC_RRCA:
+        case AC_RRC:
             return 1;
-        case AC_RLCA:
+        case AC_RLC:
             return 1;
         case AC_JMP:
             return 3;
@@ -75,7 +75,7 @@ int GetAsmCommandSize(enum AssemblerCommand c) {
             return 1;
         case AC_SPHL:
             return 1;
-        case AC_CPL:
+        case AC_CMA:
             return 1;
         case AC_INC:
             return 1;

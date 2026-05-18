@@ -186,7 +186,7 @@ static bool OptimizeMviA(State &s, AsmBase::Line& l) {
             }
             // Замена LD A, CONST на CPL
             if (l.argument[1].number == uint8_t(~prev_value.number)) {
-                l.opcode = AC_CPL;
+                l.opcode = AC_CMA;
                 l.argument[0] = AsmArgument();
                 l.argument[1] = AsmArgument();
                 return true;
@@ -352,11 +352,11 @@ bool LoadSave(AsmBase &a, std::map<size_t, StateItem> &states, bool jb) {
             case AC_STAX:
                 // TODO: Может изменить переменную
                 break;
-            case AC_RLA:
-            case AC_RRA:
-            case AC_RRCA:
-            case AC_RLCA:
-            case AC_CPL:
+            case AC_RAL:
+            case AC_RAR:
+            case AC_RRC:
+            case AC_RLC:
+            case AC_CMA:
                 ResetState(s, R8_A);  // TODO: Можно вычислить
                 break;
             // Can't change registers

@@ -101,7 +101,7 @@ public:
 
     void carry_rotate_left() {
         ChangedReg(R8_A);
-        Add(AC_RLA);
+        Add(AC_RAL);
     }
 
     // ┌─>─ CF >─ D7 .. D0 >──┐
@@ -109,7 +109,7 @@ public:
 
     void carry_rotate_right() {
         ChangedReg(R8_A);
-        Add(AC_RRA);
+        Add(AC_RAR);
     }
 
     // ┌─> D7 .. D0 >─┬─> CF
@@ -117,7 +117,7 @@ public:
 
     void cyclic_rotate_right() {
         ChangedReg(R8_A);
-        Add(AC_RRCA);
+        Add(AC_RRC);
     }
 
     // CF <─┬─< D7 .. D0 <─┐
@@ -125,7 +125,7 @@ public:
 
     void cyclic_rotate_left() {
         ChangedReg(R8_A);
-        Add(AC_RLCA);
+        Add(AC_RLC);
     }
 
     void ei() {
@@ -159,7 +159,7 @@ public:
 
     void cpl() {
         ChangedReg(R16_AF);
-        Add(AC_CPL);
+        Add(AC_CMA);
     }
 
     void call(CString string) {
@@ -188,7 +188,7 @@ public:
     }
 
     void rotate(AssemblerCommand opcode) {
-        assert(opcode == AC_RLA || opcode == AC_RRA || opcode == AC_RLCA || opcode == AC_RRCA);
+        assert(opcode == AC_RAL || opcode == AC_RAR || opcode == AC_RLC || opcode == AC_RRC);
         ChangedReg(R8_A);
         Add(opcode);
     }

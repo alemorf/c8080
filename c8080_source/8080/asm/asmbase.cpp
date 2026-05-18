@@ -177,16 +177,16 @@ void AsmBase::MakeFile() {
             case AC_XTHL:
                 Write("\tex (sp), hl\n");
                 break;
-            case AC_RLA:
+            case AC_RAL:
                 Write("\trla\n");
                 break;
-            case AC_RRA:
+            case AC_RAR:
                 Write("\trra\n");
                 break;
-            case AC_RRCA:
+            case AC_RRC:
                 Write("\trrca\n");
                 break;
-            case AC_RLCA:
+            case AC_RLC:
                 Write("\trlca\n");
                 break;
             case AC_JMP:
@@ -237,7 +237,7 @@ void AsmBase::MakeFile() {
             case AC_SPHL:
                 Write("\tld sp, hl\n");
                 break;
-            case AC_CPL:
+            case AC_CMA:
                 Write("\tcpl\n");
                 break;
             case AC_INC:
