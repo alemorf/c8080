@@ -16,7 +16,7 @@
  */
 
 #include "index.h"
-#include "../../c/tools/numberiszero.h"
+#include "../../c/tools/nodeisnumber.h"
 
 namespace I8080 {
 
@@ -24,7 +24,7 @@ bool PrepareRemoveDead(Prepare &, CNodePtr &node) {
     // 0 ? B : C  => C
     // 1 ? B : C  => B
     if (node->type == CNT_OPERATOR && node->operator_code == COP_IF && node->a->type == CNT_NUMBER) {
-        DeleteNode(node, NumberIsZero(node->a) ? 'c' : 'b');
+        DeleteNode(node, NodeIsNumber0(node->a) ? 'c' : 'b');
         return true;
     }
 
@@ -32,7 +32,7 @@ bool PrepareRemoveDead(Prepare &, CNodePtr &node) {
     // if (1) B else C  =>  { B }
     if (node->type == CNT_IF && node->a->type == CNT_NUMBER && !node->has_label) {
         node->type = CNT_LEVEL;
-        node->a = NumberIsZero(node->a) ? node->c : node->b;
+        node->a = NodeIsNumber0(node->a) ? node->c : node->b;
         node->b = nullptr;
         node->c = nullptr;
         return true;
@@ -41,7 +41,7 @@ bool PrepareRemoveDead(Prepare &, CNodePtr &node) {
     // while (0) B  =>  {}
     // while (1) B  =>  while () B
     if (node->type == CNT_WHILE && node->a != nullptr && node->a->type == CNT_NUMBER && !node->has_label) {
-        if (NumberIsZero(node->a)) {
+        if (NodeIsNumber0(node->a)) {
             node->type = CNT_LEVEL;
             node->a = nullptr;
             node->b = nullptr;
@@ -54,7 +54,7 @@ bool PrepareRemoveDead(Prepare &, CNodePtr &node) {
     // do { B } while (0)  =>  do { B } while ()
     // do { B } while (1)  =>  for (;;) { B );
     if (node->type == CNT_DO && node->a != nullptr && node->a->type == CNT_NUMBER) {
-        if (NumberIsZero(node->a)) {
+        if (NodeIsNumber0(node->a)) {
             node->a = nullptr;  // No condition
         } else {
             node->type = CNT_FOR;
@@ -68,7 +68,7 @@ bool PrepareRemoveDead(Prepare &, CNodePtr &node) {
     // for (A; 0; C) D  =>  { A }
     // for (A; 1; C) D  =>  for (A; ; C) D
     if (node->type == CNT_FOR && node->b != nullptr && node->b->type == CNT_NUMBER && !node->has_label) {
-        if (NumberIsZero(node->b)) {
+        if (NodeIsNumber0(node->b)) {
             node->type = CNT_LEVEL;
             node->b = nullptr;
             node->c = nullptr;

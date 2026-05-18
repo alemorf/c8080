@@ -16,7 +16,7 @@
  */
 
 #include "convert.h"
-#include "numberiszero.h"
+#include "nodeisnumber.h"
 #include "../tools/cthrow.h"
 
 // These types convert to each other without errors
@@ -67,7 +67,7 @@ static void ConvertCheck(CConstType to_type, CNodePtr from) {
         return;
 
     // 0 -> any***
-    if (NumberIsZero(from) && to_type.pointers.size() != 0)
+    if (NodeIsNumber0(from) && to_type.pointers.size() != 0)
         return;
 
     // Simple types are converts any to any

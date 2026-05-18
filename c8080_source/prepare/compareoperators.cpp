@@ -16,9 +16,7 @@
  */
 
 #include "index.h"
-#include "../c/tools/numberiszero.h"
-#include "../c/tools/numberisone.h"
-
+#include "../c/tools/nodeisnumber.h"
 bool PrepareCompareOperators(Prepare &, CNodePtr &node) {
     if (node->type != CNT_OPERATOR)
         return false;
@@ -26,23 +24,23 @@ bool PrepareCompareOperators(Prepare &, CNodePtr &node) {
     // Replace "cmp" with "or a"
     if (node->b->type == CNT_NUMBER && node->a->ctype.IsUnsigned()) {
         // Replace UNSIGNED <= 0 with UNSIGNED == 0
-        if (node->operator_code == COP_CMP_LE && NumberIsZero(node->b)) {
+        if (node->operator_code == COP_CMP_LE && NodeIsNumber0(node->b)) {
             node->operator_code = COP_CMP_E;
             return true;
         }
         // Replace UNSIGNED > 0 with UNSIGNED != 0
-        if (node->operator_code == COP_CMP_G && NumberIsZero(node->b)) {
+        if (node->operator_code == COP_CMP_G && NodeIsNumber0(node->b)) {
             node->operator_code = COP_CMP_NE;
             return true;
         }
         // Replace UNSIGNED >= 1 with UNSIGNED != 0
-        if (node->operator_code == COP_CMP_GE && NumberIsOne(node->b)) {
+        if (node->operator_code == COP_CMP_GE && NodeIsNumber1(node->b)) {
             node->operator_code = COP_CMP_NE;
             node->b->number.u = 0;
             return true;
         }
         // Replace UNSIGNED < 1 with UNSIGNED == 0
-        if (node->operator_code == COP_CMP_L && NumberIsOne(node->b)) {
+        if (node->operator_code == COP_CMP_L && NodeIsNumber1(node->b)) {
             node->operator_code = COP_CMP_E;
             node->b->number.u = 0;
             return true;

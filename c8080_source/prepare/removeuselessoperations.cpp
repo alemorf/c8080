@@ -16,110 +16,108 @@
  */
 
 #include "index.h"
-#include "../c/tools/numberiszero.h"
-#include "../c/tools/numberisone.h"
-#include "../c/tools/numberisnonzero.h"
+#include "../c/tools/nodeisnumber.h"
 
 bool PrepareRemoveUselessOperations(Prepare &p, CNodePtr &node) {
     if (node->type == CNT_OPERATOR) {
         switch (node->operator_code) {
             case COP_SHL:
-                if (NumberIsZero(node->b))  // Replace X << 0 with X
+                if (NodeIsNumber0(node->b))  // Replace X << 0 with X
                     return DeleteNodeSaveType(node, 'a');
                 return false;
             case COP_SHR:
-                if (NumberIsZero(node->b))  // Replace X >> 0 with X
+                if (NodeIsNumber0(node->b))  // Replace X >> 0 with X
                     return DeleteNodeSaveType(node, 'a');
                 return false;
             case COP_OR:
-                if (NumberIsZero(node->b))  // Replace X | 0 with X
+                if (NodeIsNumber0(node->b))  // Replace X | 0 with X
                     return DeleteNodeSaveType(node, 'a');
-                if (NumberIsZero(node->a))  // Replace 0 | X with X
+                if (NodeIsNumber0(node->a))  // Replace 0 | X with X
                     return DeleteNodeSaveType(node, 'b');
                 // TODO: 0xFFFF
                 return false;
             case COP_XOR:
-                if (NumberIsZero(node->b))  // Replace X ^ 0 with X
+                if (NodeIsNumber0(node->b))  // Replace X ^ 0 with X
                     return DeleteNodeSaveType(node, 'a');
-                if (NumberIsZero(node->a))  // Replace 0 ^ X with X
+                if (NodeIsNumber0(node->a))  // Replace 0 ^ X with X
                     return DeleteNodeSaveType(node, 'b');
                 return false;
             case COP_ADD:
-                if (NumberIsZero(node->b))  // Replace X + 0 with X
+                if (NodeIsNumber0(node->b))  // Replace X + 0 with X
                     return DeleteNodeSaveType(node, 'a');
-                if (NumberIsZero(node->a))  // Replace 0 + X with X
+                if (NodeIsNumber0(node->a))  // Replace 0 + X with X
                     return DeleteNodeSaveType(node, 'b');
                 return false;
             case COP_SUB:
-                if (NumberIsZero(node->b))  // Replace X - 0 with X
+                if (NodeIsNumber0(node->b))  // Replace X - 0 with X
                     return DeleteNodeSaveType(node, 'a');
                 return false;
             case COP_MUL:
-                if (NumberIsZero(node->a)) {
+                if (NodeIsNumber0(node->a)) {
                     std::swap(node->a, node->b);
                     node->operator_code = COP_COMMA;
                     return true;
                 }
-                if (NumberIsZero(node->b)) {
+                if (NodeIsNumber0(node->b)) {
                     node->operator_code = COP_COMMA;
                     return true;
                 }
-                if (NumberIsOne(node->b))  // Replace X * 1 with X
+                if (NodeIsNumber1(node->b))  // Replace X * 1 with X
                     return DeleteNodeSaveType(node, 'a');
-                if (NumberIsOne(node->a))  // Replace 1 * X with X
+                if (NodeIsNumber1(node->a))  // Replace 1 * X with X
                     return DeleteNodeSaveType(node, 'b');
                 // TODO: 0
                 return false;
             case COP_DIV:
-                if (NumberIsOne(node->b))  // Replace X / 1 with X
+                if (NodeIsNumber1(node->b))  // Replace X / 1 with X
                     return DeleteNodeSaveType(node, 'a');
                 return false;
             case COP_LAND:
-                if (NumberIsNonZero(node->b))  // Replace X && true with X
+                if (NodeIsNumberNot0(node->b))  // Replace X && true with X
                     return DeleteNodeSaveType(node, 'a');
-                if (NumberIsNonZero(node->a))  // Replace true && X with X
+                if (NodeIsNumberNot0(node->a))  // Replace true && X with X
                     return DeleteNodeSaveType(node, 'b');
                 // TODO: false
                 return false;
             case COP_LOR:
-                if (NumberIsZero(node->b))  // Replace X || 0 with X
+                if (NodeIsNumber0(node->b))  // Replace X || 0 with X
                     return DeleteNodeSaveType(node, 'a');
-                if (NumberIsZero(node->a))  // Replace 0 || X with X
+                if (NodeIsNumber0(node->a))  // Replace 0 || X with X
                     return DeleteNodeSaveType(node, 'b');
                 // TODO: true
                 return false;
             case COP_SET_ADD:
-                if (NumberIsZero(node->b))  // Replace X += 0 with X
+                if (NodeIsNumber0(node->b))  // Replace X += 0 with X
                     return DeleteNodeSaveType(node, 'a');
                 return false;
             case COP_SET_SUB:
-                if (NumberIsZero(node->b))  // Replace X -= 0 with X
+                if (NodeIsNumber0(node->b))  // Replace X -= 0 with X
                     return DeleteNodeSaveType(node, 'a');
                 return false;
             case COP_SET_MUL:              // TODO: Not work
-                if (NumberIsOne(node->b))  // Replace X *= 1 with X
+                if (NodeIsNumber1(node->b))  // Replace X *= 1 with X
                     return DeleteNodeSaveType(node, 'a');
                 // TODO: 0
                 return false;
             case COP_SET_DIV:              // TODO: Not work
-                if (NumberIsOne(node->b))  // Replace X /= 1 with X
+                if (NodeIsNumber1(node->b))  // Replace X /= 1 with X
                     return DeleteNodeSaveType(node, 'a');
                 return false;
             case COP_SET_SHR:
-                if (NumberIsZero(node->b))  // Replace X >>= 0 with X
+                if (NodeIsNumber0(node->b))  // Replace X >>= 0 with X
                     return DeleteNodeSaveType(node, 'a');
                 return false;
             case COP_SET_SHL:
-                if (NumberIsZero(node->b))  // Replace X <<= 0 with X
+                if (NodeIsNumber0(node->b))  // Replace X <<= 0 with X
                     return DeleteNodeSaveType(node, 'a');
                 return false;
             case COP_SET_OR:
-                if (NumberIsZero(node->b))  // Replace X |= 0 with X
+                if (NodeIsNumber0(node->b))  // Replace X |= 0 with X
                     return DeleteNodeSaveType(node, 'a');
                 return false;
                 // TODO: 0xFFFF
             case COP_SET_XOR:
-                if (NumberIsZero(node->b))  // Replace X ^= 0 with X
+                if (NodeIsNumber0(node->b))  // Replace X ^= 0 with X
                     return DeleteNodeSaveType(node, 'a');
                 return false;
                 // TODO: COP_CMP_L

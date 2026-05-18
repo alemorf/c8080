@@ -17,7 +17,7 @@
 
 #include "ccalcconst.h"
 #include "../tools/cthrow.h"
-#include "../tools/numberiszero.h"
+#include "../tools/nodeisnumber.h"
 
 template <class T>
 T &GetNumber(CNodePtr &node);
@@ -310,7 +310,7 @@ bool CCalcConst(CNodePtr &node, bool process_childs) {
                     if (process_childs)
                         changed |= CCalcConst(node->a, process_childs);
                     if (node->a->type == CNT_NUMBER) {
-                        DeleteNode(node, NumberIsZero(node->a) ? 'c' : 'b');
+                        DeleteNode(node, NodeIsNumber0(node->a) ? 'c' : 'b');
                         changed = true;
                         continue;  // RETRY!
                     }

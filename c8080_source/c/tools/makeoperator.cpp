@@ -18,7 +18,7 @@
 #include "makeoperator.h"
 #include "cthrow.h"
 #include "convert.h"
-#include "numberiszero.h"
+#include "nodeisnumber.h"
 
 static void MakeOperatorError(CConstNodePtr n) {
     CThrow(n, std::string("no match for ") + ToString(n->operator_code) + " (operand types are " +
@@ -55,10 +55,10 @@ static CType CalcResultCType(CConstNodePtr n, CConstType a, CConstType b) {
 }
 
 static CType CalcResultCType(CConstNodePtr n, CConstNodePtr a, CConstNodePtr b) {
-    if (a->ctype.IsPointer() && NumberIsZero(b))
+    if (a->ctype.IsPointer() && NodeIsNumber0(b))
         return a->ctype;
 
-    if (NumberIsZero(a) && b->ctype.IsPointer())
+    if (NodeIsNumber0(a) && b->ctype.IsPointer())
         return b->ctype;
 
     return CalcResultCType(n, a->ctype, b->ctype);

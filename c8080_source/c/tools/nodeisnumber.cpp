@@ -15,10 +15,37 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "numberiszero.h"
+#include "nodeisnumber.h"
 #include "cthrow.h"
 
-bool NumberIsZero(CConstNodePtr node) {
+bool NodeIsNumber1(CConstNodePtr node) {
+    assert(node != nullptr);
+
+    if (node->type == CNT_NUMBER) {
+        switch (node->ctype.GetAsmType()) {
+            case CBT_CHAR:
+            case CBT_SHORT:
+            case CBT_LONG:
+            case CBT_LONG_LONG:
+                return node->number.i == 1;
+            case CBT_UNSIGNED_CHAR:
+            case CBT_UNSIGNED_SHORT:
+            case CBT_UNSIGNED_LONG:
+            case CBT_UNSIGNED_LONG_LONG:
+                return node->number.u == 1;
+            case CBT_FLOAT:
+                return node->number.f == 1;
+            case CBT_DOUBLE:
+                return node->number.d == 1;
+            case CBT_LONG_DOUBLE:
+                return node->number.ld == 1;
+        }
+    }
+
+    return false;
+}
+
+bool NodeIsNumber0(CConstNodePtr node) {
     assert(node != nullptr);
 
     if (node->type == CNT_NUMBER) {
@@ -41,6 +68,15 @@ bool NumberIsZero(CConstNodePtr node) {
                 return node->number.ld == 0;
         }
     }
+
+    return false;
+}
+
+bool NodeIsNumberNot0(CConstNodePtr node) {
+    assert(node != nullptr);
+
+    if (node->type == CNT_NUMBER)
+        return !NodeIsNumber0(node);
 
     return false;
 }

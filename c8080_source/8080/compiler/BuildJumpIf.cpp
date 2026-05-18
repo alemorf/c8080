@@ -16,7 +16,7 @@
  */
 
 #include "Compiler.h"
-#include "../../c/tools/numberiszero.h"
+#include "../../c/tools/nodeisnumber.h"
 
 namespace I8080 {
 
@@ -32,13 +32,13 @@ void Compiler::BuildJumpIf(bool prepare, CNodePtr &node, bool jmp_if_true, AsmLa
             break;
         case CNT_OPERATOR:
             if (node->operator_code == COP_CMP_E || node->operator_code == COP_CMP_NE) {
-                if (NumberIsZero(node->b)) {
+                if (NodeIsNumber0(node->b)) {
                     node->compiler.main.regs =
                         BuildJumpIfZero(prepare, node->a, node->operator_code == COP_CMP_E, jmp_if_true, label);
                     node->compiler.main.able = true;
                     return;
                 }
-                if (NumberIsZero(node->a)) {
+                if (NodeIsNumber0(node->a)) {
                     node->compiler.main.regs =
                         BuildJumpIfZero(prepare, node->b, node->operator_code == COP_CMP_E, jmp_if_true, label);
                     node->compiler.main.able = true;

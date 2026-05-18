@@ -19,4 +19,6 @@
 
 #include "../cnode.h"
 
-bool NumberIsOne(CConstNodePtr node);
+bool NodeIsNumber1(CConstNodePtr node);
+bool NodeIsNumber0(CConstNodePtr node);
+bool NodeIsNumberNot0(CConstNodePtr node);
