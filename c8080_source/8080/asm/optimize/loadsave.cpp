@@ -136,6 +136,69 @@ static void RemoveSave(Saves &saves, const AsmArgument &variable) {
         saves.erase(p);
 }
 
+static bool OptimizeMviA(State &s, AsmBase::Line& l) {
+    // MOV M, A невозможно ускорить
+    if (l.argument[0].reg == R8_M)
+        return false;
+
+    StateRegister *reg_state = ResetState(s, l.argument[0].reg, true);
+    if (reg_state == nullptr)
+        return false;
+
+    // Удаление LD REG, CONST, если регистр уже содержит нужное значение
+    if (reg_state->value == l.argument[1]) {
+        l.opcode = AC_REMOVED;
+        l.argument[0] = AsmArgument();
+        l.argument[1] = AsmArgument();
+        return true;
+    }
+
+    const AsmArgument prev_value = reg_state->value;
+    reg_state->value = l.argument[1];
+
+    if (l.argument[0].reg == R8_A) {
+        // Замена LD A, 0 на XOR A
+        if (l.argument[1].Is0()) {
+            l.opcode = AC_ALU_REG;
+            l.alu = ALU_XOR;
+            l.argument[1] = AsmArgument();
+            return true;
+        }
+        if (prev_value.type == AAT_NUMBER && l.argument[1].type == AAT_NUMBER) {
+            // Замена LD A, CONST на INC A
+            if (l.argument[1].number == uint8_t(prev_value.number + 1)) {
+                l.opcode = AC_INC;
+                l.argument[1] = AsmArgument();
+                return true;
+            }
+            // Замена LD A, CONST на DEC A
+            if (l.argument[1].number == uint8_t(prev_value.number - 1)) {
+                l.opcode = AC_DEC;
+                l.argument[1] = AsmArgument();
+                return true;
+            }
+            // Замена LD A, CONST на ADD A
+            if (l.argument[1].number == uint8_t(prev_value.number << 1)) {
+                l.opcode = AC_ALU_REG;
+                l.alu = ALU_ADD;
+                l.argument[1] = AsmArgument();
+                return true;
+            }
+            // Замена LD A, CONST на CPL
+            if (l.argument[1].number == uint8_t(~prev_value.number)) {
+                l.opcode = AC_CPL;
+                l.argument[0] = AsmArgument();
+                l.argument[1] = AsmArgument();
+                return true;
+            }
+        }
+    }
+
+    // TODO: Загрузить значение из других регистров
+
+    return false;
+}
+
 bool LoadSave(AsmBase &a, std::map<size_t, StateItem> &states, bool jb) {
     bool changed = false;
     State s;
@@ -252,32 +315,8 @@ bool LoadSave(AsmBase &a, std::map<size_t, StateItem> &states, bool jb) {
             case AC_MVI: {
                 assert(l.argument[0].type == AAT_REG);
                 RemoveSave(saves, l.argument[1]);  // Конструкция: ld hl, var / add (hl)
-                if (l.argument[0].reg == R8_M)
-                    break;
-                StateRegister *sr = ResetState(s, l.argument[0].reg, true);
-                if (sr != nullptr) {
-                    if (sr->value == l.argument[1]) {
-                        l.opcode = AC_REMOVED;
-                        changed = true;
-                        break;
-                    }
-                    // Замена LD A, CONST на ADD A
-                    if (l.argument[0].reg == R8_A && sr->value.type == AAT_NUMBER && l.argument[0].type == AAT_NUMBER &&
-                        l.argument[0].number == sr->value.number * 2) {
-                        l.opcode = AC_ALU_REG;
-                        l.alu = ALU_ADD;
-                        changed = true;
-                        break;
-                    }
-                    sr->value = l.argument[1];
-                }
-
-                // Замена ld a, 0 на xor a
-                if (l.argument[0].reg == R8_A && s.a.value.Is0()) {
-                    l.opcode = AC_ALU_REG;
-                    l.alu = ALU_XOR;
+                if (OptimizeMviA(s, l))
                     changed = true;
-                }
                 break;
             }
             case AC_XCHG:
