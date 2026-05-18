@@ -142,7 +142,7 @@ CVariablePtr CParserBase::RegisterVariable(bool extern_flag, CNodePtr node, bool
             programm.Note(v->e,
                           "previous declaration of '" + name + "' with type '" + v->type.ToString() + "'");  // gcc
         }
-        if (!extern_flag && !v->only_extern) {
+        if (!extern_flag && (!v->only_extern || v->address_attribute.Exists())) {
             programm.Error(node->e, "redefinition of '" + name + "'");     // gcc
             programm.Note(v->e, "previous definition of '" + name + "'");  // gcc
         }

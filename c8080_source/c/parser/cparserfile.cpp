@@ -190,6 +190,9 @@ void CParserFile::ParseAttributes(CNode &n) {
         if (l.IfToken("__address")) {
             CAddressAttribute a;
 
+            if (!n.variable->only_extern)
+                l.Error("__address can only be used for external variables", e);
+
             if (l.WantToken("(")) {
                 std::string str;
                 if (l.IfString2(str)) {
@@ -261,7 +264,7 @@ CNodePtr CParserFile::ParseLine(bool *out_break, bool global) {
         return nullptr;
     }
 
-    if (typedef_flag && base_type.flag_static) {
+    if (base_type.flag_static && (typedef_flag || extern_flag)) {
         programm.Error(e, "multiple storage classes in declaration specifiers");  // gcc
         base_type.flag_static = false;
     }
