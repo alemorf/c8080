@@ -21,9 +21,6 @@
 bool NumberIsOne(CConstNodePtr node) {
     assert(node != nullptr);
 
-    if (node->type == CNT_CONVERT)
-        return NumberIsZero(node->a);
-
     if (node->type == CNT_NUMBER) {
         if (node->ctype.IsPointer())
             return node->number.u == 0;
