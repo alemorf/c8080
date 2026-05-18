@@ -95,6 +95,14 @@ public:
                 return p - string_start;
         }
         return npos;
+#elifdef __APPLE__
+        const char *p = string_start + size();
+        while (p != string_start) {
+            p--;
+            if (*p == c)
+                return p - string_start;
+        }
+        return npos;
 #else
         const char *const p = static_cast<const char *>(memrchr(string_start, c, size()));
         return p != nullptr ? p - string_start : npos;

@@ -18,11 +18,11 @@ files:
 	find . -type f >c8080.files
 
 ../c8080: ${OBJ_FILES}
-	g++ -s -Wall -Wno-switch -O2 -static --std=c++17 -o $@ $^
+	g++ -s -Wall -Wno-switch -O2 --std=c++17 -o $@ $^
 
 build/%.o: %.cpp
 	mkdir -p $(dir $@)
-	g++ -MD -Wall -Wno-switch -O2 -static --std=c++17 -c -o $@ $<
+	g++ -MD -Wall -Wno-switch -O2 --std=c++17 -c -o $@ $<
 
 -include $(OBJ_FILES:.o=.d)
 
@@ -31,7 +31,7 @@ build/%.o: %.cpp
 
 build.w64/%.o: %.cpp
 	mkdir -p $(dir $@)
-	x86_64-w64-mingw32-g++ -O2 -static --std=c++17 -c -o $@ $<
+	x86_64-w64-mingw32-g++ -MD -O2 -static --std=c++17 -c -o $@ $<
 
 -include $(W64_FILES:.o=.d)
 
@@ -40,7 +40,7 @@ build.w64/%.o: %.cpp
 
 build.w32/%.o: %.cpp
 	mkdir -p $(dir $@)
-	i686-w64-mingw32-g++ -O2 -static --std=c++17 -c -o $@ $<
+	i686-w64-mingw32-g++ -MD -O2 -static --std=c++17 -c -o $@ $<
 
 -include $(W32_FILES:.o=.d)
 
