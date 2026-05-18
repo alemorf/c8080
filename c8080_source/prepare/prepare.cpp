@@ -46,6 +46,7 @@ static const PrepareFunctionType prepare_function_list[] = {
     PrepareAddWithStackAddress,
     PrepareDoubleConvert,
     PrepareCompareOperators,
+    nullptr
 };
 
 enum { PREPARE_CHANGED = 1, PREPARE_LABEL = 2 };
@@ -74,25 +75,19 @@ uint32_t PrepareInt(Prepare &p, CNodePtr *pnode) {
             if (r & PREPARE_LABEL)
                 (*pnode)->has_label = true;
 
-            for (auto &i : prepare_function_list) {
-                if (i(p, *pnode))
-                    r |= PREPARE_CHANGED;
-                if (*pnode == nullptr)
-                    return return_value;
-            }
-
-            for (auto i = p.list; *i; i++) {
+            for (auto i = prepare_function_list; *i && *pnode != nullptr; i++)
                 if ((*i)(p, *pnode))
                     r |= PREPARE_CHANGED;
-                if (*pnode == nullptr)
-                    return return_value;
-            }
+
+            for (auto i = p.list; *i && *pnode != nullptr; i++)
+                if ((*i)(p, *pnode))
+                    r |= PREPARE_CHANGED;
 
             return_value |= r;
-        } while (r & PREPARE_CHANGED);
+        } while ((r & PREPARE_CHANGED) != 0 && *pnode != nullptr);
 
-        pnode = &(*pnode)->next_node;
-        assert(pnode);
+        if (*pnode != nullptr)
+            pnode = &(*pnode)->next_node;
     }
     return return_value;
 }
