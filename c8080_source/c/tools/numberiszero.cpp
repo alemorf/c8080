@@ -21,23 +21,15 @@
 bool NumberIsZero(CConstNodePtr node) {
     assert(node != nullptr);
 
-    if (node->type == CNT_CONVERT)
-        return NumberIsZero(node->a);
-
     if (node->type == CNT_NUMBER) {
-        if (node->ctype.IsPointer())
-            return node->number.u == 0;
-        switch (node->ctype.base_type) {
+        switch (node->ctype.GetAsmType()) {
             case CBT_CHAR:
-            case CBT_SIGNED_CHAR:
             case CBT_SHORT:
-            case CBT_INT:
             case CBT_LONG:
             case CBT_LONG_LONG:
                 return node->number.i == 0;
             case CBT_UNSIGNED_CHAR:
             case CBT_UNSIGNED_SHORT:
-            case CBT_UNSIGNED_INT:
             case CBT_UNSIGNED_LONG:
             case CBT_UNSIGNED_LONG_LONG:
                 return node->number.u == 0;
