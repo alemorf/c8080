@@ -4,6 +4,11 @@ OBJ_FILES=$(addprefix build/,$(CPP_FILES:%.cpp=%.o))
 W64_FILES=$(addprefix build.w64/,$(CPP_FILES:%.cpp=%.o))
 W32_FILES=$(addprefix build.w32/,$(CPP_FILES:%.cpp=%.o))
 
+static=-static
+ifeq ($(shell uname -o),Darwin)
+       static=
+endif
+
 all: ../c8080 files
 
 .PHONY: clean
@@ -18,11 +23,11 @@ files:
 	find . -type f >c8080.files
 
 ../c8080: ${OBJ_FILES}
-	g++ -s -Wall -Wno-switch -O2 --std=c++17 -o $@ $^
+	g++ -s -Wall -Wno-switch -O2 $(static) --std=c++17 -o $@ $^
 
 build/%.o: %.cpp
 	mkdir -p $(dir $@)
-	g++ -MD -Wall -Wno-switch -O2 --std=c++17 -c -o $@ $<
+	g++ -MD -Wall -Wno-switch -O2 $(static) --std=c++17 -c -o $@ $<
 
 -include $(OBJ_FILES:.o=.d)
 
