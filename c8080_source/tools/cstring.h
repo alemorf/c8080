@@ -87,7 +87,7 @@ public:
     }
 
     size_t rfind(char c) const {
-#ifdef __MINGW32__
+#if defined(__MINGW32__)
         const char *p = string_start + size();
         while (p != string_start) {
             p--;
@@ -95,7 +95,7 @@ public:
                 return p - string_start;
         }
         return npos;
-#elifdef __APPLE__
+#elif defined(__APPLE__)
         const char *p = string_start + size();
         while (p != string_start) {
             p--;
