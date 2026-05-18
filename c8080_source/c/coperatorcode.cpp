@@ -125,13 +125,15 @@ COperatorCode NegativeCompareOperator(COperatorCode code) {
 const char *ToString(COperatorCode code) {
     switch (code) {
         case COP_CMP_L:
-        case COP_CMP_L_ADD_CONST:
             return "<";
+        case COP_CMP_L_ADD_CONST:
+            return "<addconst";
         case COP_CMP_G:
             return ">";
         case COP_CMP_LE:
             return "<=";
         case COP_CMP_GE_ADD_CONST:
+            return ">=addconst";
         case COP_CMP_GE:
             return ">=";
         case COP_CMP_E:
