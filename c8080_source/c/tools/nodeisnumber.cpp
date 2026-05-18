@@ -1,6 +1,6 @@
 /*
  * c8080 compiler
- * Copyright (c) 2025 Aleksey Morozov aleksey.f.morozov@gmail.com aleksey.f.morozov@yandex.ru
+ * Copyright (c) 2026 Aleksey Morozov aleksey.f.morozov@gmail.com aleksey.f.morozov@yandex.ru
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,8 +75,26 @@ bool NodeIsNumber0(CConstNodePtr node) {
 bool NodeIsNumberNot0(CConstNodePtr node) {
     assert(node != nullptr);
 
-    if (node->type == CNT_NUMBER)
-        return !NodeIsNumber0(node);
+    if (node->type == CNT_NUMBER) {
+        switch (node->ctype.GetAsmType()) {
+            case CBT_CHAR:
+            case CBT_SHORT:
+            case CBT_LONG:
+            case CBT_LONG_LONG:
+                return node->number.i != 0;
+            case CBT_UNSIGNED_CHAR:
+            case CBT_UNSIGNED_SHORT:
+            case CBT_UNSIGNED_LONG:
+            case CBT_UNSIGNED_LONG_LONG:
+                return node->number.u != 0;
+            case CBT_FLOAT:
+                return node->number.f != 0;
+            case CBT_DOUBLE:
+                return node->number.d != 0;
+            case CBT_LONG_DOUBLE:
+                return node->number.ld != 0;
+        }
+    }
 
     return false;
 }
