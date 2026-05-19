@@ -36,9 +36,9 @@
 #include <cpm.h>
 #endif
 
-static unsigned x, y, max, x1, y1, k, z, d, sh, v;
-static unsigned char mark;
-static char l, t, o, ot;
+static unsigned x, y, max, x1, y1, k, z, sh, v;
+static unsigned char mark, d;
+static unsigned char l, t, o, ot;
 static char st[40];
 
 #ifdef __linux__
@@ -73,6 +73,10 @@ static bool KeyPressed(void) {
 
 static unsigned rnd(unsigned max) {
     return (unsigned)rand() % (max + 1);
+}
+
+static uint8_t rnd8(uint8_t max) {
+    return rnd(max);
 }
 
 static unsigned unsigned_sqrt(unsigned x) {
@@ -215,7 +219,7 @@ static bool wwod(void) {
 }
 
 static void play(void) {
-    if (rnd(1))
+    if (rnd8(1))
         t = '+';
     else
         t = '-';
@@ -229,7 +233,7 @@ static void play(void) {
         case 7:
         case 3:
         case 4:
-            if (rnd(1))
+            if (rnd8(1))
                 l = '+';
             else
                 l = '-';
@@ -242,7 +246,7 @@ static void play(void) {
         case 2:
         case 6:
         case 5:
-            if (rnd(1))
+            if (rnd8(1))
                 l = '+';
             else
                 l = '-';
@@ -418,7 +422,7 @@ int main(int argc, char **argv) {
                     snprintf(st, sizeof(st), "%u%c%u", x, l, y);
                     break;
                 case '5':
-                    switch (rnd(5)) {
+                    switch (rnd8(5)) {
                         case 0:
                         case 5:
                             t = '+';
@@ -436,11 +440,11 @@ int main(int argc, char **argv) {
                         play();
                     } else {
                         xod(t);
-                        if (rnd(1))
+                        if (rnd8(1))
                             l = '+';
                         else
                             l = '-';
-                        switch (rnd(7)) {
+                        switch (rnd8(7)) {
                             case 0:
                             case 7:
                                 dop(l, x);
@@ -453,7 +457,7 @@ int main(int argc, char **argv) {
                                 break;
                             case 2:
                             case 5:
-                                if (rnd(1)) {
+                                if (rnd8(1)) {
                                     x1 = rnd(max - k) + k;
                                     k = x1 - k;
                                     snprintf(st, sizeof(st), "%u-%u%c%u", x1, x, t, y);
@@ -465,7 +469,7 @@ int main(int argc, char **argv) {
                                 break;
                             case 3:
                             case 4:
-                                if (rnd(1)) {
+                                if (rnd8(1)) {
                                     x1 = rnd(k);
                                     k = k - x1;
                                     snprintf(st, sizeof(st), "%u%c%u-%u", x, t, y, x1);
