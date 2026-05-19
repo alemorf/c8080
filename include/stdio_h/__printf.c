@@ -93,7 +93,7 @@ int __printf(const char *format, va_list va) {
                         c = *format;
                     }
                 }
-#ifndef C8080_PRINTF_NO_LONG
+#ifndef __C8080_PRINTF_NO_LONG
                 uint8_t longMode = 0;
                 if (c == 'l') {
                     longMode = 1;
@@ -112,7 +112,7 @@ int __printf(const char *format, va_list va) {
                     case 'u':
                     case 'd':
                     case 'i': {
-#ifndef C8080_PRINTF_NO_LONG
+#ifndef __C8080_PRINTF_NO_LONG
                         char buf[UINT32_TO_STRING_SIZE];
                         uint32_t value32 = longMode ? va_arg(va, uint32_t) : va_arg(va, uint16_t);
                         if (c == 'i' || c == 'd') {
