@@ -136,7 +136,7 @@ static void RemoveSave(Saves &saves, const AsmArgument &variable) {
         saves.erase(p);
 }
 
-static bool OptimizeMviA(State &s, AsmBase::Line& l) {
+static bool OptimizeMviA(State &s, AsmBase::Line &l) {
     // MOV M, A невозможно ускорить
     if (l.argument[0].reg == R8_M)
         return false;

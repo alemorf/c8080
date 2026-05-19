@@ -94,12 +94,12 @@ bool PrepareRemoveUselessOperations(Prepare &p, CNodePtr &node) {
                 if (NodeIsNumber0(node->b))  // Replace X -= 0 with X
                     return DeleteNodeSaveType(node, 'a');
                 return false;
-            case COP_SET_MUL:              // TODO: Not work
+            case COP_SET_MUL:                // TODO: Not work
                 if (NodeIsNumber1(node->b))  // Replace X *= 1 with X
                     return DeleteNodeSaveType(node, 'a');
                 // TODO: 0
                 return false;
-            case COP_SET_DIV:              // TODO: Not work
+            case COP_SET_DIV:                // TODO: Not work
                 if (NodeIsNumber1(node->b))  // Replace X /= 1 with X
                     return DeleteNodeSaveType(node, 'a');
                 return false;
