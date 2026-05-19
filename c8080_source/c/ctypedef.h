@@ -1,6 +1,6 @@
 /*
  * c8080 compiler
- * Copyright (c) 2025 Aleksey Morozov aleksey.f.morozov@gmail.com aleksey.f.morozov@yandex.ru
+ * Copyright (c) 2026 Aleksey Morozov aleksey.f.morozov@gmail.com aleksey.f.morozov@yandex.ru
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,12 +26,4 @@ public:
     CType type;
     std::string name;
     CErrorPosition e;
-
-    bool operator==(const CTypedef &b) const {
-        return type == b.type && name == b.name;
-    }
-
-    bool operator!=(const CTypedef &b) const {
-        return !(*this == b);
-    }
 };
