@@ -630,8 +630,8 @@ void Cmm::Compile(CString asm_file_name) {
 
     // Write const strings
     for (auto &i : p.const_strings)
-        if (i.second->c.IsUsed())
-            out.const_string(i.second->c.GetName(out.const_string_counter), i.first);
+        if (i.second->compiler.IsUsed())
+            out.const_string(i.second->compiler.GetName(out.const_string_counter), i.first);
 
     out.MakeFile();
     out.SaveAsmFile(asm_file_name);

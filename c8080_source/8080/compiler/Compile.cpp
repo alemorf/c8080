@@ -105,8 +105,8 @@ void Compiler::Compile(CParser &c, OutputFormat output_format, CString output_fi
 
     // Write const strings
     for (auto &i : p.const_strings)
-        if (i.second->c.IsUsed())
-            out.const_string(i.second->c.GetName(out.const_string_counter), i.first);
+        if (i.second->compiler.IsUsed())
+            out.const_string(i.second->compiler.GetName(out.const_string_counter), i.first);
 
     // Write user variables with non-zero value
     for (auto &vd : p.all_top_variables)

@@ -19,11 +19,11 @@
 
 #include <string>
 #include <memory>
-#include "cconststringcomiler.h"
+#include "../8080/treeextensions/cconststringcomiler.h"
 
 struct CConstString {
     std::string text;
-    CConstStringCompiler c;
+    I8080::CConstStringCompiler compiler;
 };
 
 typedef std::shared_ptr<CConstString> CConstStringPtr;

@@ -27,7 +27,7 @@ std::string Asm::GetConst(const CNodePtr &node, bool *error, std::vector<CVariab
             if (node->const_string == nullptr)
                 C_ERROR_INTERNAL(node->e, "null pointer");
             if (!measure)
-                return node->const_string->c.GetName(const_string_counter);
+                return node->const_string->compiler.GetName(const_string_counter);
             return "measure";
         case CNT_NUMBER:
             switch (node->ctype.GetAsmType()) {

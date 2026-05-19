@@ -1,6 +1,6 @@
 /*
  * c8080 compiler
- * Copyright (c) 2025 Aleksey Morozov aleksey.f.morozov@gmail.com aleksey.f.morozov@yandex.ru
+ * Copyright (c) 2026 Aleksey Morozov aleksey.f.morozov@gmail.com aleksey.f.morozov@yandex.ru
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +20,12 @@
 #include <string>
 #include <stddef.h>
 #include <stdint.h>
-#include "../tools/number_size.h"
+#include "../../tools/number_size.h"
 
-struct CConstStringCompiler {
+namespace I8080 {
+
+class CConstStringCompiler {
+public:
     char name[sizeof("__c_") + CHARS_IN_64_BIT_NUMBER];  // "__c_12345\0"
 
     CConstStringCompiler() {
@@ -34,4 +37,6 @@ struct CConstStringCompiler {
     }
 
     const char *GetName(uint64_t &counter);
+};
+
 };

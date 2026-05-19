@@ -1,6 +1,6 @@
 /*
  * c8080 compiler
- * Copyright (c) 2025 Aleksey Morozov aleksey.f.morozov@gmail.com aleksey.f.morozov@yandex.ru
+ * Copyright (c) 2026 Aleksey Morozov aleksey.f.morozov@gmail.com aleksey.f.morozov@yandex.ru
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 #include <stdio.h>
 #include <inttypes.h>
 
+namespace I8080 {
+
 const char *CConstStringCompiler::GetName(uint64_t &counter) {
     if (name[0] == 0) {
         int result = snprintf(name, sizeof(name), "__c_%" PRIu64, counter++);
@@ -27,4 +29,6 @@ const char *CConstStringCompiler::GetName(uint64_t &counter) {
             throw std::runtime_error("Internal error in " + std::string(__PRETTY_FUNCTION__));
     }
     return name;
+}
+
 }
