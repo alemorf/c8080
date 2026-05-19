@@ -51,7 +51,7 @@ build.w32/%.o: %.cpp
 
 .PHONY: check
 check: 
-	cppcheck --language=c++ ${CPP_FILES} ${H_FILES}
+	cppcheck --language=c++ --enable=all ${CPP_FILES} ${H_FILES}
 
 .PHONY: format
 format:
