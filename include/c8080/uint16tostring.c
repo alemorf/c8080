@@ -19,7 +19,7 @@
 #include <c8080/remainder.h>
 
 char *Uint16ToString(char *outputBuffer, uint16_t value, uint8_t radix) {
-    uint8_t i = UINT16_TO_STRING_BUFFER_SIZE - 1;
+    uint8_t i = UINT16_TO_STRING_SIZE - 1;
     do {
         *outputBuffer = ' ';
         ++outputBuffer;

@@ -21,6 +21,6 @@
 #include <stddef.h>
 #include <c8080/c8080.h>
 
-static const size_t UINT16_TO_STRING_BUFFER_SIZE = 6;  // 65535\0
+static const size_t UINT16_TO_STRING_SIZE = 6;  // 65535\0
 
 char *Uint16ToString(char *outputBuffer, uint16_t value, uint8_t radix) __link("c8080/uint16tostring.c");
