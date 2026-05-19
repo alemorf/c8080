@@ -17,6 +17,7 @@
 
 #include "cmonooperatorcode.h"
 #include <stdexcept>
+#include <string>
 
 const char *ToString(CMonoOperatorCode operator_code) {
     switch (operator_code) {

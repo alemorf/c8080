@@ -18,6 +18,7 @@
 #include "asmalu.h"
 #include <array>
 #include <stdexcept>
+#include <string>
 
 namespace I8080 {
 

@@ -17,6 +17,7 @@
 
 #include "coperatorcode.h"
 #include <stdexcept>
+#include <string>
 
 bool IsSetOperator(COperatorCode code) {
     switch (code) {

@@ -17,6 +17,7 @@
 
 #include "asmcondition.h"
 #include <stdexcept>
+#include <string>
 
 namespace I8080 {
 
