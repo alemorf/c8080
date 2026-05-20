@@ -19,6 +19,8 @@
 #include <stdlib.h>
 
 bool StrToUint64(CString str, uint64_t &out) {
+    if (str.empty())
+        return false;
     char *end = nullptr;
     errno = 0;
     out = strtoull(str.c_str(), &end, 0);
