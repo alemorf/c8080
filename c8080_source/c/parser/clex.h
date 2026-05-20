@@ -18,6 +18,7 @@
 #pragma once
 
 #include "ccondcompilation.h"
+#include "../cbasetype.h"
 
 class CLex : public CCondCompilation {
 public:
@@ -41,19 +42,28 @@ public:
         return true;
     }
 
-    bool IfInteger(uint64_t &out_number) {
+    bool IfInteger(uint64_t &out_number, CBaseType &out_type) {
         if (token != CT_INTEGER)
             return false;
         out_number = token_integer;
+        out_type = CalculateIntegerType();
         NextToken();
         return true;
     }
 
-    uint64_t NeedInteger() {
+    uint64_t NeedInteger(CBaseType &out_suffix) {
         uint64_t result = 0;
-        if (!IfInteger(result))
+        if (!IfInteger(result, out_suffix))
             ThrowSyntaxError();
         return result;
+    }
+
+    bool WantInteger(uint64_t &out_number, CBaseType &out_type) {
+        if (!IfInteger(out_number, out_type)) {
+            SyntaxError();
+            return false;
+        }
+        return true;
     }
 
     bool IfToken(const char *string) {
@@ -63,10 +73,11 @@ public:
         return true;
     }
 
-    bool IfFloat(long double &out_number) {
+    bool IfFloat(long double &out_number, CBaseType &out_type) {
         if (token != CT_FLOAT)
             return false;
         out_number = token_float;
+        out_type = ParseFloatSuffix();
         NextToken();
         return true;
     }
@@ -185,4 +196,9 @@ public:
         }
         return false;
     }
+
+private:
+    unsigned ParseIntegerSuffix();
+    CBaseType CalculateIntegerType();
+    CBaseType ParseFloatSuffix();
 };

@@ -39,4 +39,4 @@ public:
     const char *GetName(uint64_t &counter);
 };
 
-};
+};  // namespace I8080

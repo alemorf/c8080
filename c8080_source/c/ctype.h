@@ -57,7 +57,7 @@ public:
 
     bool IsSigned() const {
         return pointers.empty() && (base_type == CBT_CHAR || base_type == CBT_SIGNED_CHAR || base_type == CBT_SHORT ||
-                                     base_type == CBT_INT || base_type == CBT_LONG);
+                                    base_type == CBT_INT || base_type == CBT_LONG);
     }
 
     bool IsUnsigned() const {

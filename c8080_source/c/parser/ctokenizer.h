@@ -44,8 +44,11 @@ public:
     long double token_float{};
     size_t token_column{};
     size_t token_line{};
+    int token_number_errno;
     const char *token_data{};
     size_t token_size{};
+    const char *token_suffix{};
+    size_t token_suffix_size{};
 
     void Open2(const char *contents, const char *file_name);
     void NextToken2();

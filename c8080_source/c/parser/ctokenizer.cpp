@@ -18,6 +18,7 @@
 #include "ctokenizer.h"
 #include <errno.h>
 #include <stdlib.h>
+#include <assert.h>
 
 static inline size_t Tab(size_t column) {
     static const size_t tab_size = 4;
@@ -37,6 +38,9 @@ void CTokenizer::Open2(const char *contents, const char *file_name_) {
     token_line = 0;
     token_data = 0;
     token_size = 0;
+    token_number_errno = 0;
+    token_suffix = 0;
+    token_suffix_size = 0;
 }
 
 void CTokenizer::NextToken2() {
@@ -100,21 +104,25 @@ CToken CTokenizer::NextToken3() {
 
     if (c >= '0' && c <= '9') {
         const char *start = cursor - 1;
-
         errno = 0;
         token_integer = strtoull(start, (char **)&cursor, 0);
-        if (errno == ERANGE || start == cursor)
-            Throw("number out of range");
-
+        token_number_errno = errno;
+        token_suffix = cursor;
+        assert(start != cursor);
         if (cursor[0] == '.' || cursor[0] == 'e' || cursor[0] == 'E') {
+            errno = 0;
             token_float = strtold(start, (char **)&cursor);
-            if (errno == ERANGE || start == cursor)
-                Throw("number out of range");
+            token_number_errno = errno;
+            token_suffix = cursor;
+            assert(start != cursor);
+            while (cursor[0] == '_' || (cursor[0] >= '0' && cursor[0] <= '9') || (cursor[0] >= 'a' && cursor[0] <= 'z') || (cursor[0] >= 'A' && cursor[0] <= 'Z'))
+                cursor++;
+            token_suffix_size = cursor - token_suffix;
             return CT_FLOAT;
         }
-
-        // TODO: U UL...
-
+        while (cursor[0] == '_' || (cursor[0] >= '0' && cursor[0] <= '9') || (cursor[0] >= 'a' && cursor[0] <= 'z') || (cursor[0] >= 'A' && cursor[0] <= 'Z'))
+            cursor++;
+        token_suffix_size = cursor - token_suffix;
         return CT_INTEGER;
     }
 

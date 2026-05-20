@@ -31,4 +31,4 @@ const char *CConstStringCompiler::GetName(uint64_t &counter) {
     return name;
 }
 
-}
+}  // namespace I8080

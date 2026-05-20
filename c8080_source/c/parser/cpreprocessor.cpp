@@ -112,8 +112,9 @@ void CParserFile::PreprocessorPragmaCodepage() {
     if (!l.WantToken(","))
         return;
     CErrorPosition p2(l);
-    uint64_t to = l.token_integer;
-    if (!l.WantToken(CT_INTEGER))
+    uint64_t to;
+    CBaseType unused_type;
+    if (!l.WantInteger(to, unused_type))
         return;
     if (to < 0 || to > UINT8_MAX)
         return programm.Error(p2, "incorrect number");
@@ -355,7 +356,8 @@ int64_t CParserFile::PreprocessorIf2() {
     }
 
     uint64_t value;
-    if (l.IfInteger(value)) {
+    CBaseType unused_type;
+    if (l.IfInteger(value, unused_type)) {
         if (value > INT64_MAX)
             l.Error("integer constant is too large for its type");
         return int64_t(value);

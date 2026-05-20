@@ -42,15 +42,19 @@ void CParserFile::Parse(CNodeList &node_list, CString file_name) {
 }
 
 uint64_t CParserFile::ParseUint64() {
-    static const CType uint64_ctype{CBT_UNSIGNED_LONG_LONG};
-    CNodePtr value = Convert(uint64_ctype, ParseExpression());
+    CNodePtr value = ParseExpression();
     CCalcConst(value, true);
-    if (value->type != CNT_NUMBER) {
-        programm.Error(value->e, "Is not number");
-        return 0;
+    if (value->type == CNT_NUMBER) {
+        if (value->ctype.IsSigned()) {
+            if (value->number.i < 0)
+                programm.Error(value->e, "Is not positive number");
+            return value->number.i;
+        }
+        if (value->ctype.IsUnsigned() && value->ctype.pointers.empty())
+            return value->number.u;
     }
-    assert(!value->ctype.IsPointer() && value->ctype.base_type == CBT_UNSIGNED_LONG_LONG);
-    return value->number.u;
+    programm.Error(value->e, "Is not number");
+    return 0;
 }
 
 int64_t CParserFile::ParseInt64() {
@@ -283,7 +287,8 @@ CNodePtr CParserFile::ParseLine(bool *out_break, bool global) {
 
         if (typedef_flag) {
             CNodePtr node = CNODE({CNT_TYPEDEF, ctype : type, e : e});
-            RegisterTypedef(node, name);
+            if (!name.empty())
+                RegisterTypedef(node, name);
 
             if (l.IfToken(";"))
                 break;
@@ -875,29 +880,23 @@ CNodePtr CParserFile::ParseExpressionValue() {
     }
 
     uint64_t number = 0;
-    if (l.IfInteger(number)) {
+    CBaseType suffix;
+    if (l.IfInteger(number, suffix)) {
         CNodePtr node = CNODE({CNT_NUMBER, e : e});
-        if (number <= INT16_MAX) {
-            node->number.i = int16_t(number);
-            node->ctype.base_type = CBT_SHORT;
-        } else if (number <= INT32_MAX) {
-            node->number.i = int32_t(number);
-            node->ctype.base_type = CBT_LONG;
-        } else if (number <= INT64_MAX) {
-            node->number.i = int64_t(number);
-            node->ctype.base_type = CBT_LONG_LONG;
-        } else {
+        if (IsUnsigned(suffix))
             node->number.u = number;
-            node->ctype.base_type = CBT_UNSIGNED_LONG_LONG;
-        }
+        else
+            node->number.i = number;
+        node->ctype.base_type = suffix;
         return node;
     }
 
     long double f = 0;
-    if (l.IfFloat(f)) {
+    CBaseType type;
+    if (l.IfFloat(f, type)) {
         CNodePtr node = CNODE({CNT_NUMBER, e : e});
         node->number.ld = f;
-        node->ctype.base_type = CBT_LONG_DOUBLE;
+        node->ctype.base_type = type;
         return node;
     }
 
