@@ -36,6 +36,9 @@ const char *CDecodeString(std::string &str, std::map<uint32_t, uint8_t> *codepag
                 return "unknown ESC sequence";
             char c = *src++;
             switch (c) {
+                case 'e':
+                    c = 0x1B;
+                    break;
                 case 'n':
                     c = '\n';
                     break;
