@@ -255,7 +255,7 @@ int main(int argc, char **argv) {
         c.ParseAll();
 
         if (programm.error)
-            return 1;
+            return BadExit();
 
         if (o.print_expression_tree)
             Dump(programm.first_node, "");

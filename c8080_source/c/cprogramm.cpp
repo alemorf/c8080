@@ -71,7 +71,8 @@ void CProgramm::Error(const CErrorPosition &e, CString text, const char *type) {
         std::cerr << full_text << std::endl;
         last_error = full_text;
     }
-    error = true;
+    if (type[0] == 'e')
+        error = true;
 }
 
 void CProgramm::Note(const CErrorPosition &e, CString text) {

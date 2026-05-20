@@ -47,6 +47,10 @@ void CParserFile::Preprocessor() {
     if (l.IfToken("if"))
         return PreprocessorIf();
     l.enable_macro_in_preprocessor = false;
+    if (l.IfToken("error"))
+        return l.Error(l.token_data);
+    if (l.IfToken("warning"))
+        return l.Warning(l.token_data);
     // TODO: #elif #elifdef #elifndef #line #embed #error #warning
     l.Error("invalid preprocessing directive #" + std::string(l.token_data, l.token_size));  // gcc
 }

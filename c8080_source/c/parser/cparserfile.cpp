@@ -27,7 +27,7 @@
 void CParserFile::Parse(CNodeList &node_list, CString file_name) {
     l.save_string = [this](const char *data, size_t size) { return programm.SaveString(data, size); };
     l.preprocessor = [this]() { Preprocessor(); };
-    l.on_error = [this](CErrorPosition &l, CString text) { programm.Error(l, text); };
+    l.on_error = [this](const CErrorPosition &l, CString text, const char *type) { programm.Error(l, text, type); };
 
     const char *name = "";
     const char *contents = cparser.LoadFile(file_name, &name);

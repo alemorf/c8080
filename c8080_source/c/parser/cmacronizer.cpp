@@ -63,9 +63,21 @@ void CMacroizer::Error(CString text) {
     Error(text, p);
 }
 
-void CMacroizer::Error(CString text, CErrorPosition &p) {
+void CMacroizer::Error(CString text, const CErrorPosition &p) {
     if (on_error)
-        on_error(p, text);
+        on_error(p, text, "error");
+    else
+        CThrow(p, text);
+}
+
+void CMacroizer::Warning(CString text) {
+    CErrorPosition p(*this);
+    Warning(text, p);
+}
+
+void CMacroizer::Warning(CString text, const CErrorPosition &p) {
+    if (on_error)
+        on_error(p, text, "warning");
     else
         CThrow(p, text);
 }

@@ -1,12 +1,20 @@
+DEBUG=0
+
 CPP_FILES=$(shell find . -name "*.cpp" -not \( -path "./test*" -or -path "./build*" \))
 H_FILES=  $(shell find . -name "*.h"   -not \( -path "./test*" -or -path "./build*" \))
 OBJ_FILES=$(addprefix build/,$(CPP_FILES:%.cpp=%.o))
 W64_FILES=$(addprefix build.w64/,$(CPP_FILES:%.cpp=%.o))
 W32_FILES=$(addprefix build.w32/,$(CPP_FILES:%.cpp=%.o))
 
-static=-static
+STATIC=-static
 ifeq ($(shell uname -o),Darwin)
-       static=
+       STATIC=
+endif
+
+ifeq ($(DEBUG), 1)
+       DEBUG = -g
+else
+       DEBUG = -s -O2
 endif
 
 all: ../c8080 files
@@ -23,11 +31,11 @@ files:
 	find . -type f >c8080.files
 
 ../c8080: ${OBJ_FILES}
-	g++ -s -Wall -Wno-switch -O2 $(static) --std=c++17 -o $@ $^
+	g++ $(DEBUG) -Wall -Wno-switch -O2 $(STATIC) --std=c++17 -o $@ $^
 
 build/%.o: %.cpp
 	mkdir -p $(dir $@)
-	g++ -MD -Wall -Wno-switch -O2 $(static) --std=c++17 -c -o $@ $<
+	g++ $(DEBUG) -MD -Wall -Wno-switch -O2 --std=c++17 -c -o $@ $<
 
 -include $(OBJ_FILES:.o=.d)
 

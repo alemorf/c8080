@@ -58,7 +58,7 @@ protected:
     bool Leave();
 
 public:
-    std::function<void(CErrorPosition &, CString)> on_error;
+    std::function<void(const CErrorPosition &, CString, const char *type)> on_error;
     std::function<const char *(const char *, size_t)> save_string;
     size_t endif_counter{};
     unsigned in_macro{};
@@ -76,7 +76,9 @@ public:
     void SyntaxError();
     void Throw(CString text);
     void Error(CString text);
-    void Error(CString text, CErrorPosition &p);
+    void Error(CString text, const CErrorPosition &p);
+    void Warning(CString text);
+    void Warning(CString text, const CErrorPosition &p);
     bool FindDirective(std::string &out);
     bool ReadRaw(std::string &result, char terminator1, char terminator2, char open);
 };
