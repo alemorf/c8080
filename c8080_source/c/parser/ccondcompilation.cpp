@@ -79,7 +79,7 @@ void CCondCompilation::PreprocessorIgnore(bool can_else) {
             break;
         }
 
-        if (line == "if" || line == "ifdef" || line == "ifndef")
+        if (0 == line.compare(0, 2, "if"))
             level++;
     }
 }
