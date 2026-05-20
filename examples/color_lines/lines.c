@@ -126,13 +126,13 @@ static void ClearLine(uint8_t x0, uint8_t y0, uint8_t dx, uint8_t dy, uint8_t le
 static char *Center(char *buffer, uint16_t value) {
     char *text = Uint16ToString(buffer, value, 10);
 #ifdef CENTER_SCORE
-    buffer += (UINT16_TO_STRING_BUFFER_SIZE - 1 - strlen(text)) / 2;
+    buffer += (UINT16_TO_STRING_SIZE - 1 - strlen(text)) / 2;
 #endif
     return buffer;
 }
 
 static void DrawScoreAndCreatures2(void) {
-    char buffer[UINT16_TO_STRING_BUFFER_SIZE];
+    char buffer[UINT16_TO_STRING_SIZE];
     DrawText(DRAWTEXTARGS(SCORE_X, SCORE_Y), SCORE_COLOR, Center(buffer, score));
 
     uint16_t n;
@@ -488,7 +488,7 @@ static void DrawButtons(void) {
 static void DrawScreen3(void) {
     DrawScreen(imgScreen);
 
-    char buffer[UINT16_TO_STRING_BUFFER_SIZE];
+    char buffer[UINT16_TO_STRING_SIZE];
     DrawText(DRAWTEXTARGS(TOPSCORE_X, TOPSCORE_Y), TOPSCORE_COLOR, Center(buffer, hiScores[0].score));
 
     if (TOPNAME_Y != 0) {
