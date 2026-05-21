@@ -542,7 +542,7 @@ __o_shr_i16__l1:
 
 // Example: int16_t hl; int32_t dehl = hl;
 // Input: hl
-// Output: de:hl
+// Output: dehl
 
 void __o_i16_to_i32() {
     asm {
@@ -555,8 +555,8 @@ void __o_i16_to_i32() {
 }
 
 // Example: uint32_t dehl; dehl = -dehl;
-// Input: de:hl
-// Output: de:hl
+// Input: dehl
+// Output: dehl
 
 void __o_minus_32() {
     asm {
@@ -576,8 +576,8 @@ void __o_minus_32() {
 }
 
 // Example: uint32_t dehl; dehl = ~dehl;
-// Input: de:hl
-// Output: de:hl
+// Input: dehl
+// Output: dehl
 
 void __o_neg_32() {
     asm {
@@ -597,8 +597,8 @@ void __o_neg_32() {
 }
 
 // Example: uint32_t dehl, stack; dehl += stack;
-// Input: de:hl, dword in stack
-// Output: de:hl
+// Input: dehl, dword in stack
+// Output: dehl
 
 void __o_add_32() {
     asm {
@@ -624,8 +624,8 @@ void __o_add_32() {
 }
 
 // Example: uint32_t dehl, stack; dehl -= stack;
-// Input: de:hl, dword in stack
-// Output: de:hl
+// Input: dehl, dword in stack
+// Output: dehl
 
 void __o_sub_32() {
     asm {
@@ -652,7 +652,7 @@ void __o_sub_32() {
 
 // Example: uint32_t *hl, dehl; dehl = *hl;
 // Input: hl
-// Output: de:hl
+// Output: dehl
 
 void __o_load_32() {
     asm {
@@ -668,8 +668,8 @@ void __o_load_32() {
 }
 
 // Example: uint32_t *stack, dehl; *stack = dehl;
-// Input: de:hl, word in stack
-// Output: de:hl
+// Input: dehl, word in stack
+// Output: dehl
 
 void __o_set_32() {
     asm {
@@ -688,8 +688,8 @@ void __o_set_32() {
 }
 
 // Example: uint32_t dehl, stack; dehl &= stack;
-// Input: de:hl, dword in stack
-// Output: de:hl
+// Input: dehl, dword in stack
+// Output: dehl
 
 void __o_and_32() {
     asm {
@@ -715,8 +715,8 @@ void __o_and_32() {
 }
 
 // Example: uint32_t dehl, stack; dehl |= stack;
-// Input: de:hl, dword in stack
-// Output: de:hl
+// Input: dehl, dword in stack
+// Output: dehl
 
 void __o_or_32() {
     asm {
@@ -742,8 +742,8 @@ void __o_or_32() {
 }
 
 // Example: uint32_t dehl, stack; dehl ^= stack;
-// Input: de:hl, dword in stack
-// Output: de:hl
+// Input: dehl, dword in stack
+// Output: dehl
 
 void __o_xor_32() {
     asm {
@@ -769,8 +769,8 @@ void __o_xor_32() {
 }
 
 // Example: uint32_t dehl, stack; dehl *= stack;
-// Input: de:hl, dword in stack
-// Output: de:hl
+// Input: dehl, dword in stack
+// Output: dehl
 
 void __o_mul_32() {
     asm {
@@ -855,8 +855,8 @@ __o_mul_32_l1:
 }
 
 // Example: uint32_t dehl, stack; dehl /= stack;
-// Input: de:hl, dword in stack
-// Output: de:hl
+// Input: dehl, dword in stack
+// Output: dehl
 // Used by user: uint32_t __remainder = dehl % stack
 
 void __o_div_u32() {
@@ -869,9 +869,7 @@ void __o_div_u32() {
         pop  hl
         ex   (sp), hl
         ld   (__remainder+2), hl
-        ld   hl, __o_div_u32__ret
-__o_div_u32__com:
-        ld   (__o_div_u32__ra), hl
+__o_div_u32_int:
         ld   hl, bc
         ld   a, h                      ; if (b == 0) return;
         or   l
@@ -904,7 +902,6 @@ __o_div_u32__l4:                       ; while(--c != 0) (
 __o_div_u32__lc=$+1
         ld   a, 0
         dec  a
-__o_div_u32__ra=$+1
         jp   z, __o_div_u32__ret
         ld   (__o_div_u32__lc), a
 
@@ -959,22 +956,12 @@ __o_div_u32__l5:
     }
 }
 
-// Example: int32_t dehl, stack; dehl /= stack;
-// Input: de:hl, dword in stack
-// Output: de:hl
-// Warning! __remainder is used only in unsigned operations
-
-void __o_div_i32() {
-    asm {
-        TODO
-    }
-}
-
 // Example: uint32_t dehl, stack; dehl %= stack;
-// Input: de:hl, dword in stack
-// Output: de:hl
+// Input: dehl, dword in stack
+// Output: dehl
 
 void __o_mod_u32() {
+    (void)__remainder;
     (void)__o_div_u32;
     asm {
         ld   bc, hl                ; bc = v1l
@@ -984,29 +971,107 @@ void __o_mod_u32() {
         pop  hl                    ; hl = ret, stack = v2h
         ex   (sp), hl              ; hl = v2l, stack = ret
         ld   (__remainder+2), hl
-        ld   hl, __o_mod_u32__ret
-        jp   __o_div_u32__com
-
-__o_mod_u32__ret:
+        call __o_div_u32_int
         ld   hl, (__remainder+2)
         ex   hl, de
         ld   hl, (__remainder+0)
     }
 }
 
+// Example: int32_t dehl, stack; dehl /= stack;
+// Input: dehl, dword in stack
+// Output: dehl
+// Warning! __remainder is used only in unsigned operations
+
+void __o_div_i32() {
+    (void)__remainder;
+    (void)__o_minus_32;
+    (void)__o_div_u32;
+    asm {
+        ld   bc, hl
+        pop  hl
+        ex   (sp), hl
+        ld   (__remainder+0), hl
+        pop  hl
+        ex   (sp), hl
+        ld   (__remainder+2), hl
+
+__o_div_i32_int:
+        ld   a, d
+        add  a
+        jp   nc, __o_div_i32_1
+
+        ld   hl, bc
+        call __o_minus_32
+        ld   bc, hl
+
+        ld   a, (__remainder + 3)
+        add  a
+        jp   nc, __o_div_i32_2  ; negative/positive
+
+        call __o_div_i32_4
+
+        jp   __o_div_u32_int  ; negative/negative
+
+__o_div_i32_1:
+        ld   a, (__remainder + 3)
+        add  a
+        jp   nc, __o_div_u32_int  ; positive/positive
+
+        call __o_div_i32_4
+
+__o_div_i32_2:
+        call __o_div_u32_int
+        jp   __o_minus_32
+
+__o_div_i32_4:
+        push de
+        ld   hl, (__remainder+2)
+        ex   hl, de
+        ld   hl, (__remainder+0)
+        call __o_minus_32
+        ld   (__remainder+0), hl
+        ex   hl, de
+        ld   (__remainder+2), hl
+        pop  de
+    }
+ }
+
 // Example: int32_t dehl, stack; dehl %= stack;
-// Input: de:hl, dword in stack
-// Output: de:hl
+// Input: dehl, dword in stack
+// Output: dehl
 
 void __o_mod_i32() {
+    (void)__remainder;
+    (void)__o_div_i32;
+    (void)__o_minus_32;
     asm {
-        TODO
+        ld   bc, hl
+        pop  hl
+        ex   (sp), hl
+        ld   (__remainder+0), hl
+        pop  hl
+        ex   (sp), hl
+        ld   (__remainder+2), hl
+
+        push hl
+        call __o_div_i32_int
+        pop  af
+
+        ld   hl, (__remainder+2)
+        ex   hl, de
+        ld   hl, (__remainder+0)
+
+        add  a
+        ret  nc
+
+        call __o_minus_32
     }
 }
 
 // Example: uint32_t dehl, stack; dehl <<= stack;
-// Input: de:hl, dword in stack
-// Output: de:hl
+// Input: dehl, dword in stack
+// Output: dehl
 
 void __o_shl_32() {
     asm {
@@ -1034,8 +1099,8 @@ __o_shl_32_2:
 }
 
 // Example: uint32_t dehl, stack; dehl >>= stack;
-// Input: de:hl, dword in stack
-// Output: de:hl
+// Input: dehl, dword in stack
+// Output: dehl
 
 void __o_shr_u32() {
     asm {
@@ -1070,8 +1135,8 @@ __o_shr_u32_1:
 }
 
 // Example: int32_t dehl, stack; dehl >>= stack;
-// Input: de:hl, dword in stack
-// Output: de:hl
+// Input: dehl, dword in stack
+// Output: dehl
 
 void __o_shr_i32() {
     asm {

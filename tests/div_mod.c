@@ -82,5 +82,44 @@ int main(int, char **) {
     }
 #endif
 
+    // 32 bit
+
+    {
+        volatile uint32_t a = 2000000000, b = 76543;
+        volatile uint32_t c = a / b, d = a % b, check = c * b + d - a;
+        printf("%lu / %lu = %lu mod %lu check %lu\n", a, b, c, d, check);
+    }
+    {
+        volatile int32_t a = 2000000000, b = 76543;
+        volatile int32_t c = a / b, d = a % b, check = c * b + d - a;
+        printf("%li / %li = %li mod %li check %li\n", a, b, c, d, check);
+    }
+    {
+        volatile int32_t a = -2000000000, b = 76543;
+        volatile int32_t c = a / b, d = a % b, check = c * b + d - a;
+        printf("%li / %li = %li mod %li check %li\n", a, b, c, d, check);
+    }
+    {
+        volatile int32_t a = 2000000000, b = -76543;
+        volatile int32_t c = a / b, d = a % b, check = c * b + d - a;
+        printf("%li / %li = %li mod %li check %li\n", a, b, c, d, check);
+    }
+    {
+        volatile int32_t a = -2000000000, b = -76543;
+        volatile int32_t c = a / b, d = a % b, check = c * b + d - a;
+        printf("%li / %li = %li mod %li check %li\n", a, b, c, d, check);
+    }
+
+#if 1
+    for (uint16_t i = 0; i < 0xFFFF; i++) {
+        volatile int32_t a = rand() | (rand() << 16L), b = rand() | (rand() << 16L);
+        volatile int32_t c = a / b, d = a % b, check = c * b + d - a;
+        //        if (check != 0)
+        printf("%li / %li = %li mod %li check %li\n", a, b, c, d, check);
+        if (check != 0)
+            return 1;
+    }
+#endif
+
     return 0;
 }
