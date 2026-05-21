@@ -42,7 +42,7 @@ static_assert(sizeof(-0xFFFFFFFFFFFFFFFFU) == 8);
 
 // А еще минус не меняет тип
 #ifndef __C8080_COMPILER
-static_assert(_Generic(-0xFFFFFFFFFFFFFFFFU, long unsigned int: 1));
+static_assert(_Generic(-0xFFFFFFFFFFFFFFFFU, long unsigned int : 1));
 #endif
 
 // Очевидный случай
@@ -53,7 +53,7 @@ static_assert(0x7FFF > 0);
 #else
 static_assert(sizeof(0x7FFFFFFF) == sizeof(int));
 static_assert(0x7FFFFFFF > 0);
-static_assert(_Generic(0x7FFFFFFF, int: 1));
+static_assert(_Generic(0x7FFFFFFF, int : 1));
 #endif
 
 // Указание типа unsigned
@@ -64,7 +64,7 @@ static_assert(0x7FFFU > 0);
 #else
 static_assert(sizeof(0x7FFFFFFFU) == sizeof(int));
 static_assert(0x7FFFFFFFU > 0);
-static_assert(_Generic(0x7FFFFFFFU, unsigned: 1));
+static_assert(_Generic(0x7FFFFFFFU, unsigned : 1));
 #endif
 
 // INT_MAX+1 ... UINT_MAX десятичные автоматически не приводится к unsigned
@@ -84,23 +84,22 @@ static_assert(sizeof(0xFFFFFFFF) == sizeof(int));
 #ifdef __C8080_COMPILER
 static_assert(sizeof(0xFFFF) == sizeof(int));
 static_assert(sizeof(0xFFFFU) == sizeof(int));
-static_assert(0xFFFF > 0)
-static_assert(0xFFFFU > 0)
+static_assert(0xFFFF > 0) static_assert(0xFFFFU > 0)
 #else
 static_assert(sizeof(0xFFFFFFFF) == sizeof(unsigned));
 static_assert(sizeof(0xFFFFFFFFU) == sizeof(unsigned));
-static_assert(_Generic(0xFFFFFFFF, unsigned: 1));
-static_assert(_Generic(0xFFFFFFFFU, unsigned: 1));
+static_assert(_Generic(0xFFFFFFFF, unsigned : 1));
+static_assert(_Generic(0xFFFFFFFFU, unsigned : 1));
 static_assert(0xFFFFFFFF > 0);
 static_assert(0xFFFFFFFFU > 0);
 #endif
 
-// UINT_MAX ... LONG_MAX опять signed
+    // UINT_MAX ... LONG_MAX опять signed
 
-static_assert(sizeof(0x7FFFFFFFFFFFFFFF) == sizeof(long long));
+    static_assert(sizeof(0x7FFFFFFFFFFFFFFF) == sizeof(long long));
 static_assert(0x7FFFFFFFFFFFFFFF > 0);
 #ifndef __C8080_COMPILER
-static_assert(_Generic(0x7FFFFFFFFFFFFFFF, long int: 1));
+static_assert(_Generic(0x7FFFFFFFFFFFFFFF, long int : 1));
 #endif
 
 // Указание типа unsigned
@@ -108,7 +107,7 @@ static_assert(_Generic(0x7FFFFFFFFFFFFFFF, long int: 1));
 static_assert(sizeof(0x7FFFFFFFFFFFFFFFU) == sizeof(long long));
 static_assert(0x7FFFFFFFFFFFFFFFU > 0);
 #ifndef __C8080_COMPILER
-static_assert(_Generic(0x7FFFFFFFFFFFFFFFU, long unsigned int: 1));
+static_assert(_Generic(0x7FFFFFFFFFFFFFFFU, long unsigned int : 1));
 #endif
 
 // >LONG_MAX автоматически приводится к unsigned
@@ -118,8 +117,8 @@ static_assert(sizeof(0xFFFFFFFFFFFFFFFFU) == sizeof(long long));
 static_assert(0xFFFFFFFFFFFFFFFF > 0);
 static_assert(0xFFFFFFFFFFFFFFFFU > 0);
 #ifndef __C8080_COMPILER
-static_assert(_Generic(0xFFFFFFFFFFFFFFFF, long unsigned int: 1));
-static_assert(_Generic(0xFFFFFFFFFFFFFFFFU, long unsigned int: 1));
+static_assert(_Generic(0xFFFFFFFFFFFFFFFF, long unsigned int : 1));
+static_assert(_Generic(0xFFFFFFFFFFFFFFFFU, long unsigned int : 1));
 #endif
 
 // Переполнение десятичного знакового числа
@@ -148,6 +147,6 @@ static_assert(sizeof(123.456f) == sizeof(float));
 static_assert(sizeof(123.456) == sizeof(double));
 static_assert(sizeof(123.456l) == sizeof(long double));
 
-int main(int, char**) {
-   return 0;
+int main(int, char **) {
+    return 0;
 }

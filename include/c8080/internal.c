@@ -19,7 +19,7 @@
 #include <stddef.h>
 #include <c8080/remainder.h>
 
-uint32_t __remainder;
+uint32_t __remainder; // depricated
 
 int main(int argc, char **argv);
 
@@ -109,16 +109,6 @@ __o_mul_8__l2:
     }
 }
 
-// Example: int8_t a, d; a /= d;
-// Input: a, d
-// Output: a
-
-void __o_div_i8() {
-    asm {
-        TODO
-    }
-}
-
 // Example: uint8_t a, d; a /= d;
 // Input: a, d
 // Output: a
@@ -165,13 +155,67 @@ void __o_mod_u8() {
     }
 }
 
+// Example: int8_t a, d; a /= d;
+// Input: a, d
+// Output: a
+// Warning! __remainder contains positive remainder of the division
+
+void __o_div_i8() {
+    (void)__o_div_u8;
+    asm {
+        ; B - invert result flag, C - invert remainder flag
+        ld  bc, 101h
+
+        ; Make A positive
+        or  a
+        jp  p, __o_div_i8__l1
+        cpl
+        inc a
+        inc b  ; Change invert result flag
+        inc c  ; Change invert remainder flag
+__o_div_i8__l1:
+
+        ; Make D positive
+        ld  e, a
+        ld  a, d
+        or  a
+        jp  p, __o_div_i8__l2
+        cpl
+        inc a
+        ld  d, a
+        dec b  ; Change invert result flag
+__o_div_i8__l2:
+        ld  a, e
+
+        ; Do positive division
+        push bc
+        call __o_div_u8
+        pop  bc
+
+        ; Invert the result if b != 1
+        dec  b
+        ret  z
+        cpl
+        inc  a
+    }
+}
+
 // Example: int8_t a, d; a %= d;
 // Input: a, d
 // Output: a
+// Warning! __remainder contains positive remainder of the division
 
 void __o_mod_i8() {
+    (void)__o_div_i8;
     asm {
-        TODO
+        call __o_div_i8
+        ld   a, l
+
+        ; Invert the remainder if c != 1
+        dec  c
+        ret  z
+        cpl
+        inc  a
     }
 }
 

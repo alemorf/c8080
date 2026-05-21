@@ -14,8 +14,7 @@ struct Outer {
     struct Inner i;
 };
 
-void __main()
-{
+void __main() {
     struct Outer o;
     o.i.a = 42;
 }

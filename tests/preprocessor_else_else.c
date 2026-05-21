@@ -9,35 +9,35 @@
 #define B 1
 
 #if A == 1
-  #if B != 1
-    #error Bad 1
-  #else
-    int a;
-  #endif
+#if B != 1
+#error Bad 1
 #else
-  #if B != 1
-    #error Bad 2
-  #else
-    #error Bad 3
-  #endif
+int a;
+#endif
+#else
+#if B != 1
+#error Bad 2
+#else
+#error Bad 3
+#endif
 #endif
 
 #if A != 1
-  #if B == 1
-    #error Bad 4
-  #else
-    #error Bad 5
-  #endif
+#if B == 1
+#error Bad 4
 #else
-  #if B == 1
-    int b;
-  #else
-    #error Bad 6
-  #endif
+#error Bad 5
+#endif
+#else
+#if B == 1
+int b;
+#else
+#error Bad 6
+#endif
 #endif
 
-int main(int, char**) {
-   a = 1;
-   b = 2;
-   return 0;
+int main(int, char **) {
+    a = 1;
+    b = 2;
+    return 0;
 }
