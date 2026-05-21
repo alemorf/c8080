@@ -3,6 +3,31 @@
 #include <stdlib.h>
 
 int main(int, char **) {
+    // shift
+
+    {
+        volatile uint8_t a = 0xAA, b = 3;
+        volatile uint8_t c = a >> b;
+        printf("0x%02x >> 0x%02x = 0x%02x\n", a, b, c);
+    }
+    {
+        volatile int8_t a = 0xAA, b = 3;
+        volatile int8_t c = a >> b;
+        printf("0x%02x >> 0x%02x = 0x%02x\n", a, b, c);
+    }
+    {
+        volatile int16_t a = 0xAAAA, b = 3;
+        volatile int16_t c = a >> b;
+        printf("0x%02x >> 0x%02x = 0x%02x\n", a, b, c);
+    }
+    {
+        volatile int32_t a = 0xAAAAAAAA, b = 3;
+        volatile int32_t c = a >> b;
+        printf("0x%02lx >> 0x%02lx = 0x%02lx\n", a, b, c);
+    }
+
+    // 8 bit
+
     {
         volatile uint8_t a = 100, b = 3;
         volatile uint8_t c = a / b, d = a % b, check = c * b + d - a;
@@ -110,7 +135,7 @@ int main(int, char **) {
         printf("%li / %li = %li mod %li check %li\n", a, b, c, d, check);
     }
 
-#if 1
+#if 0
     for (uint16_t i = 0; i < 0xFFFF; i++) {
         volatile int32_t a = rand() | (rand() << 16L), b = rand() | (rand() << 16L);
         volatile int32_t c = a / b, d = a % b, check = c * b + d - a;

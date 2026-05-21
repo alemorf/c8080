@@ -73,7 +73,13 @@ __o_shl_8__l1:
 
 void __o_shr_u8() {
     asm {
-        TODO
+        inc  d
+__o_shr_u8__l1:
+        dec  d
+        ret  z
+        or   a    ; cf = 0
+        rra
+        jp   __o_shr_u8__l1
     }
 }
 
@@ -83,7 +89,14 @@ void __o_shr_u8() {
 
 void __o_shr_i8() {
     asm {
-        TODO
+        inc  d
+__o_shr_i8__l1:
+        dec  d
+        ret  z
+        rlca
+        rrca
+        rra
+        jp   __o_shr_i8__l1
     }
 }
 
@@ -115,7 +128,7 @@ __o_mul_8__l2:
 // Used by the functions below: l = a % d
 // Used by user: uint32_t __remainder = a % d
 
-void __o_div_u8() {  // TODO: Optimize ADD HL, HL
+void __o_div_u8() {
     (void)__remainder;
     asm {
         ld   e, a
@@ -514,7 +527,6 @@ __o_shr_u16__l1:
         rra
         ld   l, a
         jp   __o_shr_u16__l1
-1
     }
 }
 
@@ -1140,6 +1152,33 @@ __o_shr_u32_1:
 
 void __o_shr_i32() {
     asm {
-        TODO
+        ld   a, l
+        pop  hl          ; hl = ret, stack = v2l
+        ex   (sp), hl    ; hl = v2l, stack = ret
+        ld   bc, hl
+        pop  hl          ; hl = ret, stack = v2l
+        ex   (sp), hl    ; hl = v2h, stack = ret
+        ex   hl, de
+        ld   hl, bc
+        and  31
+        ld   c, a
+__o_shr_i32_1:
+        ret  z
+        ld   a, d
+        rlca
+        rrca
+        rra
+        ld   d, a
+        ld   a, e
+        rra
+        ld   e, a
+        ld   a, h
+        rra
+        ld   h, a
+        ld   a, l
+        rra
+        ld   l, a
+        dec  c
+        jp   __o_shr_i32_1
     }
 }
