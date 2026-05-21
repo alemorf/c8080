@@ -19,7 +19,7 @@
 #include <stddef.h>
 #include <c8080/remainder.h>
 
-uint32_t __remainder; // depricated
+uint32_t __remainder;
 
 int main(int argc, char **argv);
 
@@ -112,11 +112,14 @@ __o_mul_8__l2:
 // Example: uint8_t a, d; a /= d;
 // Input: a, d
 // Output: a
+// Used by the functions below: l = a % d
+// Used by user: uint32_t __remainder = a % d
 
 void __o_div_u8() {  // TODO: Optimize ADD HL, HL
     (void)__remainder;
     asm {
         ld   e, a
+__o_div_u8_ed:
         ld   hl, 0
         ld   (__remainder + 2), hl
         ld   h, 8       ; l = remain, h = loop
@@ -158,62 +161,63 @@ void __o_mod_u8() {
 // Example: int8_t a, d; a /= d;
 // Input: a, d
 // Output: a
-// Warning! __remainder contains positive remainder of the division
+// Warning! __remainder is used only in unsigned operations
 
 void __o_div_i8() {
     (void)__o_div_u8;
     asm {
-        ; B - invert result flag, C - invert remainder flag
-        ld  bc, 101h
+        or   a
+        jp   m, __o_div_i8_1
 
-        ; Make A positive
-        or  a
-        jp  p, __o_div_i8__l1
-        cpl
-        inc a
-        inc b  ; Change invert result flag
-        inc c  ; Change invert remainder flag
-__o_div_i8__l1:
+        ld   e, a
+        ld   a, d
+        or   a
+        jp   p, __o_div_u8_ed  ; positive / positive
 
-        ; Make D positive
-        ld  e, a
-        ld  a, d
-        or  a
-        jp  p, __o_div_i8__l2
-        cpl
-        inc a
-        ld  d, a
-        dec b  ; Change invert result flag
-__o_div_i8__l2:
-        ld  a, e
-
-        ; Do positive division
-        push bc
-        call __o_div_u8
-        pop  bc
-
-        ; Invert the result if b != 1
-        dec  b
-        ret  z
         cpl
         inc  a
+        ld   d, a
+
+        call __o_div_u8_ed
+        cpl
+        inc  a
+        ret  ; positive / negative
+
+__o_div_i8_1:
+        cpl
+        inc  a
+
+        ld   e, a
+        ld   a, d
+        or   a
+        jp   p, __o_div_i8_2
+
+        cpl
+        inc  a
+        ld   d, a
+
+        jp   __o_div_u8_ed  ; negative / negative
+
+__o_div_i8_2:
+        call __o_div_u8_ed
+        cpl
+        inc  a  ; negative / positive
     }
 }
 
 // Example: int8_t a, d; a %= d;
 // Input: a, d
 // Output: a
-// Warning! __remainder contains positive remainder of the division
 
 void __o_mod_i8() {
     (void)__o_div_i8;
     asm {
+        push af
         call __o_div_i8
+        pop  af
+        or   a
         ld   a, l
-
-        ; Invert the remainder if c != 1
-        dec  c
-        ret  z
+        ret  p
         cpl
         inc  a
     }
@@ -346,41 +350,30 @@ __o_mul_16_l1:
     }
 }
 
-// Example: uint16_t hl, de; hl /= de;
+// Not used by compiler. Used by the functions below.
 // Input: hl, de
-// Output: hl
+// Output: hl = hl / de, de = hl % de
 
-void __o_div_u16() {
-    (void)__remainder;
+void __o_div_mod_u16() {
     asm {
-        call __o_div_u16__l0
         ex   hl, de
-        ld   (__remainder), hl
-        ld   hl, 0
-        ld   (__remainder + 2), hl
-        ex   hl, de
-        ret
-
-__o_div_u16__l0:
-        ex   hl, de
-__o_div_u16__l:
         ld   a, h
         or   l
         ret  z
         ld   bc, 0
         push bc
-__o_div_u16__l1:
+__o_div_mod_u16__l1:
         ld   a, e
         sub  l
         ld   a, d
         sbc  h
-        jp   c, __o_div_u16__l2
+        jp   c, __o_div_mod_u16__l2
         push hl
         add  hl, hl
-        jp   nc, __o_div_u16__l1
-__o_div_u16__l2:
+        jp   nc, __o_div_mod_u16__l1
+__o_div_mod_u16__l2:
         ld   hl, 0
-__o_div_u16__l3:
+__o_div_mod_u16__l3:
         pop  bc
         ld   a, b
         or   c
@@ -393,23 +386,52 @@ __o_div_u16__l3:
         ld   a, d
         sbc  b
         ld   d, a
-        jp   c, __o_div_u16__l4
+        jp   c, __o_div_mod_u16__l4
         inc  hl
         pop  bc
-        jp   __o_div_u16__l3
-__o_div_u16__l4:
+        jp   __o_div_mod_u16__l3
+__o_div_mod_u16__l4:
         pop  de
-        jp   __o_div_u16__l3
+        jp   __o_div_mod_u16__l3
+    }
+}
+
+// Example: uint16_t hl, de; hl /= de;
+// Input: hl, de
+// Output: hl
+// Used by user: uint32_t __remainder = hl % de
+
+void __o_div_u16() {
+    (void)__remainder;
+    __o_div_mod_u16();
+    asm {
+        ex   hl, de
+        ld   (__remainder), hl
+        ld   hl, 0
+        ld   (__remainder + 2), hl
+        ex   hl, de
+    }
+}
+
+// Example: uint16_t hl, de; hl %= de;
+// Input: hl, de
+// Output: hl
+
+void __o_mod_u16() {
+    __o_div_mod_u16();
+    asm {
+        ex hl, de
     }
 }
 
 // Example: int16_t hl, de; hl /= de;
 // Input: hl, de
 // Output: hl
+// Warning! __remainder is used only in unsigned operations
 
 void __o_div_i16() {
     (void)__o_minus_16;
-    (void)__o_div_u16;
+    (void)__o_div_mod_u16;
     asm {
         ld   a, h
         add  a
@@ -425,32 +447,20 @@ void __o_div_i16() {
         call __o_minus_16
         ex   hl, de
 
-        jp   __o_div_u16        ; hl & de - negative
+        jp   __o_div_mod_u16        ; hl & de - negative
 
 __o_div_i16_1:
         ld   a, d
         add  a
-        jp   nc, __o_div_u16    ; hl & de - positive
+        jp   nc, __o_div_mod_u16    ; hl & de - positive
 
         ex   hl, de
         call __o_minus_16
         ex   hl, de
 
 __o_div_i16_2:
-        call __o_div_u16
+        call __o_div_mod_u16
         jp   __o_minus_16
-    }
-}
-
-// Example: uint16_t hl, de; hl %= de;
-// Input: hl, de
-// Output: hl
-
-void __o_mod_u16() {
-    (void)__o_div_u16;
-    asm {
-        call __o_div_u16__l0
-        ex hl, de
     }
 }
 
@@ -459,8 +469,15 @@ void __o_mod_u16() {
 // Output: hl
 
 void __o_mod_i16() {
+    (void)__o_div_i16;
+    (void)__o_minus_16;
     asm {
-        TODO
+        push hl
+        call __o_div_i16
+        pop  af
+        ex   hl, de
+        add  a
+        jp   c, __o_minus_16
     }
 }
 
@@ -840,6 +857,7 @@ __o_mul_32_l1:
 // Example: uint32_t dehl, stack; dehl /= stack;
 // Input: de:hl, dword in stack
 // Output: de:hl
+// Used by user: uint32_t __remainder = dehl % stack
 
 void __o_div_u32() {
     (void)__remainder;
@@ -944,6 +962,7 @@ __o_div_u32__l5:
 // Example: int32_t dehl, stack; dehl /= stack;
 // Input: de:hl, dword in stack
 // Output: de:hl
+// Warning! __remainder is used only in unsigned operations
 
 void __o_div_i32() {
     asm {

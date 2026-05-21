@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 int main(int, char **) {
     {
@@ -28,6 +29,7 @@ int main(int, char **) {
         printf("%i / %i = %i mod %i check %i\n", a, b, c, d, check);
     }
 
+#if 0
     for (uint16_t i = 0; i < 0x100; i++) {
         printf("Test %i\n", i);
         for (uint16_t j = 1; j < 0x100; j++) {
@@ -39,6 +41,46 @@ int main(int, char **) {
             }
         }
     }
+#endif
+
+    // 16 bit
+
+    {
+        volatile uint16_t a = 30000, b = 51;
+        volatile uint16_t c = a / b, d = a % b, check = c * b + d - a;
+        printf("%u / %u = %u mod %u check %u\n", a, b, c, d, check);
+    }
+    {
+        volatile int16_t a = 30000, b = 51;
+        volatile int16_t c = a / b, d = a % b, check = c * b + d - a;
+        printf("%i / %i = %i mod %i check %i\n", a, b, c, d, check);
+    }
+    {
+        volatile int16_t a = 30000, b = -51;
+        volatile int16_t c = a / b, d = a % b, check = c * b + d - a;
+        printf("%i / %i = %i mod %i check %i\n", a, b, c, d, check);
+    }
+    {
+        volatile int16_t a = -30000, b = 51;
+        volatile int16_t c = a / b, d = a % b, check = c * b + d - a;
+        printf("%i / %i = %i mod %i check %i\n", a, b, c, d, check);
+    }
+    {
+        volatile int16_t a = -30000, b = -51;
+        volatile int16_t c = a / b, d = a % b, check = c * b + d - a;
+        printf("%i / %i = %i mod %i check %i\n", a, b, c, d, check);
+    }
+
+#if 0
+    for (uint16_t i = 0; i < 0xFFFF; i++) {
+        volatile int16_t a = rand(), b = rand();
+        volatile int16_t c = a / b, d = a % b, check = c * b + d - a;
+        if (check != 0)
+            printf("%i / %i = %i mod %i check %i\n", a, b, c, d, check);
+        if (check != 0)
+            return 1;
+    }
+#endif
 
     return 0;
 }
