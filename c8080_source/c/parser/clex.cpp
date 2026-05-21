@@ -123,7 +123,7 @@ CBaseType CLex::CalculateIntegerType() {
     }
 
     if (token_integer > C_ULONG_MAX) {
-        Warning("integer constant is so large that it is unsigned"); // gcc
+        Warning("integer constant is so large that it is unsigned");  // gcc
         return CBT_UNSIGNED_LONG_LONG;
     }
     if (token_integer > C_LONG_MAX || (type & SUFFIX_LL))

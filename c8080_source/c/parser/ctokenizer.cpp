@@ -115,12 +115,14 @@ CToken CTokenizer::NextToken3() {
             token_number_errno = errno;
             token_suffix = cursor;
             assert(start != cursor);
-            while (cursor[0] == '_' || (cursor[0] >= '0' && cursor[0] <= '9') || (cursor[0] >= 'a' && cursor[0] <= 'z') || (cursor[0] >= 'A' && cursor[0] <= 'Z'))
+            while (cursor[0] == '_' || (cursor[0] >= '0' && cursor[0] <= '9') ||
+                   (cursor[0] >= 'a' && cursor[0] <= 'z') || (cursor[0] >= 'A' && cursor[0] <= 'Z'))
                 cursor++;
             token_suffix_size = cursor - token_suffix;
             return CT_FLOAT;
         }
-        while (cursor[0] == '_' || (cursor[0] >= '0' && cursor[0] <= '9') || (cursor[0] >= 'a' && cursor[0] <= 'z') || (cursor[0] >= 'A' && cursor[0] <= 'Z'))
+        while (cursor[0] == '_' || (cursor[0] >= '0' && cursor[0] <= '9') || (cursor[0] >= 'a' && cursor[0] <= 'z') ||
+               (cursor[0] >= 'A' && cursor[0] <= 'Z'))
             cursor++;
         token_suffix_size = cursor - token_suffix;
         return CT_INTEGER;
