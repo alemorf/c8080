@@ -52,3 +52,6 @@ void WriteConsole(const char *text) __link("c8080/console_h/writeconsole.c");
 
 /* Read console input and replace multi-byte key codes with a constant of type "KEY_" of fixed type uint16_t */
 int ReadAndDecodeConsoleKeys(void) __link("c8080/console_h/readanddecodeconsolekeys.c");
+
+/* Can read console input */
+bool CanReadConsole(void) __link("c8080/console_h/canreadconsole.c");
