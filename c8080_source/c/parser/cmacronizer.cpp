@@ -36,6 +36,7 @@ void CMacroizer::Open(const char *contents, const char *file_name) {
     enable_macro_in_preprocessor = false;
     endif_counter = 0;
     error_position = CErrorPosition();
+    macro_arg_level = 0;
 
     Open2(contents, file_name);
 }
@@ -97,10 +98,17 @@ void CMacroizer::NextToken() {
 
         if (token == CT_IDENT) {
             auto mi = macro.find(CString(token_data, token_size));
-            if (mi == macro.end() || mi->second->disabled)  // Macro should not call itself
-                break;
-
-            Macro &m = *mi->second;
+            if (mi == macro.end())
+                return;
+            std::shared_ptr<Macro> mp = mi->second;
+            while (mp->prev && mp->is_macro_arg != 0 && mp->is_macro_arg != macro_arg_level) {
+                mp = mp->prev;
+                if (mp == nullptr)
+                    return;
+            }
+            if (mp->disabled != 0 && mp->disabled_level != macro_arg_level)  // Macro should not call itself
+                return;
+            Macro &m = *mp;
             if (m.args.size() > 0) {
                 if (cursor[0] != '(')
                     ThrowSyntaxError();
@@ -118,13 +126,13 @@ void CMacroizer::NextToken() {
                         if (!var_last)
                             Error("not enough parameters in macro");
                     }
-                    AddMacro(m.args[j], arg_body.c_str(), arg_body.size());
+                    AddMacro(m.args[j], arg_body.c_str(), arg_body.size(), nullptr, CMAM_FIXED, true);
                 }
 
                 if (m.args_mode == CMAM_VA_OPT) {
                     static const std::vector<std::string> args = {"__VA_OPT__"};
                     AddMacro("__VA_OPT__", "__VA_OPT__", last_arg_is_empty ? 0 : sizeof("__VA_OPT__") - 1, &args,
-                             CMAM_VAR_LAST);
+                             CMAM_VAR_LAST, true);
                 }
 
                 if (!no_more_args) {
@@ -133,8 +141,11 @@ void CMacroizer::NextToken() {
                     ReadRaw(temp, '(', ')', '(');
                 }
             }
-            m.disabled = true;  // Macro should not call itself
+            m.disabled++;                        // Macro should not call itself
+            m.disabled_level = macro_arg_level;  // For nested calls of the same macro
             Enter(&m, m.body, mi->first.c_str());
+            if (m.is_macro_arg)
+                macro_arg_level -= 2;
             continue;
         }
 
@@ -162,11 +173,13 @@ void CMacroizer::Enter(Macro *active_macro, const char *contents, const char *fi
     s->file_name = file_name;
     s->endif_counter = endif_counter;
     s->active_macro = active_macro;
+    s->macro_arg_level = macro_arg_level;
     file_name = file_name_;
     cursor = contents;
     line = 1;
     column = 1;
     endif_counter = 0;
+    macro_arg_level++;
 }
 
 bool CMacroizer::Leave() {
@@ -190,7 +203,7 @@ bool CMacroizer::Leave() {
             DeleteMacro("__VA_OPT__");
         for (auto i : s.active_macro->args)
             DeleteMacro(i);
-        s.active_macro->disabled = false;
+        s.active_macro->disabled--;
     }
 
     endif_counter = s.endif_counter;
@@ -198,6 +211,7 @@ bool CMacroizer::Leave() {
     cursor = s.cursor;
     line = s.line;
     column = s.column;
+    macro_arg_level = s.macro_arg_level;
 
     stack.pop_back();
 
@@ -222,6 +236,8 @@ void CMacroizer::ReadDirective(std::string &result) {
             break;
         if (token != CT_REMARK)
             result.append(start, cursor - start);
+        else
+            result.append(" ", 1);
     }
 }
 
@@ -251,15 +267,16 @@ bool CMacroizer::ReadRaw(std::string &result, char terminator1, char terminator2
 }
 
 void CMacroizer::AddMacro(CString name, const char *body, size_t size, const std::vector<std::string> *args,
-                          CMacroArgsMode mode) {
+                          CMacroArgsMode mode, bool is_macro_arg) {
     // TODO: assert(!in_macro);
     std::shared_ptr<Macro> m = std::make_shared<Macro>();
-    m->name = name;                     // Копия в Macro
-    m->body = save_string(body, size);  // TODO: Не выделять память, а сохранить указатели???
+    m->name = name;
+    m->body = save_string(body, size);
     m->args_mode = mode;
     if (args != nullptr)
         m->args = *args;
-    auto &i = macro[m->name];  // В качестве индекса ссылка на Macro
+    m->is_macro_arg = is_macro_arg ? (macro_arg_level + 1) : 0;
+    auto &i = macro[m->name];
     m->prev = i;
     i = m;
 }

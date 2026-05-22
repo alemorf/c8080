@@ -35,10 +35,12 @@ protected:
     struct Macro {
         std::string name;
         const char *body{};
-        bool disabled{};  // Macro should not call itself
+        size_t disabled{};        // Macro should not call itself
+        size_t disabled_level{};  // For nested calls of the same macro
         std::vector<std::string> args;
         std::shared_ptr<Macro> prev;
         CMacroArgsMode args_mode{CMAM_FIXED};
+        size_t is_macro_arg{};
     };
 
     struct Stack {
@@ -48,10 +50,12 @@ protected:
         const char *file_name{};
         size_t endif_counter{};
         Macro *active_macro{};  // Macro should not call itself
+        size_t macro_arg_level{};
     };
 
     std::map<CString, std::shared_ptr<Macro>> macro;
     std::list<Stack> stack;
+    size_t macro_arg_level{};
 
     void Enter(Macro *macro_index, const char *contents, const char *name);
     void ReadDirective(std::string &result);
@@ -68,7 +72,7 @@ public:
     void Open(const char *contents, const char *file_name);
     void Include(const char *contents, const char *file_name);
     void AddMacro(CString name, const char *body = "", size_t size = 0, const std::vector<std::string> *args = nullptr,
-                  CMacroArgsMode mode = CMAM_FIXED);
+                  CMacroArgsMode mode = CMAM_FIXED, bool is_arg = false);
     bool FindMacro(CString name);
     bool DeleteMacro(CString name);
     void NextToken();

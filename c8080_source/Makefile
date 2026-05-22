@@ -12,7 +12,7 @@ ifeq ($(shell uname -o),Darwin)
 endif
 
 ifeq ($(DEBUG), 1)
-       DEBUG = -g
+       DEBUG = -g -O0
 else
        DEBUG = -s -O2
 endif
@@ -35,7 +35,7 @@ files:
 
 build/%.o: %.cpp
 	mkdir -p $(dir $@)
-	g++ $(DEBUG) -MD -Wall -Wno-switch -O2 --std=c++17 -c -o $@ $<
+	g++ $(DEBUG) -MD -Wall -Wno-switch --std=c++17 -c -o $@ $<
 
 -include $(OBJ_FILES:.o=.d)
 
