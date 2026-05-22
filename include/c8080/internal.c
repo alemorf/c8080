@@ -18,6 +18,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <c8080/remainder.h>
+#include <c8080/heap.h>
 
 uint32_t __remainder;
 
@@ -39,6 +40,8 @@ __init_loop:
 #if __has_include(<c8080/initstack.inc>)
 #include <c8080/initstack.inc>
 #endif
+
+    __HEAP_INIT
 
     main(0, NULL);
 }
@@ -1047,7 +1050,7 @@ __o_div_i32_4:
         ld   (__remainder+2), hl
         pop  de
     }
- }
+}
 
 // Example: int32_t dehl, stack; dehl %= stack;
 // Input: dehl, dword in stack

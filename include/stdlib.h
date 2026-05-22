@@ -18,6 +18,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stddef.h>
 #include <c8080/c8080.h>
 
 #define RAND_MAX 0x7FFF
@@ -36,10 +37,12 @@ typedef struct {
     long int quot, rem;
 } ldiv_t;
 
-long strtol(const char *str, char **endptr, int base) __link("stdlib_h/strtoiul.c");
-unsigned long strtoul(const char *str, char **endptr, int base) __link("stdlib_h/strtoiul.c");
-void srand(unsigned seed) __link("stdlib_h/rand.c");
-int rand(void) __link("stdlib_h/rand.c");
 int abs(int x) __link("stdlib_h/abs.c");
+int rand(void) __link("stdlib_h/rand.c");
 long labs(long x) __link("stdlib_h/labs.c");
 long long llabs(long long x) __link("stdlib_h/llabs.c");
+long strtol(const char *str, char **endptr, int base) __link("stdlib_h/strtoiul.c");
+unsigned long strtoul(const char *str, char **endptr, int base) __link("stdlib_h/strtoiul.c");
+void free(void *ptr) __link("stdlib_h/free.c");
+void *malloc(size_t size) __link("stdlib_h/malloc.c");
+void srand(unsigned seed) __link("stdlib_h/rand.c");

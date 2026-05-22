@@ -1,4 +1,19 @@
-#if !defined(ARCH_CPM_BIOS) && !defined(ARCH_CPM_BDOS)
+#if defined(ARCH_CPM_BIOS)
+    /* BDOS and command processor are removed from memory. */
+#error TODO
+#else
+#if defined(ARCH_CPM_BDOS)
+    /* Command processor is removed from memory. */
+    asm {
+        ld   a, (7)
+        ld   h, a
+        ld   l, 0
+        ld   sp, hl
+
+        ld   hl, 0
+        push hl
+    }
+#else
     /* clang-format on */
     asm {
         ld   hl, 0
@@ -10,29 +25,14 @@
         ld   h, a
         ld   l, 0
         ld   sp, hl
-        
+
         push de
     }
     /* clang-format off */
 #endif
-
-    /* Command processor is removed from memory. */
-#if defined(ARCH_CPM_BDOS) 
-    asm {
-        ld   a, (7)
-        ld   h, a
-        ld   l, 0
-        ld   sp, hl
-        
-        ld   hl, 0
-        push hl
-    }
 #endif
 
-    /* BDOS and command processor are removed from memory. */
-#if defined(ARCH_CPM_BIOS) 
-#error TODO
-#endif
+    __HEAP_INIT
 
     static char argv0[1];
     static char *argv[] = { argv0, (char*)0x81 };
