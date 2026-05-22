@@ -18,5 +18,5 @@
 
 #include <c8080/codepage/866.h>
 
-#define TILE(X, Y) (void *)((X) + (Y) * 0x100)
-#define DRAWTEXTARGS(X, Y) (void *)((X) + (Y) * 0x100), 0
+#define TILE(X, Y) (void *)((X) + (Y)*0x100)
+#define DRAWTEXTARGS(X, Y) (void *)((X) + (Y)*0x100), 0

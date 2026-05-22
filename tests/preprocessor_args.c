@@ -4,12 +4,12 @@
 #include <assert.h>
 #endif
 
-#define A1(B) B*B
+#define A1(B) B *B
 #define A2(A) A1(A1(A))
 
 static_assert(A2(2) == 16);
 
-#define MACRO(X) ((X)*(X))
+#define MACRO(X) ((X) * (X))
 
 static_assert(MACRO(MACRO(MACRO(2))) == 256);
 
@@ -22,6 +22,6 @@ int LOOP;
 
 int LOOP1;
 
-int main(int, char**) {
+int main(int, char **) {
     return 0;
 }
