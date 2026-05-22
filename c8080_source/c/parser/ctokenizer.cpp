@@ -279,6 +279,12 @@ CToken CTokenizer::NextToken3() {
                     }
             }
             return CT_OPERATOR;
+        case '#':
+            switch (*cursor) {
+                case '#':  // ##
+                    cursor++;
+            }
+            return CT_OPERATOR;
         default:
             return CT_OPERATOR;
     }

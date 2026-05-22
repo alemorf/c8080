@@ -29,7 +29,7 @@ void CCondCompilation::NextToken() {
     for (;;) {
         CMacroizer::NextToken();
 
-        if (token_data[0] != '#' || !preprocessor)
+        if (token_data[0] != '#' || token_data[1] == '#' || !preprocessor)
             break;
 
         if (in_macro != 0)
