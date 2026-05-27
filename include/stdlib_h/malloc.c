@@ -29,7 +29,7 @@ void *malloc(size_t size) {
     struct __HeapBlock *i = &__heap;
     do {
         if (i->free) {
-            while (i->next->free) // The last block is always used
+            while (i->next->free)  // The last block is always used
                 i->next = i->next->next;
             const size_t block_size = (void *)i->next - (void *)i;
             if (block_size >= size) {
@@ -44,6 +44,6 @@ void *malloc(size_t size) {
             }
         }
         i = i->next;
-   } while (i);
-   return NULL;
+    } while (i);
+    return NULL;
 }
