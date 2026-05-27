@@ -71,6 +71,18 @@ void CTokenizer::NextToken2() {
 
     token_size = cursor - token_data;
 
+    // Для выхода из параметра макроса. Что бы cursor указывал на ## или EOF.
+    for (;;) {
+        switch (*cursor) {
+            case '\t':
+            case ' ':
+            case '\r':
+                cursor++;
+                continue;
+        }
+        break;
+    }
+
     for (const char *i = token_data; i < cursor; i++) {
         switch (*i) {
             case '\t':

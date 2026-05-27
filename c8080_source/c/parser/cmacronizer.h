@@ -56,10 +56,12 @@ protected:
     std::map<CString, std::shared_ptr<Macro>> macro;
     std::list<Stack> stack;
     size_t macro_arg_level{};
+    std::string temp;
 
     void Enter(Macro *macro_index, const char *contents, const char *name);
     void ReadDirective(std::string &result);
     bool Leave();
+    void NextToken0();
 
 public:
     std::function<void(const CErrorPosition &, CString, const char *type)> on_error;

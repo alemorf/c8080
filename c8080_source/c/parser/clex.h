@@ -144,11 +144,6 @@ public:
             return false;
         out_string.assign(token_data, token_size);
         NextToken();
-        while (token_size == 2 && token_data[0] == '#' && token_data[1] == '#') {
-            NextToken();
-            out_string.append(token_data, token_size);
-            NextToken();
-        }
         return true;
     }
 

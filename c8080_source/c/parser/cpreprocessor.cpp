@@ -133,7 +133,7 @@ void CParserFile::PreprocessorPragmaOnce() {
 }
 
 void CParserFile::PreprocessorDefine() {
-    bool args_e = (l.cursor[0] == '(');
+    bool args_e = (l.cursor[-1] != ' ' && l.cursor[0] == '(');
     std::string id;
     if (!l.WantIdent(id))
         return;

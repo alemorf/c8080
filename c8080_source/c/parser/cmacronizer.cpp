@@ -84,6 +84,24 @@ void CMacroizer::Warning(CString text, const CErrorPosition &p) {
 }
 
 void CMacroizer::NextToken() {
+    NextToken0();
+
+    if (token == CT_IDENT && cursor[0] == '#' && cursor[1] == '#') {
+        temp.assign(token_data, token_size);
+        do {
+            NextToken0();
+            if (token_size != 2 || token_data[0] != '#' || token_data[1] != '#')
+                SyntaxError();
+            NextToken0();
+            temp.append(token_data, token_size);
+        } while (cursor[0] == '#' && cursor[1] == '#');
+        token = CT_IDENT;
+        token_data = save_string(temp.c_str(), temp.size());
+        token_size = temp.size();
+    }
+}
+
+void CMacroizer::NextToken0() {
     for (;;) {
         NextToken2();
 
@@ -99,15 +117,15 @@ void CMacroizer::NextToken() {
         if (token == CT_IDENT) {
             auto mi = macro.find(CString(token_data, token_size));
             if (mi == macro.end())
-                return;
+                break;
             std::shared_ptr<Macro> mp = mi->second;
             while (mp->prev && mp->is_macro_arg != 0 && mp->is_macro_arg != macro_arg_level) {
                 mp = mp->prev;
                 if (mp == nullptr)
-                    return;
+                    goto break2;
             }
             if (mp->disabled != 0 && mp->disabled_level != macro_arg_level)  // Macro should not call itself
-                return;
+                break;
             Macro &m = *mp;
             if (m.args.size() > 0) {
                 if (cursor[0] != '(')
@@ -151,6 +169,12 @@ void CMacroizer::NextToken() {
 
         break;
     }
+
+    // Нужно выйти из параметра макроса, потому что вызывающая функция будет искать токен ##
+break2:
+    while (cursor[0] == 0)
+        if (!Leave())
+            break;
 }
 
 void CMacroizer::Enter(Macro *active_macro, const char *contents, const char *file_name_) {
@@ -235,10 +259,16 @@ void CMacroizer::ReadDirective(std::string &result) {
         if (token == CT_EOF || token == CT_EOL)
             break;
         if (token != CT_REMARK)
-            result.append(start, cursor - start);
+            result.append(token_data, cursor - start);
         else
             result.append(" ", 1);
     }
+
+    // Trim end
+    auto i = result.rbegin();
+    while (i != result.rend() && (*i == '\r' || *i == '\t' || *i == ' '))
+        i++;
+    result.resize(result.size() - (i - result.rbegin()));
 }
 
 bool CMacroizer::ReadRaw(std::string &result, char terminator1, char terminator2, char open) {
@@ -257,7 +287,7 @@ bool CMacroizer::ReadRaw(std::string &result, char terminator1, char terminator2
                 if (level == 0)
                     return true;
                 level--;
-            } else if (token_data[0] == terminator1) {
+            } else if (token_data[0] == terminator1 && level == 0) {
                 return false;
             }
         }
