@@ -22,7 +22,7 @@
 #include <c8080/c8080.h>
 
 int8_t __global memcmp(const void *buffer1, const void *buffer2, size_t size) __link("string_h/memcmp.c");
-void *__global memcpy(void *destination, const void *source, size_t size) __link("string_h/memcpy.c");
+void *__global memcpy(void *destination, const void *source, size_t size); /* internal.c */
 void *__global memmove(void *destination, const void *source, size_t size) __link("string_h/memmove.c");
 void *__global memset(void *destination, uint8_t byte, size_t size) __link("string_h/memset.c");
 void __global memswap(void *buffer1, void *buffer2, size_t size) __link("string_h/memswap.c");

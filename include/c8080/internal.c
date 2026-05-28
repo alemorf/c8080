@@ -1185,3 +1185,29 @@ __o_shr_i32_1:
         jp   __o_shr_i32_1
     }
 }
+
+void *__global memcpy(void *, const void *, size_t) {
+    asm {
+__a_3_memcpy=0
+        ex   hl, de             ; de = size
+__a_2_memcpy=$+1
+        ld   bc, 0              ; bc = source
+__a_1_memcpy=$+1
+        ld   hl, 0              ; hl = destination
+        inc  d                  ; enter loop
+        xor  a
+        or   e
+        jp   z, memcpy_2
+memcpy_1:
+        ld   a, (bc)
+        ld   (hl), a
+        inc  hl
+        inc  bc
+        dec  e                  ; end loop
+        jp   nz, memcpy_1
+memcpy_2:
+        dec  d
+        jp   nz, memcpy_1
+        ld   hl, (__a_1_memcpy) ; return destination
+    }
+}
