@@ -33,3 +33,4 @@ bool PrepareDoubleConvert(Prepare &, CNodePtr &node);
 bool PrepareCompareOperators(Prepare &, CNodePtr &node);
 bool PrepareJump(Prepare &, CNodePtr &parent);
 bool Prepare8BitVarArgs(Prepare &p, CNodePtr &node);
+bool PrepareCopyStruct(Prepare &p, CNodePtr &node);

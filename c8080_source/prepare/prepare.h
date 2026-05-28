@@ -33,6 +33,7 @@ public:
     CVariablePtr function;
     const PrepareFunctionType *list;
     I8080::Asm &out;
+    CVariablePtr memcpy;
 
     Prepare(CProgramm &p, I8080::Asm &o, CVariablePtr f, const PrepareFunctionType *l)
         : programm(p), function(f), list(l), out(o) {

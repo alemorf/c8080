@@ -65,6 +65,7 @@ void InternalFunctions::Init(CProgramm &p) {
     shr_i32 = FindFunction(p, "__o_shr_i32");
     minus_32 = FindFunction(p, "__o_minus_32");
     neg_32 = FindFunction(p, "__o_neg_32");
+    memcpy = FindFunction(p, "memcpy");
 }
 
 CVariablePtr InternalFunctions::FindFunction(CProgramm &p, CString name) {

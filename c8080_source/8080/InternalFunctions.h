@@ -73,6 +73,9 @@ public:
     CVariablePtr mod_u32;     // 32 % 32
     CVariablePtr mod_i32;     // 32 % 32 (signed)
 
+    // stdlib
+    CVariablePtr memcpy;
+
     void Init(CProgramm &p);
 
 protected:

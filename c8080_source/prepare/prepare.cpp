@@ -46,6 +46,7 @@ static const PrepareFunctionType prepare_function_list[] = {
     PrepareAddWithStackAddress,
     PrepareDoubleConvert,
     PrepareCompareOperators,
+    PrepareCopyStruct,
     nullptr,
 };
 
