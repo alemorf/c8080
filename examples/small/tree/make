@@ -1,0 +1,3 @@
+#!/bin/bash
+set -e
+../../../c8080 -otree.com -OCPM -DARCH_CPM tree.c
