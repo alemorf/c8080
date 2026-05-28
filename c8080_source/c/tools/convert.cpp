@@ -109,5 +109,7 @@ CNodePtr Convert(CConstType to_type, CNodePtr from, bool cmm) {
     assert(from != nullptr);
     if (!cmm)
         ConvertCheck(to_type, from);
+    if (from->ctype.CompareNoStatic(to_type))
+        return from;
     return CNODE({CNT_CONVERT, a : from, ctype : to_type, e : from->e});
 }
