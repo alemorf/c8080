@@ -523,7 +523,7 @@ void CParserFile::ParseFunction(CNodePtr &node) {
     }
 
     CNodeList list;
-    while (!l.IfToken("}"))
+    while (!l.IfToken("}") && !l.IfToken(CT_EOF))
         list.PushBack(ParseFunctionBody());
     node->a = list.first;
 
