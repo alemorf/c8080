@@ -19,15 +19,11 @@
 #include "../c/tools/makecnode.h"
 
 // Replace
-//   a = b;  // struct my a, b;
+//   struct my a, b;
+//   a = b;
 // by
+//   struct my a, b;
 //   *(struct my*)memcpy(&a, &b, sizeof(struct my));
-
-// The C parser stores the access to array element (X[Y]) as:
-//  ARRAY_ELEMENT(X, Y)
-//  Will be replaced with:
-//  1) MONOOPERATOR.DEADDR(OPERATOR.ADD(X, OPERATOR.MUL(SIZEOF, Y))) if struct_item is not array
-//  2) OPERATOR.ADD(X, OPERATOR.MUL(SIZEOF, Y)) if struct_item is array
 
 bool PrepareCopyStruct(Prepare &p, CNodePtr &node) {
     if (node->type == CNT_OPERATOR && node->operator_code == COP_SET && node->a->ctype.pointers.empty() &&
