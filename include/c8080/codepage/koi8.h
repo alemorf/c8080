@@ -29,7 +29,7 @@
 #pragma codepage('┤', 0x87)
 #pragma codepage('┬', 0x88)
 #pragma codepage('┴', 0x89)
-#pragma codepage('┼', 0x8A) 
+#pragma codepage('┼', 0x8A)
 // TODO: #pragma codepage('', 0x8B)
 // TODO: #pragma codepage('', 0x8C)
 // TODO: #pragma codepage('', 0x8D)
@@ -154,4 +154,3 @@
 #pragma codepage('Щ', 0xFD)
 #pragma codepage('Ч', 0xFE)
 #pragma codepage('Ъ', 0xFF)
-
