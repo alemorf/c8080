@@ -114,6 +114,10 @@ public:
         return !pointers.empty() && pointers.back().is_array;
     }
 
+    bool IsStructUnion() const {
+        return pointers.empty() && base_type == CBT_STRUCT;
+    }
+
     CBaseType GetAsmType() const;
     CBaseType GetAsmTypeIgnoreSign() const;
 

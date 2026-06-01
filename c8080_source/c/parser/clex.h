@@ -89,7 +89,7 @@ public:
 
     bool WantToken(const char *string) {
         if (!IfToken(string)) {
-            SyntaxError();
+            SyntaxError(string);
             return false;
         }
         return true;

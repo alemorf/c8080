@@ -54,6 +54,10 @@ void CMacroizer::SyntaxError() {
     Error(std::string("syntax error, unexpected '") + std::string(token_data, token_size) + "'");
 }
 
+void CMacroizer::SyntaxError(const char *what) {
+    Error(std::string("syntax error, expected '") + what + "'");
+}
+
 void CMacroizer::Throw(CString text) {
     CErrorPosition p(*this);
     CThrow(p, text);

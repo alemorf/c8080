@@ -474,16 +474,20 @@ void CParserFile::ParseFunctionTypeArgs(CErrorPosition &e, CType &return_type, s
 void CParserFile::ParseStruct(CStruct &struct_object) {
     CErrorPosition e(l);
     while (!l.IfToken("}")) {
+        if (l.IfToken(";"))
+            continue;
         CType base_type;
         ParseTypeWoPointers(&base_type);
         do {
             CStructItemPtr struct_item = std::make_shared<CStructItem>();
-            struct_item->type = base_type;
             ParseTypeNameArray(base_type, struct_item->name, struct_item->type);
-            ParseGccAttributes(nullptr);
-            struct_object.items.push_back(struct_item);
+            ParseGccAttributes(nullptr); // TODO
+            if (struct_item->name.empty() && !struct_item->type.IsStructUnion())
+                l.Warning("declaration does not declare anything"); // gcc
+            else
+                struct_object.items.push_back(struct_item);
         } while (l.IfToken(","));
-        l.NeedToken(";");
+        l.WantToken(";");
     }
     struct_object.CalcOffsets(e);
 }
