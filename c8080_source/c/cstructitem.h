@@ -36,7 +36,7 @@ public:
     }
 
     std::string ToString() const {
-        return type.ToString() + " " + name;
+        return name.empty() ? type.ToString() : (type.ToString() + " " + name);
     }
 };
 

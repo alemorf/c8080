@@ -75,13 +75,10 @@ std::string CStruct::ToString() const {
         result += name;
         result += " ";
     }
-    result += "{";
-    bool first = true;
-    for (auto &i : items) {
-        if (!first)
-            result += ", ";
-        first = false;
+    result += "{ ";
+    for (const auto &i : items) {
         result += i->ToString();
+        result += "; ";
     }
     result += "}";
     return result;
