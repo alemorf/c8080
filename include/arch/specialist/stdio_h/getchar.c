@@ -16,8 +16,10 @@
  */
 
 #include <stdio.h>
+#include <c8080/hal.h>
 
 int getchar(void) {
+#ifdef __C8080_USE_BIOS_CONSOLE_IO
     asm {
         call 0C803h
         ld   l, a
@@ -25,4 +27,7 @@ int getchar(void) {
         sbc  a
         ld   h, a
     }
+#else
+    return ReadKey();
+#endif
 }

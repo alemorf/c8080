@@ -19,6 +19,7 @@
 #include <c8080/codepage/micro80.h>
 
 #define FEATURE_HAL_SAVE_SCREEN
+#define FEATURE_HAL_CHANGE_TILE_COLOR
 
 static uint8_t *const SCREEN = (uint8_t *)0xE800;
 static uint8_t *const SCREEN_ATTRIB = (uint8_t *)0xE000;

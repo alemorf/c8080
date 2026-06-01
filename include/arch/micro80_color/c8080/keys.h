@@ -19,11 +19,18 @@
 
 #include <stdint.h>
 
-static const uint8_t KEY_LEFT = 0x08;
+static const uint8_t KEY_LEFT_INKEY = 0x08;
+static const uint8_t KEY_RIGHT_INKEY = 0x18;
+static const uint8_t KEY_UP_INKEY = 0x19;
+static const uint8_t KEY_DOWN_INKEY = 0x1A;
+static const uint8_t KEY_BACKSPACE_INKEY = 0x7F;
+
 static const uint8_t KEY_ENTER = 0x0D;
-static const uint8_t KEY_RIGHT = 0x18;
-static const uint8_t KEY_UP = 0x19;
-static const uint8_t KEY_DOWN = 0x1A;
 static const uint8_t KEY_SPACE = 0x20;
-static const uint8_t KEY_BACKSPACE = 0x7F;
 static const uint8_t KEY_ESC = 0x0C;
+
+static const uint8_t KEY_BACKSPACE = 0x08;
+static const uint16_t KEY_UP = 0x200 | 'A';    /* ESC [ A */
+static const uint16_t KEY_DOWN = 0x200 | 'B';  /* ESC [ B */
+static const uint16_t KEY_RIGHT = 0x200 | 'C'; /* ESC [ C */
+static const uint16_t KEY_LEFT = 0x200 | 'D';  /* ESC [ D */

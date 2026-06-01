@@ -17,4 +17,8 @@
 
 #pragma once
 
+#ifdef __C8080_USE_BIOS_CONSOLE_IO
 #include <c8080/codepage/koi7.h>
+#else
+#include <c8080/codepage/866.h>
+#endif

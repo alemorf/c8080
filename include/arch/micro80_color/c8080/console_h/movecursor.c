@@ -21,12 +21,12 @@ void __global MoveCursor(uint8_t x, uint8_t y) {
     asm {
 __a_2_movecursor = 0
 	add  ' '
-	ld   (movecursor_data + 2), a
+	ld   (movecursor_data + 3), a
 	
 __a_1_movecursor = $+1
         ld   a, 0
 	add  ' '
-	ld   (movecursor_data + 3), a
+	ld   (movecursor_data + 2), a
 	
 	ld   hl, movecursor_data
         jp   0F818h

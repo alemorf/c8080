@@ -19,5 +19,9 @@
 #include <stdio.h>
 
 int ReadAndDecodeConsoleKeys(void) {
-    return getchar();
+    char c = getchar();
+    if (c != 0x1B)
+        return c;
+    c = getchar();
+    return 0x200 + c;
 }

@@ -15,6 +15,6 @@
 
 #pragma once
 
-#include <c8080/codepage/micro80.h>
+#include <c8080/codepage/koi8.h>
 
 #define FEATURE_CONSOLE_GET_CURSOR_POSITION
