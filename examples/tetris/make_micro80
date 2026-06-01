@@ -1,0 +1,3 @@
+#!/bin/bash
+../../c8080 -OCPM -DARCH_CPM -DARCH_MICRO80_COLOR -otetris.micro80.com tetris.c 
+

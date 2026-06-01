@@ -1,4 +1,3 @@
 #!/bin/bash
-set -e
 ../../c8080 -OCPM -otetris.cpm.vt100.com tetris.c -DARCH_CPM -DARCH_VT100
 

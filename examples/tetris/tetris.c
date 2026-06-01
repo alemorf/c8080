@@ -14,7 +14,7 @@
 
 #include "tetris.h"
 
-static const unsigned GAME_SPEED = 5;
+static const unsigned GAME_SPEED = 3000;
 
 const int tetrominoes[7][16] = {
     {0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0},  // I
@@ -41,22 +41,21 @@ int main(int, char **) {
     memset(arena, 0, sizeof(arena[0][0]) * A_HEIGHT * A_WIDTH);
     newTetromino();
 
-    const int targetFrameTime = 350;
-
     unsigned elapsed = 0;
 
     while (!gameOver) {
         processInputs();
 
-        elapsed++;
-        if (elapsed >= GAME_SPEED) {
-            elapsed = 0;
+        if (elapsed > 0) {
+            elapsed--;
+            continue;
+        }
+        elapsed = GAME_SPEED;
 
-            if (!moveDown()) {
-                addToArena();
-                checkLines();
-                newTetromino();
-            }
+        if (!moveDown()) {
+            addToArena();
+            checkLines();
+            newTetromino();
         }
 
         drawArena();
@@ -127,21 +126,25 @@ void processInputs() {
                 if (validPos(currTetrominoIdx, nextRotation, currX, currY)) {
                     currRotation = nextRotation;
                 }
+                drawArena();
                 break;
             case KEY_LEFT:  // Left arrow key
                 if (validPos(currTetrominoIdx, currRotation, currX - 1, currY)) {
                     currX--;
                 }
+                drawArena();
                 break;
             case KEY_RIGHT:  // Right arrow key
                 if (validPos(currTetrominoIdx, currRotation, currX + 1, currY)) {
                     currX++;
                 }
+                drawArena();
                 break;
             case KEY_DOWN:  // Down arrow key
                 while (validPos(currTetrominoIdx, currRotation, currX, currY + 1)) {
                     currY++;
                 }
+                drawArena();
                 break;
         }
     }
