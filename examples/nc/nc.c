@@ -16,6 +16,7 @@
  */
 
 #include "nc.h"
+#include "arch.h"
 #include <c8080/hal.h>
 #include <c8080/keys.h>
 #include <c8080/console.h>
@@ -25,26 +26,28 @@
 #include <string.h>
 #include <stdio.h>
 #include <cpm.h>
-#include "colors.h"
 #include "windows.h"
 #include "panel.h"
 #include "dir.h"
 #include "config.h"
 
-#ifdef ARCH_MICRO80_COLOR
-#include "arch_micro80.h"
-#endif
+struct state {
+    uint8_t state;
+    uint8_t drive_user_b;
+    uint16_t a_offset;
+    uint8_t a_cursor_x;
+    uint8_t a_cursor_y;
+    uint16_t b_offset;
+    uint8_t b_cursor_x;
+    uint8_t b_cursor_y;
+};
 
-#ifdef NC_SAVE_SCREEN
+#ifdef FEATURE_HAL_SAVE_SCREEN
 static struct SavedScreen saved_screen;
 #endif
 
-#ifdef NC_GLOB
 static const uint8_t STATE_TAB = 1 << 4;
-#ifdef NC_SAVE_SCREEN
 static const uint8_t STATE_HIDDEN = 1 << 5;
-#endif
-#endif
 
 static const uint16_t STACK_SIZE = 1024;
 
@@ -52,7 +55,11 @@ static uint8_t copy_buffer_size;  // Размер panel.buffer в 128 байтн
 static bool panels_hidden;
 
 static const char help_64_no_fn[] =
+#ifdef KEY_TAB_ONLY_IF_EMPTY_COMMAND_LINE
     " ;\0Tab  \0"
+#else
+    "  \0Tab  \0"
+#endif
     " 1\0Left \0"
     " 2\0Right\0"
     " 3\0View \0"
@@ -61,7 +68,76 @@ static const char help_64_no_fn[] =
     " 6\0Ren  \0"
     " 7\0Mkdir\0"
     " 8\0Del  \0"
-    " \0";
+    "\0";
+
+static void SaveState(void) {
+#ifdef NC_STATE_IN_MEMORY
+    static struct state *const s = (struct state *)(NC_STATE_IN_MEMORY);
+    // TODO: assert(sizeof(struct state) <= NC_STATE_IN_MEMORY_SIZE);
+#else
+    static struct state *const s = (void *)DEFAULT_DMA;
+    memset(s, 0, CPM_128_BLOCK);
+#endif
+    s->drive_user_b = panel_b.drive_user;
+    s->state = (panel_x ? STATE_TAB : 0);
+    if (panels_hidden)
+        s->state |= STATE_HIDDEN;
+    s->a_cursor_x = panel_a.cursor_x;
+    s->a_cursor_y = panel_a.cursor_y;
+    s->a_offset = panel_a.offset;
+    s->b_cursor_x = panel_b.cursor_x;
+    s->b_cursor_y = panel_b.cursor_y;
+    s->b_offset = panel_b.offset;
+#ifndef NC_STATE_IN_MEMORY
+    struct FCB file;
+    memcpy(&file.drive, "\x01NC      CFG", 12);
+    CpmSetUser(0);
+    if (CpmOpen(&file) != 0xFF || CpmCreate(&file) != 0xFF) {
+        CpmWrite(&file);
+        CpmClose(&file);
+    }
+#endif
+}
+
+static void LoadState(void) {
+#ifdef NC_STATE_IN_MEMORY
+    static struct state *const s = (struct state *)(NC_STATE_IN_MEMORY);
+    // TODO: assert(sizeof(struct state) <= NC_STATE_IN_MEMORY_SIZE);
+#else
+    static struct state *const s = (void *)DEFAULT_DMA;
+    memset(s, 0, CPM_128_BLOCK);
+    struct FCB file;
+    memcpy(&file.drive, "\x01NC      CFG", 12);
+    CpmSetUser(0);
+    if (CpmOpen(&file) != 0xFF) {
+        CpmRead(&file);
+        CpmClose(&file);
+    }
+#endif
+    panel_a.cursor_x = s->a_cursor_x;
+    panel_a.cursor_y = s->a_cursor_y;
+    panel_a.offset = s->a_offset;
+    panel_b.cursor_x = s->b_cursor_x;
+    panel_b.cursor_y = s->b_cursor_y;
+    panel_b.offset = s->b_offset;
+    panels_hidden = (s->state & STATE_HIDDEN) != 0;
+
+    if (s->state & STATE_TAB) {
+        if (panel_x != 0)
+            panel_x = 0;
+        else
+            panel_x = TEXT_WIDTH / 2;
+    }
+
+    panel_b.drive_user = s->drive_user_b;
+    if ((panel_b.drive_user & 0x0F) >= DRIVE_COUNT)
+        panel_b.drive_user = panel_a.drive_user;
+
+    // Текущий диск и папку в активную панель
+    //    panel_a.drive_user = CpmGetDrive() | (CpmGetUser() << 4);
+    //    panel_b.drive_user = panel_a.drive_user;
+    //    TODO: CRC
+}
 
 static void NcDrawCommandLine(void) {
     DrawInput(panel_a.short_path_size + 1, TEXT_HEIGHT - 2, TEXT_WIDTH - 1 - panel_a.short_path_size,
@@ -77,7 +153,7 @@ static void NcDrawActivePanelTitleAndCommandLine(void) {
     NcDrawCommandLinePrefix();
     NcDrawCommandLine();
     PanelDrawTitle(COLOR_PANEL_TITLE_ACTIVE);
-    PanelShowCursor();
+    PanelRedrawCursor(true);
 }
 
 static void NcDrawHelp(void) {
@@ -95,17 +171,15 @@ static void NcDrawHelp(void) {
 
 void NcDrawScreen(void) {
     HideCursor();
-    MoveCursor(0, 0);  // Что бы уменьшить вероятность прокрутки экрана из-за ошибок CP/M
+    MoveCursor(0, 0);  // Что бы уменьшить вероятность прокрутки экрана из-за ошибок CP/M выводимых на экран
 
-#ifdef NC_SAVE_SCREEN
-    if (panels_hidden) {
+#ifdef FEATURE_HAL_SAVE_SCREEN
+    if (panels_hidden)
         RestoreScreen(&saved_screen);
-    }
 #endif
 
     NcDrawHelp();
 
-#ifdef NC_SAVE_SCREEN
     if (panels_hidden) {
         if (panel_a.total_kb == 0)
             PanelReload();  // Для вычисления пути, который будет отображен в ком. строке
@@ -113,66 +187,68 @@ void NcDrawScreen(void) {
         NcDrawCommandLine();
         return;
     }
-#endif
 
+#ifdef FULL_COLOR_MODE
     PanelDrawBorder(0);
     PanelDrawBorder(PANEL_WIDTH);
+#endif
 
     if (panel_a.total_kb == 0)
         PanelReload();
 
-    PanelDrawFiles();
-    NcDrawActivePanelTitleAndCommandLine();
-    PanelDrawFreeSpace();
+    PanelDrawFiles(true);
+
+    NcDrawCommandLinePrefix();
+    NcDrawCommandLine();
 
     PanelSwap();
     if (panel_a.total_kb == 0)
         PanelReloadOrCopy();
-    PanelDrawTitle(COLOR_PANEL_TITLE);
-    PanelDrawFiles();
-    PanelDrawFileInfo();
-    PanelDrawFreeSpace();
+    PanelDrawFiles(false);
     PanelSwap();
+
+    PanelRedrawCursor(true);
 }
 
 static void NcBeforeExit(void) {
-    // Сохранение состояния
-#ifdef NC_GLOB
-    glob_drive_user_b = panel_b.drive_user;
-    glob_state = (panel_x ? STATE_TAB : 0);
-#ifdef NC_SAVE_SCREEN
-    if (panels_hidden)
-        glob_state |= STATE_HIDDEN;
-#endif
-    glob_a_cursor_x = panel_a.cursor_x;
-    glob_a_cursor_y = panel_a.cursor_y;
-    glob_a_offset = panel_a.offset;
-    glob_b_cursor_x = panel_b.cursor_x;
-    glob_b_cursor_y = panel_b.cursor_y;
-    glob_b_offset = panel_b.offset;
-#endif
+    SaveState();
 
+#ifdef FEATURE_HAL_SAVE_SCREEN
     // Восстанавление экрана
-#ifdef NC_SAVE_SCREEN
     RestoreScreen(&saved_screen);
 #else
-    ClearConsole();
+    // Цвет по умолчанию для консоли
+    SetConsoleColor(COLOR_COMMAND_LINE);
+    if (!panels_hidden) {
+        // Если отображаются панели, то перед выходом очищается экран
+        // Курсор вверх экрана
+        ClearConsole();
+    } else {
+        // Если не отображаются панели, то перед выходом очищаются 2 нижгние строки
+        char spaces[TEXT_WIDTH + 1];
+        MakeString(spaces, ' ', TEXT_WIDTH);
+        spaces[TEXT_WIDTH] = 0;
+        DrawTextXY(0, TEXT_HEIGHT - 2, COLOR_COMMAND_LINE, spaces);
+        spaces[TEXT_WIDTH - 1] = 0;
+        DrawTextXY(0, TEXT_HEIGHT - 1, COLOR_COMMAND_LINE, spaces);
+        // Курсор вниз экрана
+        MoveCursor(TEXT_HEIGHT - 2, 0);
+    }
+    ShowCursor();
 #endif
 }
 
 static void NcCommand(const char *text) {
     NcBeforeExit();
-    puts(panel_a.path);
-    puts(">");
-    puts(text);
+    WriteConsole(panel_a.path);
+    WriteConsole(">");
+    WriteConsole(text);
     uint8_t d = panel_a.drive_user;
-#ifdef NC_GLOB
     // TODO: Если указываем диск, то всегда будет корневая папка. А потом нужно будет вставить парсер пути.
     if (text[0] != 0 && text[1] == ':') {
-        bios_user = 0xF0 + (d >> 4);
+        common_folder = 0xF0 + (d >> 4);
         d &= 0x0F;
     }
-#endif
     CpmCommand(d, text);
 }
 
@@ -192,7 +268,7 @@ static void NcExecute(void) {
         panel_a.offset = 0;
         PanelReload();
 
-        PanelDrawFiles();
+        PanelDrawFiles(true);
         NcDrawActivePanelTitleAndCommandLine();
         return;
     }
@@ -224,7 +300,6 @@ static void NcSelectDrive(uint8_t offset) {
     PanelReload();
     if (swap)
         PanelSwap();
-    NcDrawScreen();
 }
 
 static void NcDriveChanged(uint8_t drive_user) {
@@ -235,7 +310,6 @@ static void NcDriveChanged(uint8_t drive_user) {
         PanelReloadOrCopy();
         PanelSwap();
     }
-    NcDrawScreen();
 }
 
 static void NcCopyMoveRename(bool rename) {
@@ -479,96 +553,93 @@ int main(int, char **) {
     } while (copy_buffer_size <= allow_loop && copy_buffer_size < MAX_ROUND_UINT8 / 2);
 
     // CCP будет запускать A:NC вместо ожидания ввода команды пользователем
-#ifdef NC_GLOB
-    bios_dont_resart_nc = 0;
-#endif
+    common_dont_exec_nc = 0;
 
     // Что бы командер нижней строкой не закрывал полезные данные
+#ifdef FEATURE_CONSOLE_GET_CURSOR_POSITION
     const uint16_t xy = GetCursorPosition();
     if (xy >= (TEXT_HEIGHT - 1) << 8) {
         CpmConsoleWrite('\n');
         MoveCursor(xy, (xy >> 8) - 1);
     }
+#else
+    WriteConsole("\n");
+#endif
 
     // Сохранение консоли
-#ifdef NC_SAVE_SCREEN
+#ifdef FEATURE_HAL_SAVE_SCREEN
     SaveScreen(&saved_screen);
 #endif
 
     // Скрытие курсора
     HideCursor();
 
-#ifdef NC_GLOB
     // Текущий диск и папку в активную панель
-    panel_a.drive_user = ((((bios_user & 0xF0) == 0xE0) ? bios_user : CpmGetUser()) << 4) | CpmGetDrive();
-
-    bios_user = 0;
+    panel_a.drive_user = ((((common_folder & 0xF0) == 0xE0) ? common_folder : CpmGetUser()) << 4) | CpmGetDrive();
+    common_folder = 0;
 
     // Восстановление состояния
-    panel_a.cursor_x = glob_a_cursor_x;
-    panel_a.cursor_y = glob_a_cursor_y;
-    panel_a.offset = glob_a_offset;
-    panel_b.cursor_x = glob_b_cursor_x;
-    panel_b.cursor_y = glob_b_cursor_y;
-    panel_b.offset = glob_b_offset;
-
-#ifdef NC_SAVE_SCREEN
-    panels_hidden = (glob_state & STATE_HIDDEN) != 0;
-#endif
-
-    if (glob_state & STATE_TAB) {
-        if (panel_x != 0)
-            panel_x = 0;
-        else
-            panel_x = TEXT_WIDTH / 2;
-    }
-
-    panel_b.drive_user = glob_drive_user_b;
-    if ((panel_b.drive_user & 0x0F) >= DRIVE_COUNT)
-        panel_b.drive_user = panel_a.drive_user;
-#else
-    // Текущий диск и папку в активную панель
-    panel_a.drive_user = CpmGetDrive() | (CpmGetUser() << 4);
-    panel_b.drive_user = panel_a.drive_user;
-#endif
+    LoadState();
 
     NcDrawScreen();
 
     for (;;) {
-        const uint8_t c = getchar();
+        if (!CpmBiosConSt()) {
+            if (!panels_hidden)
+                PanelRedrawCursor(true);
+            NcDrawCommandLine();
+            DrawInputCursor();
+        }
+        const int c = ReadAndDecodeConsoleKeys();
         if (!panels_hidden) {
             if (input_size == 0) {
                 switch (c) {
-                    case ';':
+#ifdef KEY_TAB_ONLY_IF_EMPTY_COMMAND_LINE
+                    case KEY_TAB:
                         PanelDrawTitle(COLOR_PANEL_TITLE);
-                        PanelHideCursor();
+                        PanelRedrawCursor(false);
                         PanelSwap();
                         NcDrawActivePanelTitleAndCommandLine();
                         continue;
+#endif
                     case '1':
                         NcSelectDrive(0);
+                        NcDrawScreen();
                         continue;
                     case '2':
                         NcSelectDrive(PANEL_WIDTH);
+                        NcDrawScreen();
                         continue;
                     case KEY_ENTER:
                         NcExecute();
                         continue;
                     case '5':
                         NcCopyMoveRename(false);
+                        NcDrawScreen();
                         continue;
                     case '6':
                         NcCopyMoveRename(true);
+                        NcDrawScreen();
                         continue;
                     case '7':
                         NcMakeDir();
+                        NcDrawScreen();
                         continue;
                     case '8':
                         NcDelete();
+                        NcDrawScreen();
                         continue;
                 }
             }
             switch (c) {
+#ifndef KEY_TAB_ONLY_IF_EMPTY_COMMAND_LINE
+                case KEY_TAB:
+                    PanelDrawTitle(COLOR_PANEL_TITLE);
+                    PanelRedrawCursor(false);
+                    PanelSwap();
+                    NcDrawActivePanelTitleAndCommandLine();
+                    continue;
+#endif
                 case KEY_LEFT:
                     PanelMoveCursorLeft();
                     continue;
@@ -587,9 +658,7 @@ int main(int, char **) {
             switch (c) {
                 case '0':
                     NcBeforeExit();
-#ifdef NC_GLOB
-                    bios_dont_resart_nc = 1;
-#endif
+                    common_dont_exec_nc = 1;
                     return 0;
             }
         }
@@ -611,14 +680,17 @@ int main(int, char **) {
                 panel_x = PANEL_WIDTH - panel_x;
                 NcDrawScreen();
                 continue;
-#ifdef NC_SAVE_SCREEN
             case 'O' & 0x1F:  // CTRL+O
+#ifndef FEATURE_HAL_SAVE_SCREEN
+                if (!panels_hidden) {
+                    SetConsoleColor(1);
+                    ClearConsole();
+                }
+#endif
                 panels_hidden = !panels_hidden;
                 NcDrawScreen();
                 continue;
-#endif
         }
         ProcessInput(c);
-        NcDrawCommandLine();
     }
 }

@@ -19,7 +19,8 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <c8080/hal.h>
+#include <stdbool.h>
+#include "arch.h"
 
 static const uint8_t PANEL_OX = 2;
 static const uint8_t PANEL_OY = 2;
@@ -54,6 +55,9 @@ struct Panel {
     uint16_t count;
     uint8_t copy_end[0];
 
+    uint16_t offset_now;
+    uint8_t cursor_x_now;
+    uint8_t cursor_y_now;
     uint16_t offset;
     uint8_t cursor_x;
     uint8_t cursor_y;
@@ -66,18 +70,19 @@ extern size_t panel_files_max;
 extern uint8_t panel_x;
 extern uint8_t panel_reload_select_dir;  // Глобальная переменная для оптимизации размера
 
+#ifdef FULL_COLOR_MODE
+void PanelDrawBorder(uint8_t x);
+#endif
+
 void PanelReloadOrCopy(void);
 void PanelReload(void);
 uint8_t PanelGetDrive(void);
 uint8_t PanelGetDirIndex(void);
-void PanelDrawBorder(uint8_t x);
 void PanelDrawFreeSpace(void);
 void PanelDrawFileInfo(void);
 void PanelDrawTitle(uint8_t color);
-void PanelDrawCursor(uint8_t color);
-void PanelHideCursor(void);
-void PanelShowCursor(void);
-void PanelDrawFiles(void);
+void PanelRedrawCursor(bool show);
+void PanelDrawFiles(bool active);
 void PanelMoveCursorLeft(void);
 void PanelMoveCursorRight(void);
 void PanelMoveCursorUp(void);

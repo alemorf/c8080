@@ -16,18 +16,18 @@
  */
 
 #include "windows.h"
+#include <c8080/console.h>
 #include <c8080/hal.h>
 #include <c8080/keys.h>
 #include <string.h>
-#include "colors.h"
 #include "stdio.h"
-#include "nc.h"
 #include "config.h"
 
 uint8_t window_color = COLOR_WINDOW;
 uint8_t window_x = 0;
 char input[128];
 uint8_t input_size;
+static uint8_t input_cursor_x, input_cursor_y;
 
 char *MakeString(char *str, char c, uint8_t l) {
     memset(str, c, l);
@@ -44,22 +44,32 @@ void DrawWindowText(uint8_t y, const char *text) {
 }
 
 uint8_t DrawWindow(uint8_t x, uint8_t height, const char *title) {
+    HideCursor();
     window_x = x;
     uint8_t y = ((TEXT_HEIGHT - 6) - height) / 2;
     const uint8_t result = y;
     DrawWindowText(y, "╔══════════════════════════╗");
     y++;
+#ifdef FEATURE_HAL_CHANGE_TILE_COLOR
     ChangeTileColor(TILE(window_x + (WINDOW_WIDTH + 4), y), COLOR_WINDOW_SHADOW, 2, height + 2);
+#endif
     do {
         DrawWindowText(y, "║                          ║");
         y++;
         height--;
     } while (height != 0);
     DrawWindowText(y, "╚══════════════════════════╝");
+#ifdef FEATURE_HAL_CHANGE_TILE_COLOR
     ChangeTileColor(TILE(window_x + 2, y + 1), COLOR_WINDOW_SHADOW, WINDOW_WIDTH + 4, 1);
+#endif
     window_x += 2;
     DrawWindowTextCenter(result, title);
     return result + 2;
+}
+
+void DrawInputCursor(void) {
+    MoveCursor(input_cursor_y, input_cursor_x);
+    ShowCursor();
 }
 
 void DrawInput(uint8_t x, uint8_t y, uint8_t width, uint8_t color) {
@@ -69,18 +79,18 @@ void DrawInput(uint8_t x, uint8_t y, uint8_t width, uint8_t color) {
     uint8_t offset = 0;
     if (input_size >= width)
         offset = input_size - width + 1;
-    memcpy(spaces, input + offset, input_size);
-
-    spaces[input_size - offset] = '_';
+    memcpy(spaces, input + offset, input_size - offset);
 
     DrawTextXY(x, y, color, spaces);
+    input_cursor_x = x + input_size - offset;
+    input_cursor_y = y;
 }
 
-void ProcessInput(char c) {
+void ProcessInput(int c) {
     if (c == KEY_BACKSPACE) {
         if (input_size > 0)
             input_size--;
-    } else if (c >= ' ') {
+    } else if (c >= ' ' && c <= 0xFF) {
         if (input_size < sizeof(input) - 2) {
             input[input_size] = c;
             input_size++;
@@ -91,10 +101,11 @@ void ProcessInput(char c) {
 
 bool RunInput(uint8_t y) {
     input_size = 0;  // TODO: input_pos = strlen(input);
-    char c;
+    int c;
     for (;;) {
         DrawInput(window_x, y, WINDOW_WIDTH, COLOR_INPUT);
-        c = getchar();
+        DrawInputCursor();
+        c = ReadAndDecodeConsoleKeys();
         if (c == KEY_ENTER)
             break;
         if (c == KEY_ESC)
@@ -102,7 +113,6 @@ bool RunInput(uint8_t y) {
         ProcessInput(c);
     }
     input_size = 0;  // Что бы введенный текст не появился в ком. строке
-    NcDrawScreen();
     return c == KEY_ENTER;
 }
 
@@ -124,12 +134,20 @@ void DrawProgressNext(uint8_t y, uint16_t current, uint16_t maximal) {
 static uint8_t DrawButton(uint8_t x, uint8_t y, uint8_t active, const char *text, uint8_t text_size) {
     char buf[16];
     MakeString(buf, ' ', text_size + 4);
+
+    if (active) {
+        buf[0] = '[';
+        buf[text_size + 3] = ']';
+    }
+
     memcpy(buf + 2, text, text_size);
     DrawTextXY(x, y, active ? COLOR_BUTTON_ACTIVE : COLOR_BUTTON, buf);
+#ifdef DRAW_BUTTON_SHADOW
     text_size += 4;
     DrawTextXY(x + text_size, y, CHANGE_INK_TO_BLACK(window_color), "▄");
     memset(buf, '▀', text_size);
     DrawTextXY(x + 1, y + 1, CHANGE_INK_TO_BLACK(window_color), buf);
+#endif
 }
 
 uint8_t DrawButtons(uint8_t y, uint8_t cursor, const char *items) {
@@ -157,7 +175,7 @@ uint8_t DrawButtons(uint8_t y, uint8_t cursor, const char *items) {
 uint8_t RunButtons(uint8_t y, uint8_t cursor, const char *items) {
     for (;;) {
         const uint8_t count = DrawButtons(y, cursor, items);
-        switch (getchar()) {
+        switch (ReadAndDecodeConsoleKeys()) {
             case KEY_LEFT:
                 cursor--;
                 if (cursor > count)
@@ -169,10 +187,8 @@ uint8_t RunButtons(uint8_t y, uint8_t cursor, const char *items) {
                     cursor = 0;
                 break;
             case KEY_ENTER:
-                NcDrawScreen();
                 return cursor;
             case KEY_ESC:
-                NcDrawScreen();
                 return -1;
         }
     }
