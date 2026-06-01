@@ -17,7 +17,7 @@ private:
     void ParseAttributes(CNode &n);
     bool ParseTypeWoPointers(CType *out_type, bool can_break_inital = false);
     void ParseTypePointers(CType &out_type);
-    void ParseTypeNameArray(CConstType base_type, std::string &out_name, CType &out_type);
+    void ParseTypeNameArray(CConstType base_type, CString &out_name, CType &out_type);
     void ParsePointerFlags(CPointer &addr);
     void ParseFunctionTypeArgs(CErrorPosition &e, CType &return_type, std::vector<CPointer> *function_pointer,
                                CType &out_type);

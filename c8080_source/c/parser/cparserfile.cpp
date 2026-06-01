@@ -282,7 +282,7 @@ CNodePtr CParserFile::ParseLine(bool *out_break, bool global) {
     CNodeList node_list;
     for (;;) {
         CType type;
-        std::string name;
+        CString name;
         ParseTypeNameArray(base_type, name, type);
 
         if (typedef_flag) {
@@ -367,7 +367,7 @@ void CParserFile::ParseTypePointers(CType &out_type) {
     }
 }
 
-void CParserFile::ParseTypeNameArray(CConstType base_type, std::string &out_name, CType &out_type) {
+void CParserFile::ParseTypeNameArray(CConstType base_type, CString &out_name, CType &out_type) {
     CType type = base_type;
     ParseTypePointers(type);
 

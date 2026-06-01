@@ -139,6 +139,14 @@ public:
             ThrowSyntaxError();
     }
 
+    bool IfIdent(CString &out_string) {
+        if (token != CT_IDENT)
+            return false;
+        out_string.assign(token_data, token_size);
+        NextToken();
+        return true;
+    }
+
     bool IfIdent(std::string &out_string) {
         if (token != CT_IDENT)
             return false;

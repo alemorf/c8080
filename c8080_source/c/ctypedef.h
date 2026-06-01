@@ -24,6 +24,6 @@
 class CTypedef {
 public:
     CType type;
-    std::string name;
+    CString name;
     CErrorPosition e;
 };

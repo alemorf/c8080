@@ -30,7 +30,10 @@ private:
 public:
     static constexpr size_t npos = std::numeric_limits<size_t>::max();
 
-    CString() = delete;
+    CString() {
+        string_start = "";
+        string_size = 0;
+    }
 
     CString(const std::string &a) {
         string_start = a.c_str();
@@ -45,6 +48,12 @@ public:
     }
 
     CString(const char a[], size_t s) {
+        string_start = a;
+        string_size = s;
+        assert(string_start != nullptr);
+    }
+
+    void assign(const char a[], size_t s) {
         string_start = a;
         string_size = s;
         assert(string_start != nullptr);
