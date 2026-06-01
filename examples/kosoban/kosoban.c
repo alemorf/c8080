@@ -25,6 +25,7 @@
 #include <c8080/keys.h>
 #include <c8080/colors.h>
 #include <c8080/remainder.h>
+#include <c8080/console.h>
 #include "levels.h"
 #include "resources.h"
 #include "consts.h"
@@ -360,7 +361,7 @@ int main(int, char **) {
     LoadLevel();
 
     for (;;) {
-        switch (ReadKey()) {
+        switch (ReadAndDecodeConsoleKeys()) {
             case '1':
                 LoadLevel();
                 break;

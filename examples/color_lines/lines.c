@@ -439,7 +439,7 @@ static void AddToHiScores(void) {
         char c = ReadKey();
         if (c == KEY_ENTER)
             break;
-        if (c == KEY_BACKSPACE) {
+        if (c == KEY_BACKSPACE_INKEY) {
             if (i == 0)
                 continue;
             --i;
@@ -706,7 +706,7 @@ int main(int, char **) {
             case '5':
                 NewGame();
                 break;
-            case KEY_UP:
+            case KEY_UP_INKEY:
                 ClearCursor();
                 if (cursorY == 0)
                     cursorY = GAME_HEIGHT - 1;
@@ -714,7 +714,7 @@ int main(int, char **) {
                     cursorY--;
                 DrawCursor();
                 break;
-            case KEY_DOWN:
+            case KEY_DOWN_INKEY:
                 ClearCursor();
                 if (cursorY == GAME_HEIGHT - 1)
                     cursorY = 0;
@@ -722,7 +722,7 @@ int main(int, char **) {
                     cursorY++;
                 DrawCursor();
                 break;
-            case KEY_LEFT:
+            case KEY_LEFT_INKEY:
                 ClearCursor();
                 if (cursorX == 0)
                     cursorX = GAME_WIDTH - 1;
@@ -730,7 +730,7 @@ int main(int, char **) {
                     cursorX--;
                 DrawCursor();
                 break;
-            case KEY_RIGHT:
+            case KEY_RIGHT_INKEY:
                 ClearCursor();
                 if (cursorX == GAME_WIDTH - 1)
                     cursorX = 0;
