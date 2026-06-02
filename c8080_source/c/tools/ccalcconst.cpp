@@ -126,18 +126,15 @@ static bool CalcOperator(CNodePtr &node) {
     assert(node->a->ctype.GetAsmType() == node->b->ctype.GetAsmType());
 
     switch (node->a->ctype.GetAsmType()) {
-        case CBT_CHAR:
-        case CBT_SIGNED_CHAR:
-        case CBT_SHORT:
-        case CBT_INT:
-        case CBT_LONG:
-        case CBT_LONG_LONG:
+        case CBT_INT8:
+        case CBT_INT16:
+        case CBT_INT32:
+        case CBT_INT64:
             return CalcOperatorIntFixed<int64_t>(node);
-        case CBT_UNSIGNED_CHAR:
-        case CBT_UNSIGNED_SHORT:
-        case CBT_UNSIGNED_INT:
-        case CBT_UNSIGNED_LONG:
-        case CBT_UNSIGNED_LONG_LONG:
+        case CBT_UINT8:
+        case CBT_UINT16:
+        case CBT_UINT32:
+        case CBT_UINT64:
             return CalcOperatorIntFixed<uint64_t>(node);
         case CBT_FLOAT:
             return CalcOperatorInt<float>(node);
@@ -177,18 +174,15 @@ static bool CalcMonoOperatorIntFixed(CNodePtr &node) {
 
 static bool CalcMonoOperator(CNodePtr &node) {
     switch (node->a->ctype.GetAsmType()) {
-        case CBT_CHAR:
-        case CBT_SIGNED_CHAR:
-        case CBT_SHORT:
-        case CBT_INT:
-        case CBT_LONG:
-        case CBT_LONG_LONG:
+        case CBT_INT8:
+        case CBT_INT16:
+        case CBT_INT32:
+        case CBT_INT64:
             return CalcMonoOperatorIntFixed<int64_t>(node);
-        case CBT_UNSIGNED_CHAR:
-        case CBT_UNSIGNED_SHORT:
-        case CBT_UNSIGNED_INT:
-        case CBT_UNSIGNED_LONG:
-        case CBT_UNSIGNED_LONG_LONG:
+        case CBT_UINT8:
+        case CBT_UINT16:
+        case CBT_UINT32:
+        case CBT_UINT64:
             return CalcMonoOperatorIntFixed<uint64_t>(node);
         case CBT_FLOAT:
             return CalcMonoOperatorInt<float>(node);
@@ -203,19 +197,16 @@ static bool CalcMonoOperator(CNodePtr &node) {
 template <class A, class T>
 static bool CalcConvertInt(A &to, CNodePtr &node) {
     switch (node->ctype.GetAsmType()) {
-        case CBT_CHAR:
-        case CBT_SIGNED_CHAR:
-        case CBT_SHORT:
-        case CBT_INT:
-        case CBT_LONG:
-        case CBT_LONG_LONG:  // TODO: Вывести предупреждение
+        case CBT_INT8:
+        case CBT_INT16:
+        case CBT_INT32:
+        case CBT_INT64:  // TODO: Вывести предупреждение
             to = static_cast<T>(node->number.i);
             return true;
-        case CBT_UNSIGNED_CHAR:
-        case CBT_UNSIGNED_SHORT:
-        case CBT_UNSIGNED_INT:
-        case CBT_UNSIGNED_LONG:
-        case CBT_UNSIGNED_LONG_LONG:  // TODO: Вывести предупреждение
+        case CBT_UINT8:
+        case CBT_UINT16:
+        case CBT_UINT32:
+        case CBT_UINT64:  // TODO: Вывести предупреждение
             to = static_cast<T>(node->number.u);
             return true;
         case CBT_FLOAT:  // TODO: Вывести предупреждение
@@ -236,24 +227,21 @@ static bool CCalcConvert(CNodePtr &to_node, CNodePtr &node) {
         return false;
 
     switch (to_node->ctype.GetAsmType()) {
-        case CBT_CHAR:
-        case CBT_SIGNED_CHAR:
+        case CBT_INT8:
             return CalcConvertInt<int64_t, int8_t>(to_node->number.i, node);
-        case CBT_UNSIGNED_CHAR:
+        case CBT_UINT8:
             return CalcConvertInt<uint64_t, uint8_t>(to_node->number.u, node);
-        case CBT_SHORT:
-        case CBT_INT:
+        case CBT_INT16:
             return CalcConvertInt<int64_t, int16_t>(to_node->number.i, node);
-        case CBT_UNSIGNED_SHORT:
-        case CBT_UNSIGNED_INT:
+        case CBT_UINT16:
             return CalcConvertInt<uint64_t, uint16_t>(to_node->number.u, node);
-        case CBT_LONG:
+        case CBT_INT32:
             return CalcConvertInt<int64_t, int32_t>(to_node->number.i, node);
-        case CBT_UNSIGNED_LONG:
+        case CBT_UINT32:
             return CalcConvertInt<uint64_t, uint32_t>(to_node->number.u, node);
-        case CBT_LONG_LONG:
+        case CBT_INT64:
             return CalcConvertInt<int64_t, int64_t>(to_node->number.i, node);
-        case CBT_UNSIGNED_LONG_LONG:
+        case CBT_UINT64:
             return CalcConvertInt<uint64_t, uint64_t>(to_node->number.u, node);
         case CBT_FLOAT:
             return CalcConvertInt<float, float>(to_node->number.f, node);

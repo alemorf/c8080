@@ -20,4 +20,4 @@
 static const unsigned IS8BITCONST_SIGNED = (1 << 0);
 static const unsigned IS8BITCONST_UNSIGNED = (1 << 1);
 
-unsigned Is8BitConst(CConstNodePtr node);
+unsigned Is8BitConst(const CNodePtr &node);

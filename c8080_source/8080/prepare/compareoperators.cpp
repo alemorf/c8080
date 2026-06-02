@@ -39,21 +39,21 @@ static bool ReplaceOpSigned(CNodePtr &node, COperatorCode op, int64_t max) {
 
 static bool ReplaceOp(CNodePtr &node, COperatorCode op) {
     switch (node->ctype.GetAsmType()) {
-        case CBT_UNSIGNED_CHAR:
+        case CBT_UINT8:
             return ReplaceOpUnsigned(node, op, UINT8_MAX);
-        case CBT_CHAR:
+        case CBT_INT8:
             return ReplaceOpSigned(node, op, INT8_MAX);
-        case CBT_UNSIGNED_SHORT:
+        case CBT_UINT16:
             return ReplaceOpUnsigned(node, op, UINT16_MAX);
-        case CBT_SHORT:
+        case CBT_INT16:
             return ReplaceOpSigned(node, op, INT16_MAX);
-        case CBT_UNSIGNED_LONG:
+        case CBT_UINT32:
             return ReplaceOpUnsigned(node, op, UINT32_MAX);
-        case CBT_LONG:
+        case CBT_INT32:
             return ReplaceOpSigned(node, op, INT32_MAX);
-        case CBT_UNSIGNED_LONG_LONG:
+        case CBT_UINT64:
             return ReplaceOpUnsigned(node, op, UINT64_MAX);
-        case CBT_LONG_LONG:
+        case CBT_INT64:
             return ReplaceOpSigned(node, op, INT64_MAX);
     }
     return false;

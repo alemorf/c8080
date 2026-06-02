@@ -39,12 +39,12 @@ void Compiler::CompileSwitch(CNodePtr &node) {
     }
 
     switch (node->a->ctype.GetAsmType()) {
-        case CBT_CHAR:
-        case CBT_UNSIGNED_CHAR:
+        case CBT_INT8:
+        case CBT_UINT8:
             CompileSwitch8(node, cases, default_label);
             break;
-        case CBT_SHORT:
-        case CBT_UNSIGNED_SHORT:
+        case CBT_INT16:
+        case CBT_UINT16:
             CompileSwitch16(node, cases, default_label);
             break;
         default:

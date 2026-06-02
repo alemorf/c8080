@@ -18,16 +18,14 @@
 #include "is8bitconst.h"
 #include "../../c/tools/cthrow.h"
 
-unsigned Is8BitConst(CConstNodePtr node) {
+unsigned Is8BitConst(const CNodePtr& node) {
     assert(node != nullptr);
     if (node->type == CNT_NUMBER) {
         switch (node->ctype.GetAsmType()) {
-            case CBT_CHAR:
-            case CBT_SIGNED_CHAR:
-            case CBT_SHORT:
-            case CBT_INT:
-            case CBT_LONG:
-            case CBT_LONG_LONG:
+            case CBT_INT8:
+            case CBT_INT16:
+            case CBT_INT32:
+            case CBT_INT64:
                 if (node->number.i < INT8_MIN)
                     return 0;
                 if (node->number.i < 0)
@@ -37,17 +35,16 @@ unsigned Is8BitConst(CConstNodePtr node) {
                 if (node->number.i <= UINT8_MAX)
                     return IS8BITCONST_UNSIGNED;
                 return 0;
-            case CBT_UNSIGNED_CHAR:
-            case CBT_UNSIGNED_SHORT:
-            case CBT_UNSIGNED_INT:
-            case CBT_UNSIGNED_LONG:
-            case CBT_UNSIGNED_LONG_LONG:
-                if (node->number.u <= unsigned(INT8_MIN))
+            case CBT_UINT8:
+            case CBT_UINT16:
+            case CBT_UINT32:
+            case CBT_UINT64:
+                if (node->number.u <= unsigned(INT8_MAX))
                     return IS8BITCONST_SIGNED | IS8BITCONST_UNSIGNED;
                 if (node->number.u <= UINT8_MAX)
                     return IS8BITCONST_UNSIGNED;
                 return 0;
         }
     }
-    return false;
+    return 0;
 }

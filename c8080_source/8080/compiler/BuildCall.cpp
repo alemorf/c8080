@@ -49,8 +49,8 @@ bool Compiler::Case_Call(CNodePtr &node, AsmRegister reg) {
         CNodePtr &i = args[j - 1];
         Build(i);
         switch (i->ctype.GetAsmType()) {
-            case CBT_CHAR:
-            case CBT_UNSIGNED_CHAR:
+            case CBT_INT8:
+            case CBT_UINT8:
                 if (i->compiler.alt.able && i->compiler.alt.metric < i->compiler.main.metric) {
                     Build(i, R8_D);
                     out.dec_reg(R16_SP);
@@ -64,8 +64,8 @@ bool Compiler::Case_Call(CNodePtr &node, AsmRegister reg) {
                 }
                 used_stack_size += 2;
                 break;
-            case CBT_SHORT:
-            case CBT_UNSIGNED_SHORT:
+            case CBT_INT16:
+            case CBT_UINT16:
                 if (i->compiler.alt.able && i->compiler.alt.metric < i->compiler.main.metric) {
                     Build(i, R16_DE);
                     out.push_reg(R16_DE);
@@ -75,8 +75,8 @@ bool Compiler::Case_Call(CNodePtr &node, AsmRegister reg) {
                 }
                 used_stack_size += 2;
                 break;
-            case CBT_LONG:
-            case CBT_UNSIGNED_LONG:
+            case CBT_INT32:
+            case CBT_UINT32:
                 Build(i, R32_DEHL);
                 out.push_de_hl();
                 used_stack_size += 4;

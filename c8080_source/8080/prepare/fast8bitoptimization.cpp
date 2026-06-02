@@ -24,9 +24,9 @@ namespace I8080 {
 static unsigned CanConvertTo8Bit(CNodePtr &node) {
     if (node->type == CNT_CONVERT) {
         switch (node->a->ctype.GetAsmType()) {
-            case CBT_CHAR:
+            case CBT_INT8:
                 return IS8BITCONST_SIGNED;
-            case CBT_UNSIGNED_CHAR:
+            case CBT_UINT8:
                 return IS8BITCONST_UNSIGNED;
         }
         return 0;

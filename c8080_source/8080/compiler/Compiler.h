@@ -47,7 +47,7 @@ protected:
     void CompileSwitch8(CNodePtr &node, std::vector<CNodePtr> &cases, AsmLabel *label);
     void CompileSwitch16(CNodePtr &node, std::vector<CNodePtr> &cases, AsmLabel *label);
 
-    AsmRegister GetResultReg(CType &type, bool alt, bool no_result, CNodePtr &e);
+    AsmRegister GetResultReg(const CType &type, bool alt, bool no_result, const CNodePtr &e);
 
     void BuildArgs2(const CNodePtr &node, AsmRegister reg, CNodePtr &a, CNodePtr &b, AsmRegister main, AsmRegister alt,
                     bool can_swap);

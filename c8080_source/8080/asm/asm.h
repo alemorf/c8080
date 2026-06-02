@@ -772,22 +772,22 @@ public:
     unsigned data(CNodePtr &node) {
         if (node->type == CNT_NUMBER) {
             switch (node->ctype.GetAsmType()) {
-                case CBT_CHAR:
+                case CBT_INT8:
                     db(node->number.i);
                     return 1;
-                case CBT_UNSIGNED_CHAR:
+                case CBT_UINT8:
                     db(node->number.u);
                     return 1;
-                case CBT_SHORT:
+                case CBT_INT16:
                     dw(node->number.i);
                     return 2;
-                case CBT_UNSIGNED_SHORT:
+                case CBT_UINT16:
                     dw(node->number.u);
                     return 2;
-                case CBT_LONG:
+                case CBT_INT32:
                     dd(node->number.i);
                     return 4;
-                case CBT_UNSIGNED_LONG:
+                case CBT_UINT32:
                     dd(node->number.u);
                     return 4;
                 default:
@@ -795,16 +795,16 @@ public:
             }
         }
         switch (node->ctype.GetAsmType()) {
-            case CBT_CHAR:
-            case CBT_UNSIGNED_CHAR:
+            case CBT_INT8:
+            case CBT_UINT8:
                 db(GetConst(node));
                 return 1;
-            case CBT_SHORT:
-            case CBT_UNSIGNED_SHORT:
+            case CBT_INT16:
+            case CBT_UINT16:
                 dw(GetConst(node));
                 return 2;
-            case CBT_LONG:
-            case CBT_UNSIGNED_LONG:
+            case CBT_INT32:
+            case CBT_UINT32:
                 dd(GetConst(node));
                 return 4;
             default:

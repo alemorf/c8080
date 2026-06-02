@@ -27,21 +27,21 @@ void Compiler::BuildLoad(CNodePtr &node) {
     Measure(node, REG_NONE, &Compiler::Case_Direct);
 
     switch (node->ctype.GetAsmType()) {
-        case CBT_CHAR:
-        case CBT_UNSIGNED_CHAR:
+        case CBT_INT8:
+        case CBT_UINT8:
             Measure(node, R8_A, &Compiler::Case_LoadConstAddr_8);
             Measure(node, R8_A, &Compiler::Case_Load_8);
             Measure(node, R8_D, &Compiler::Case_Load_8);
             Measure(node, R8_A, &Compiler::Case_Load_8_A);
             break;
-        case CBT_SHORT:
-        case CBT_UNSIGNED_SHORT:
+        case CBT_INT16:
+        case CBT_UINT16:
             Measure(node, R16_HL, &Compiler::Case_LoadConstAddr_16);
             Measure(node, R16_HL, &Compiler::Case_Load_16);
             Measure(node, R16_DE, &Compiler::Case_Load_16);
             break;
-        case CBT_LONG:
-        case CBT_UNSIGNED_LONG:
+        case CBT_INT32:
+        case CBT_UINT32:
             Measure(node, R32_DEHL, &Compiler::Case_LoadConstAddr_32);
             Measure(node, R32_DEHL, &Compiler::Case_Load_32);
             break;

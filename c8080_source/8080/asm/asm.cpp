@@ -31,18 +31,18 @@ std::string Asm::GetConst(const CNodePtr &node, bool *error, std::vector<CVariab
             return "measure";
         case CNT_NUMBER:
             switch (node->ctype.GetAsmType()) {
-                case CBT_CHAR:
+                case CBT_INT8:
                     return std::to_string(int8_t(node->number.i));
-                case CBT_SHORT:
+                case CBT_INT16:
                     return std::to_string(int16_t(node->number.i));
-                case CBT_LONG:
+                case CBT_INT32:
                     return std::to_string(int32_t(node->number.i));
-                case CBT_LONG_LONG:
+                case CBT_INT64:
                     return std::to_string(node->number.i);
-                case CBT_UNSIGNED_CHAR:
-                case CBT_UNSIGNED_SHORT:
-                case CBT_UNSIGNED_LONG:
-                case CBT_UNSIGNED_LONG_LONG:
+                case CBT_UINT8:
+                case CBT_UINT16:
+                case CBT_UINT32:
+                case CBT_UINT64:
                     return std::to_string(node->number.u);
                 case CBT_FLOAT:
                     return std::to_string(node->number.f);

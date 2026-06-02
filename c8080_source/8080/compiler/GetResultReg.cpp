@@ -19,20 +19,20 @@
 
 namespace I8080 {
 
-AsmRegister Compiler::GetResultReg(CType &type, bool alt, bool no_result, CNodePtr &e) {
+AsmRegister Compiler::GetResultReg(const CType &type, bool alt, bool no_result, const CNodePtr &e) {
     if (no_result)
         return REG_NONE;
     switch (type.GetAsmType()) {
         case CBT_VOID:
             return REG_NONE;
-        case CBT_CHAR:
-        case CBT_UNSIGNED_CHAR:
+        case CBT_INT8:
+        case CBT_UINT8:
             return alt ? R8_D : R8_A;
-        case CBT_SHORT:
-        case CBT_UNSIGNED_SHORT:
+        case CBT_INT16:
+        case CBT_UINT16:
             return alt ? R16_DE : R16_HL;
-        case CBT_LONG:
-        case CBT_UNSIGNED_LONG:
+        case CBT_INT32:
+        case CBT_UINT32:
             if (alt)
                 C_ERROR_INTERNAL(e, "no alternative register for 32-bit type");
             return R32_DEHL;

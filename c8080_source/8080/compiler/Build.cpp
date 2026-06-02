@@ -121,16 +121,16 @@ void Compiler::BuildOperator(CNodePtr &node) {
     }
 
     switch (node->a->ctype.GetAsmType()) {
-        case CBT_CHAR:
-        case CBT_UNSIGNED_CHAR:
+        case CBT_INT8:
+        case CBT_UINT8:
             BuildOperator8(node);
             return;
-        case CBT_SHORT:
-        case CBT_UNSIGNED_SHORT:
+        case CBT_INT16:
+        case CBT_UINT16:
             BuildOperator16(node);
             return;
-        case CBT_LONG:
-        case CBT_UNSIGNED_LONG:
+        case CBT_INT32:
+        case CBT_UINT32:
             BuildOperator32(node);
             return;
         default:
@@ -166,16 +166,16 @@ void Compiler::BuildMonoOperator(CNodePtr &node) {
         }
         case MOP_MINUS:
             switch (node->ctype.GetAsmType()) {
-                case CBT_CHAR:
-                case CBT_UNSIGNED_CHAR:
+                case CBT_INT8:
+                case CBT_UINT8:
                     Measure(node, R8_A, &Compiler::Case_Minus8);
                     break;
-                case CBT_SHORT:
-                case CBT_UNSIGNED_SHORT:
+                case CBT_INT16:
+                case CBT_UINT16:
                     Measure(node, R16_HL, &Compiler::Case_Minus16);
                     break;
-                case CBT_LONG:
-                case CBT_UNSIGNED_LONG:
+                case CBT_INT32:
+                case CBT_UINT32:
                     Measure(node, R32_DEHL, &Compiler::Case_Minus32);
                     break;
                 default:
@@ -184,16 +184,16 @@ void Compiler::BuildMonoOperator(CNodePtr &node) {
             break;
         case MOP_NEG:
             switch (node->ctype.GetAsmType()) {
-                case CBT_CHAR:
-                case CBT_UNSIGNED_CHAR:
+                case CBT_INT8:
+                case CBT_UINT8:
                     Measure(node, R8_A, &Compiler::Case_Neg8);
                     break;
-                case CBT_SHORT:
-                case CBT_UNSIGNED_SHORT:
+                case CBT_INT16:
+                case CBT_UINT16:
                     Measure(node, R16_HL, &Compiler::Case_Neg16);
                     break;
-                case CBT_LONG:
-                case CBT_UNSIGNED_LONG:
+                case CBT_INT32:
+                case CBT_UINT32:
                     Measure(node, R32_DEHL, &Compiler::Case_Neg32);
                     break;
                 default:

@@ -27,12 +27,12 @@ static bool LastAgumentInCpuRegister(Prepare &p, CVariable &f) {
     if (p.programm.GetVariableMode(f.type) == CVM_GLOBAL && f.type.function_args.size() >= 2u &&
         !f.type.many_function_args) {  // Min 1 argument
         switch (f.type.function_args.back().type.GetAsmType()) {
-            case CBT_CHAR:
-            case CBT_UNSIGNED_CHAR:  // 8 bit
-            case CBT_SHORT:
-            case CBT_UNSIGNED_SHORT:  // 16 bit
-            case CBT_LONG:
-            case CBT_UNSIGNED_LONG:  // 32 bit
+            case CBT_INT8:
+            case CBT_UINT8:
+            case CBT_INT16:
+            case CBT_UINT16:
+            case CBT_INT32:
+            case CBT_UINT32:
                 return true;
         }
     }

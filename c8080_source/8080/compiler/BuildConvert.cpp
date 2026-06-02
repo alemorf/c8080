@@ -33,8 +33,8 @@ void Compiler::BuildConvert(CNodePtr &node) {
         return;
 
     switch (PAIR(node->a->ctype.GetAsmType(), node->ctype.GetAsmType())) {
-        case PAIR(CBT_UNSIGNED_CHAR, CBT_SHORT):
-        case PAIR(CBT_UNSIGNED_CHAR, CBT_UNSIGNED_SHORT):
+        case PAIR(CBT_UINT8, CBT_INT16):
+        case PAIR(CBT_UINT8, CBT_UINT16):
             Measure(node, R16_HL, &Compiler::Case_Convert_U8_16_MM);
             Measure(node, R16_HL, &Compiler::Case_Convert_U8_16_MA);
             Measure(node, R16_DE, &Compiler::Case_Convert_U8_16_AM);
@@ -43,33 +43,33 @@ void Compiler::BuildConvert(CNodePtr &node) {
             Measure(node, R16_HL, &Compiler::Case_ConvertLoad_U8_16);
             Measure(node, R16_DE, &Compiler::Case_ConvertLoad_U8_16);
             break;
-        case PAIR(CBT_CHAR, CBT_SHORT):
-        case PAIR(CBT_CHAR, CBT_UNSIGNED_SHORT):
+        case PAIR(CBT_INT8, CBT_INT16):
+        case PAIR(CBT_INT8, CBT_UINT16):
             Measure(node, R16_HL, &Compiler::Case_Convert_S8_16);
             break;
-        case PAIR(CBT_UNSIGNED_CHAR, CBT_LONG):
-        case PAIR(CBT_UNSIGNED_CHAR, CBT_UNSIGNED_LONG):
+        case PAIR(CBT_UINT8, CBT_INT32):
+        case PAIR(CBT_UINT8, CBT_UINT32):
             Measure(node, R32_DEHL, &Compiler::Case_Convert_U8_32_M);
             Measure(node, R32_DEHL, &Compiler::Case_Convert_U8_32_A);
             Measure(node, R32_DEHL, &Compiler::Case_ConvertLoadConstAddr_U8_32);
             Measure(node, R32_DEHL, &Compiler::Case_ConvertLoad_U8_32);
             break;
-        case PAIR(CBT_CHAR, CBT_LONG):
-        case PAIR(CBT_CHAR, CBT_UNSIGNED_LONG):
+        case PAIR(CBT_INT8, CBT_INT32):
+        case PAIR(CBT_INT8, CBT_UINT32):
             Measure(node, R32_DEHL, &Compiler::Case_Convert_S8_32);
             break;
-        case PAIR(CBT_UNSIGNED_SHORT, CBT_LONG):
-        case PAIR(CBT_UNSIGNED_SHORT, CBT_UNSIGNED_LONG):
+        case PAIR(CBT_UINT16, CBT_INT32):
+        case PAIR(CBT_UINT16, CBT_UINT32):
             Measure(node, R32_DEHL, &Compiler::Case_Convert_U16_32);
             break;
-        case PAIR(CBT_SHORT, CBT_LONG):
-        case PAIR(CBT_SHORT, CBT_UNSIGNED_LONG):
+        case PAIR(CBT_INT16, CBT_INT32):
+        case PAIR(CBT_INT16, CBT_UINT32):
             Measure(node, R32_DEHL, &Compiler::Case_Convert_S16_32);
             break;
-        case PAIR(CBT_SHORT, CBT_CHAR):
-        case PAIR(CBT_SHORT, CBT_UNSIGNED_CHAR):
-        case PAIR(CBT_UNSIGNED_SHORT, CBT_CHAR):
-        case PAIR(CBT_UNSIGNED_SHORT, CBT_UNSIGNED_CHAR):
+        case PAIR(CBT_INT16, CBT_INT8):
+        case PAIR(CBT_INT16, CBT_UINT8):
+        case PAIR(CBT_UINT16, CBT_INT8):
+        case PAIR(CBT_UINT16, CBT_UINT8):
             Measure(node, R8_A, &Compiler::Case_Convert_16_8_M);
             Measure(node, R8_D, &Compiler::Case_Convert_16_8_M);
             Measure(node, R8_A, &Compiler::Case_Convert_16_8_A);
@@ -79,10 +79,10 @@ void Compiler::BuildConvert(CNodePtr &node) {
             Measure(node, R8_D, &Compiler::Case_ConvertLoad_8);
             Measure(node, R8_A, &Compiler::Case_ConvertLoad_8_A);
             break;
-        case PAIR(CBT_LONG, CBT_CHAR):
-        case PAIR(CBT_LONG, CBT_UNSIGNED_CHAR):
-        case PAIR(CBT_UNSIGNED_LONG, CBT_CHAR):
-        case PAIR(CBT_UNSIGNED_LONG, CBT_UNSIGNED_CHAR):
+        case PAIR(CBT_INT32, CBT_INT8):
+        case PAIR(CBT_INT32, CBT_UINT8):
+        case PAIR(CBT_UINT32, CBT_INT8):
+        case PAIR(CBT_UINT32, CBT_UINT8):
             Measure(node, R8_A, &Compiler::Case_Convert_32_8);
             Measure(node, R8_D, &Compiler::Case_Convert_32_8);
             Measure(node, R8_A, &Compiler::Case_ConvertLoadConstAddr_8);
@@ -90,10 +90,10 @@ void Compiler::BuildConvert(CNodePtr &node) {
             Measure(node, R8_D, &Compiler::Case_ConvertLoad_8);
             Measure(node, R8_A, &Compiler::Case_ConvertLoad_8_A);
             break;
-        case PAIR(CBT_LONG, CBT_SHORT):
-        case PAIR(CBT_LONG, CBT_UNSIGNED_SHORT):
-        case PAIR(CBT_UNSIGNED_LONG, CBT_SHORT):
-        case PAIR(CBT_UNSIGNED_LONG, CBT_UNSIGNED_SHORT):
+        case PAIR(CBT_INT32, CBT_INT16):
+        case PAIR(CBT_INT32, CBT_UINT16):
+        case PAIR(CBT_UINT32, CBT_INT16):
+        case PAIR(CBT_UINT32, CBT_UINT16):
             Measure(node, R16_HL, &Compiler::Case_Convert_32_16);
             Measure(node, R16_HL, &Compiler::Case_ConvertLoadConstAddr_16);
             Measure(node, R16_HL, &Compiler::Case_ConvertLoad_16);

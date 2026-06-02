@@ -18,22 +18,22 @@
 #include "getnumberasuint64.h"
 #include "cthrow.h"
 
-uint64_t GetNumberAsUint64(CNodePtr node) {
+uint64_t GetNumberAsUint64(const CNodePtr& node) {
     assert(node != nullptr);
 
     if (node->type != CNT_NUMBER)
         C_ERROR_INTERNAL(node, "does not reduce to an integer constant");  // gcc
 
     switch (node->ctype.GetAsmType()) {
-        case CBT_CHAR:
-        case CBT_SHORT:
-        case CBT_LONG:
-        case CBT_LONG_LONG:
+        case CBT_INT8:
+        case CBT_INT16:
+        case CBT_INT32:
+        case CBT_INT64:
             return uint64_t(node->number.i);
-        case CBT_UNSIGNED_CHAR:
-        case CBT_UNSIGNED_SHORT:
-        case CBT_UNSIGNED_LONG:
-        case CBT_UNSIGNED_LONG_LONG:
+        case CBT_UINT8:
+        case CBT_UINT16:
+        case CBT_UINT32:
+        case CBT_UINT64:
             return node->number.u;
         case CBT_FLOAT:
             return uint64_t(node->number.f);

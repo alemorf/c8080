@@ -19,4 +19,4 @@
 
 #include "../cnode.h"
 
-uint64_t GetNumberAsUint64(CNodePtr node);
+uint64_t GetNumberAsUint64(const CNodePtr &node);

@@ -24,20 +24,20 @@ namespace I8080 {
 static void PrepareConstConvert(CNodePtr to_node, CNodePtr node, CType to_type, Asm &out) {
     std::vector<std::shared_ptr<CVariable>> use;  // to_name == node
     switch (to_type.GetAsmType()) {
-        case CBT_CHAR:
-        case CBT_UNSIGNED_CHAR:
+        case CBT_INT8:
+        case CBT_UINT8:
             to_node->text = "0FFh & (" + out.GetConst(node, nullptr, &use) + ")";
             break;
-        case CBT_SHORT:
-        case CBT_UNSIGNED_SHORT:
+        case CBT_INT16:
+        case CBT_UINT16:
             to_node->text = "0FFFFh & (" + out.GetConst(node, nullptr, &use) + ")";
             break;
-        case CBT_LONG:
-        case CBT_UNSIGNED_LONG:
+        case CBT_INT32:
+        case CBT_UINT32:
             to_node->text = "0FFFFFFFFh & (" + out.GetConst(node, nullptr, &use) + ")";
             break;
-        case CBT_LONG_LONG:
-        case CBT_UNSIGNED_LONG_LONG:
+        case CBT_INT64:
+        case CBT_UINT64:
             to_node->text = "0FFFFFFFFFFFFFFFFh & (" + out.GetConst(node, nullptr, &use) + ")";
             break;
         case CBT_FLOAT:

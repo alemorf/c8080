@@ -26,21 +26,21 @@ void Compiler::BuildSet(CNodePtr &node) {
     }
 
     switch (node->b->ctype.GetAsmType()) {
-        case CBT_CHAR:
-        case CBT_UNSIGNED_CHAR:
+        case CBT_INT8:
+        case CBT_UINT8:
             Measure(node, R8_A, &Compiler::Case_Set8_MM);      // MOV M, A
             Measure(node, R8_A, &Compiler::Case_Set8_AM);      // STAX D
             Measure(node, R8_A, &Compiler::Case_Set8_MA);      // MOV M, D
             Measure(node, R8_A, &Compiler::Case_Set8_MNR);     // STA const
             Measure(node, REG_NONE, &Compiler::Case_Set8_MN);  // MVI M, const
             break;
-        case CBT_SHORT:
-        case CBT_UNSIGNED_SHORT:
+        case CBT_INT16:
+        case CBT_UINT16:
             Measure(node, R16_HL, &Compiler::Case_Set16_AA);  // MOV M, E / INX H / MOV M, D
             Measure(node, R16_HL, &Compiler::Case_Set16_NM);  // SHLD const
             break;
-        case CBT_LONG:
-        case CBT_UNSIGNED_LONG:
+        case CBT_INT32:
+        case CBT_UINT32:
             Measure(node, R32_DEHL, &Compiler::Case_Set32_NM);  // SHLD const / XCHF / SHLD const + 2
             Measure(node, R32_DEHL, &Compiler::Case_Set32_MM);  // PUSH HL / CALL set_32
             Measure(node, R32_DEHL, &Compiler::Case_Set32_AM);  // PUSH DE / CALL set_32

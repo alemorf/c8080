@@ -28,14 +28,14 @@ uint32_t Compiler::BuildJumpIfZero(bool prepare, CNodePtr &node, bool invert1, b
     }
 
     switch (node->ctype.GetAsmType()) {
-        case CBT_CHAR:
-        case CBT_UNSIGNED_CHAR:
+        case CBT_INT8:
+        case CBT_UINT8:
             Build(node, R8_A);
             out.or_a();
             used = U_A | node->compiler.main.regs;
             break;
-        case CBT_SHORT:
-        case CBT_UNSIGNED_SHORT:
+        case CBT_INT16:
+        case CBT_UINT16:
             if (node->compiler.alt.able && node->compiler.alt.metric <= node->compiler.main.metric) {
                 Build(node, R16_DE);
                 out.ld_a_d();
@@ -48,8 +48,8 @@ uint32_t Compiler::BuildJumpIfZero(bool prepare, CNodePtr &node, bool invert1, b
                 used = U_A | node->compiler.main.regs;
             }
             break;
-        case CBT_LONG:
-        case CBT_UNSIGNED_LONG:
+        case CBT_INT32:
+        case CBT_UINT32:
             Build(node, R32_DEHL);
             out.ld_a_l();
             out.or_h();

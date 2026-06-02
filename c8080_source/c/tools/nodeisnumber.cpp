@@ -22,15 +22,15 @@ bool NodeIsNumber1(CConstNodePtr node) {
 
     if (node->type == CNT_NUMBER) {
         switch (node->ctype.GetAsmType()) {
-            case CBT_CHAR:
-            case CBT_SHORT:
-            case CBT_LONG:
-            case CBT_LONG_LONG:
+            case CBT_INT8:
+            case CBT_INT16:
+            case CBT_INT32:
+            case CBT_INT64:
                 return node->number.i == 1;
-            case CBT_UNSIGNED_CHAR:
-            case CBT_UNSIGNED_SHORT:
-            case CBT_UNSIGNED_LONG:
-            case CBT_UNSIGNED_LONG_LONG:
+            case CBT_UINT8:
+            case CBT_UINT16:
+            case CBT_UINT32:
+            case CBT_UINT64:
                 return node->number.u == 1u;
             case CBT_FLOAT:
                 return node->number.f == 1.0f;
@@ -49,15 +49,15 @@ bool NodeIsNumber0(CConstNodePtr node) {
 
     if (node->type == CNT_NUMBER) {
         switch (node->ctype.GetAsmType()) {
-            case CBT_CHAR:
-            case CBT_SHORT:
-            case CBT_LONG:
-            case CBT_LONG_LONG:
+            case CBT_INT8:
+            case CBT_INT16:
+            case CBT_INT32:
+            case CBT_INT64:
                 return node->number.i == 0;
-            case CBT_UNSIGNED_CHAR:
-            case CBT_UNSIGNED_SHORT:
-            case CBT_UNSIGNED_LONG:
-            case CBT_UNSIGNED_LONG_LONG:
+            case CBT_UINT8:
+            case CBT_UINT16:
+            case CBT_UINT32:
+            case CBT_UINT64:
                 return node->number.u == 0u;
             case CBT_FLOAT:
                 return node->number.f == 0.0f;
@@ -76,15 +76,15 @@ bool NodeIsNumberNot0(CConstNodePtr node) {
 
     if (node->type == CNT_NUMBER) {
         switch (node->ctype.GetAsmType()) {
-            case CBT_CHAR:
-            case CBT_SHORT:
-            case CBT_LONG:
-            case CBT_LONG_LONG:
+            case CBT_INT8:
+            case CBT_INT16:
+            case CBT_INT32:
+            case CBT_INT64:
                 return node->number.i != 0;
-            case CBT_UNSIGNED_CHAR:
-            case CBT_UNSIGNED_SHORT:
-            case CBT_UNSIGNED_LONG:
-            case CBT_UNSIGNED_LONG_LONG:
+            case CBT_UINT8:
+            case CBT_UINT16:
+            case CBT_UINT32:
+            case CBT_UINT64:
                 return node->number.u != 0u;
             case CBT_FLOAT:
                 return node->number.f != 0.0f;

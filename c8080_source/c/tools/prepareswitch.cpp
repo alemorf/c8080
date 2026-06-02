@@ -22,27 +22,27 @@ bool PrepareSwitch(CProgramm &p, CNodePtr &node, std::vector<CNodePtr> &cases) {
     int64_t min;
     uint64_t max;
     switch (node->a->ctype.GetAsmType()) {
-        case CBT_CHAR:
+        case CBT_INT8:
             min = INT8_MIN;
             max = INT8_MAX;
             break;
-        case CBT_UNSIGNED_CHAR:
+        case CBT_UINT8:
             min = 0;
             max = UINT8_MAX;
             break;
-        case CBT_SHORT:
+        case CBT_INT16:
             min = INT16_MIN;
             max = INT16_MAX;
             break;
-        case CBT_UNSIGNED_SHORT:
+        case CBT_UINT16:
             min = 0;
             max = UINT16_MAX;
             break;
-        case CBT_LONG:
+        case CBT_INT32:
             min = INT32_MIN;
             max = INT32_MAX;
             break;
-        case CBT_UNSIGNED_LONG:
+        case CBT_UINT32:
             min = 0;
             max = UINT32_MAX;
             break;
@@ -65,10 +65,10 @@ bool PrepareSwitch(CProgramm &p, CNodePtr &node, std::vector<CNodePtr> &cases) {
             continue;
         }
         switch (j->a->ctype.GetAsmType()) {
-            case CBT_CHAR:
-            case CBT_SHORT:
-            case CBT_LONG:
-            case CBT_LONG_LONG:
+            case CBT_INT8:
+            case CBT_INT16:
+            case CBT_INT32:
+            case CBT_INT64:
                 if (j->a->number.i < min) {
                     p.Error(j->a->e, "case label value exceeds minimum value for type");  // gcc
                     continue;
@@ -79,10 +79,10 @@ bool PrepareSwitch(CProgramm &p, CNodePtr &node, std::vector<CNodePtr> &cases) {
                 }
                 j->number.u = uint64_t(j->a->number.i);
                 break;
-            case CBT_UNSIGNED_CHAR:
-            case CBT_UNSIGNED_SHORT:
-            case CBT_UNSIGNED_LONG:
-            case CBT_UNSIGNED_LONG_LONG:
+            case CBT_UINT8:
+            case CBT_UINT16:
+            case CBT_UINT32:
+            case CBT_UINT64:
                 if (j->a->number.u > max) {
                     p.Error(j->a->e, "case label value exceeds maximum value for type");  // gcc
                     continue;
