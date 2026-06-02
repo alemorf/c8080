@@ -70,6 +70,6 @@ enum AssemblerCommand {
     AC_LXI_ARG_STACK_ADDR,
 };
 
-int GetAsmCommandSize(enum AssemblerCommand c);
+int GetAsmCommandSize(AssemblerCommand c);
 
 }  // namespace I8080

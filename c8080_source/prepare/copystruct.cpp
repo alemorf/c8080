@@ -47,6 +47,7 @@ bool PrepareCopyStruct(Prepare &p, CNodePtr &node) {
         node->b = nullptr;
         node->a->next_node->next_node = MakeCNodeNumberSizeT(item_sizeof, node->e);
         node = MakeCNodeDeaddr(node);
+        return true;
     }
     return false;
 }

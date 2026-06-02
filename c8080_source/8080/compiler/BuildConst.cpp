@@ -35,7 +35,7 @@ bool Compiler::Case_Const16(CNodePtr &node, AsmRegister reg) {
     return true;
 }
 
-bool Compiler::Case_Const32(CNodePtr &node, AsmRegister reg) {
+bool Compiler::Case_Const32(CNodePtr &node, AsmRegister) {
     out.ld_dehl_const(node);
     return true;
 }

@@ -19,7 +19,7 @@
 
 namespace I8080 {
 
-int GetAsmCommandSize(enum AssemblerCommand c) {
+int GetAsmCommandSize(AssemblerCommand c) {
     switch (c) {
         case AC_MVI:
             return 2;
@@ -77,9 +77,9 @@ int GetAsmCommandSize(enum AssemblerCommand c) {
             return 1;
         case AC_CMA:
             return 1;
-        case AC_INC:
+        case AC_INC: // INR, INX
             return 1;
-        case AC_DEC:
+        case AC_DEC: // DCR, DCX
             return 1;
         case AC_CALL_CONDITION:
             return 3;
