@@ -173,8 +173,8 @@ CBaseType CType::GetAsmType() const {
         return CBT_UNSIGNED_SHORT;
 
     switch (base_type) {
-        case CBT_SIGNED_CHAR:
-            return CBT_CHAR;
+        case CBT_CHAR:
+            return CBT_SIGNED_CHAR;
         case CBT_INT:
             return CBT_SHORT;
         case CBT_UNSIGNED_INT:
