@@ -47,6 +47,7 @@ static const PrepareFunctionType prepare_function_list[] = {
     PrepareDoubleConvert,
     PrepareCompareOperators,
     PrepareCopyStruct,
+    PrepareRemoveDead,
     nullptr,
 };
 

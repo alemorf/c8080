@@ -28,7 +28,6 @@ bool PrepareCompareOperators(Prepare &, CNodePtr &node);
 bool PrepareSub16ToAdd16(Prepare &, CNodePtr &node);
 bool PrepareIncDec(Prepare &, CNodePtr &node);
 bool PrepareFast8BitMath(Prepare &, CNodePtr &node);
-bool PrepareRemoveDead(Prepare &, CNodePtr &node);
 bool PrepareLoadVariable(Prepare &p, CNodePtr &node);
 
 }  // namespace I8080

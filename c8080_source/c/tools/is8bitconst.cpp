@@ -18,7 +18,7 @@
 #include "is8bitconst.h"
 #include "../../c/tools/cthrow.h"
 
-unsigned Is8BitConst(const CNodePtr& node) {
+unsigned Is8BitConst(const CNodePtr &node) {
     assert(node != nullptr);
     if (node->type == CNT_NUMBER) {
         switch (node->ctype.GetAsmType()) {

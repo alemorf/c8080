@@ -481,9 +481,9 @@ void CParserFile::ParseStruct(CStruct &struct_object) {
         do {
             CStructItemPtr struct_item = std::make_shared<CStructItem>();
             ParseTypeNameArray(base_type, struct_item->name, struct_item->type);
-            ParseGccAttributes(nullptr); // TODO
+            ParseGccAttributes(nullptr);  // TODO
             if (struct_item->name.empty() && !struct_item->type.IsStructUnion())
-                l.Warning("declaration does not declare anything"); // gcc
+                l.Warning("declaration does not declare anything");  // gcc
             else
                 struct_object.items.push_back(struct_item);
         } while (l.IfToken(","));

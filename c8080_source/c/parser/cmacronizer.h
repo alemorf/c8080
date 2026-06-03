@@ -80,7 +80,7 @@ public:
     void NextToken();
     void ThrowSyntaxError();
     void SyntaxError();
-    void SyntaxError(const char* want);
+    void SyntaxError(const char *want);
     void Throw(CString text);
     void Error(CString text);
     void Error(CString text, const CErrorPosition &p);

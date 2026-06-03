@@ -113,8 +113,6 @@ bool PrepareConst(Prepare &p, CNodePtr &node) {
             }
             return false;
         case CNT_OPERATOR: {
-            if (node->dont_replace_jump_node)
-                return false;
             switch (node->operator_code) {
                 case COP_ADD:
                     return PrepareConstOperator(p, "+", node);

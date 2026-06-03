@@ -18,7 +18,7 @@
 #include "getnumberasuint64.h"
 #include "cthrow.h"
 
-uint64_t GetNumberAsUint64(const CNodePtr& node) {
+uint64_t GetNumberAsUint64(const CNodePtr &node) {
     assert(node != nullptr);
 
     if (node->type != CNT_NUMBER)

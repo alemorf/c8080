@@ -18,11 +18,13 @@
 #include "index.h"
 #include "../c/tools/makeoperator.h"
 
+// Inside: if, while, do, !, &&, ||, ?:
+// must be a condition or a numeric constant (true / false)
+
 static bool PrepareJump2(CNodePtr &node) {
-    if (node && !node->IsJumpNode()) {
+    if (node && !node->IsJumpNode() && node->type != CNT_NUMBER) {
         CNodePtr ch = CNODE({CNT_NUMBER, ctype : node->ctype, e : node->e});
         node = MakeOperator(COP_CMP_NE, node, ch, node->e, false);
-        node->dont_replace_jump_node = true;
         assert(node->IsJumpNode());
         return true;
     }

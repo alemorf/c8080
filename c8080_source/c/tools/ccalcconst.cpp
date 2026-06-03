@@ -307,7 +307,7 @@ bool CCalcConst(CNodePtr &node, bool process_childs) {
                         changed |= CCalcConst(node->a, process_childs);
                         changed |= CCalcConst(node->b, process_childs);
                     }
-                    if (!node->dont_replace_jump_node && node->a->type == CNT_NUMBER && node->b->type == CNT_NUMBER) {
+                    if (node->a->type == CNT_NUMBER && node->b->type == CNT_NUMBER) {
                         if (CalcOperator(node)) {
                             node->type = CNT_NUMBER;
                             node->a = nullptr;         // Free memory

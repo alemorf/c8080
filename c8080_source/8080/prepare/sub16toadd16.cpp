@@ -37,7 +37,7 @@ bool PrepareSub16ToAdd16(Prepare &, CNodePtr &node) {
             }
         } else if (node->b->type == CNT_CONST) {
             node->operator_code = COP_ADD;
-            node->b->text = "0FFFFh & (0 - (" + node->b->text + "))"; // TODO: 0FFFF?
+            node->b->text = "0FFFFh & (0 - (" + node->b->text + "))";  // TODO: 0FFFF?
             return true;
         }
     }

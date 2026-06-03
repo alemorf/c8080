@@ -77,9 +77,9 @@ int GetAsmCommandSize(AssemblerCommand c) {
             return 1;
         case AC_CMA:
             return 1;
-        case AC_INC: // INR, INX
+        case AC_INC:  // INR, INX
             return 1;
-        case AC_DEC: // DCR, DCX
+        case AC_DEC:  // DCR, DCX
             return 1;
         case AC_CALL_CONDITION:
             return 3;
