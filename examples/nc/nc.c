@@ -553,7 +553,7 @@ int main(int, char **) {
     } while (copy_buffer_size <= allow_loop && copy_buffer_size < MAX_ROUND_UINT8 / 2);
 
     // CCP будет запускать A:NC вместо ожидания ввода команды пользователем
-    common_dont_exec_nc = 0;
+    ENABLE_NC_AUTOSTART;
 
     // Что бы командер нижней строкой не закрывал полезные данные
 #ifdef FEATURE_CONSOLE_GET_CURSOR_POSITION
@@ -658,7 +658,7 @@ int main(int, char **) {
             switch (c) {
                 case '0':
                     NcBeforeExit();
-                    common_dont_exec_nc = 1;
+                    DISABLE_NC_AUTOSTART;
                     return 0;
             }
         }

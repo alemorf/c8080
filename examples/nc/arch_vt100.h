@@ -20,7 +20,9 @@
 #include <c8080/colors.h>
 
 extern uint8_t common_folder __address(0xFF77);        // TODO: Replace by ESC
-extern uint8_t common_dont_exec_nc __address(0xFF78);  // TODO: Replace by ESC
+
+#define DISABLE_NC_AUTOSTART WriteConsole("\x1B\xFF")
+#define ENABLE_NC_AUTOSTART WriteConsole("\x1B\xFE")
 
 static const uint8_t COLOR_COMMAND_LINE = COLOR_PAPER_BLACK | COLOR_INK_WHITE;
 static const uint8_t COLOR_HELP_LINE = COLOR_PAPER_CYAN | COLOR_INK_BLACK;
