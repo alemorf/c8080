@@ -35,9 +35,18 @@
     __HEAP_INIT
 
     static char argv0[1];
-    static char *argv[] = { argv0, (char*)0x81 };
-    while (argv[1][0] == ' ')
-        argv[1]++;
+    static char *argv[] = { argv0, 0 };
+
+    asm {
+        ld   hl, 81h
+        ld   a, ' '
+__cpm_initstack_0:
+        cp   (hl)
+        ld   (__s_argv + 2), hl
+        inc  hl
+        jp   nz, __cpm_initstack_0
+    }
+
     main(argv[1][0] != 0 ? 2 : 1, argv);
 
 #if !defined(ARCH_CPM_BIOS) && !defined(ARCH_CPM_BDOS)

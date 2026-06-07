@@ -24,6 +24,10 @@
 #define __STACK_SIZE 1024
 #endif
 
+#ifdef __C8080_NO_HEAP
+#define __HEAP_INIT
+#else
+
 struct __HeapBlock {
     struct __HeapBlock *next;
     uint8_t free;
@@ -53,3 +57,4 @@ extern void *__heap_init_arg __address(sizeof(struct __HeapBlock) + __STACK_SIZE
     asm("	ld (hl), a");              \
     asm("	inc a");                   \
     asm("	ld (__heap + 2), a");
+#endif
