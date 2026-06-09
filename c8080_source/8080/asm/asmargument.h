@@ -63,6 +63,8 @@ struct AsmArgument {
                 return number == a.number;
             case AAT_LABEL:
                 return label == a.label;
+            case AAT_REG:
+                return reg == a.reg;
         }
         assert(false);
         return false;

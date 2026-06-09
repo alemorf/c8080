@@ -24,8 +24,9 @@ typedef std::map<std::string, size_t> Saves;
 
 class StateRegister {
 public:
-    AsmArgument value;
-    AsmArgument variable;
+    AsmArgument value;  // В регистре произвольное число или адрес переменной
+    AsmArgument variable;  // В регистре значение переменной
+    uint16_t increased_by;  // Регистр был увеличен на это число относительно value или variable
 };
 
 class State {
@@ -40,27 +41,35 @@ public:
 };
 
 static void CombineState(State &a, const State &b) {
-    if (a.a.value != b.a.value)
+    const bool ar = (a.a.increased_by != b.a.increased_by);
+    if (ar || a.a.value != b.a.value)
         a.a.value.SetNone();
-    if (a.a.variable != b.a.variable)
+    if (ar || a.a.variable != b.a.variable)
         a.a.variable.SetNone();
-    if (a.hl.value != b.hl.value)
+
+    const bool hlr = (a.hl.increased_by != b.hl.increased_by);
+    if (hlr || a.hl.value != b.hl.value)
         a.hl.value.SetNone();
-    if (a.hl.variable != b.hl.variable)
+    if (hlr || a.hl.variable != b.hl.variable)
         a.hl.variable.SetNone();
-    if (a.de.value != b.de.value)
+
+    const bool der = (a.de.increased_by != b.de.increased_by);
+    if (der || a.de.value != b.de.value)
         a.de.value.SetNone();
-    if (a.de.variable != b.de.variable)
+    if (der || a.de.variable != b.de.variable)
         a.de.variable.SetNone();
 }
 
 static inline void ResetState(State &s) {
     s.a.value.SetNone();
     s.a.variable.SetNone();
+    s.a.increased_by = 0;
     s.hl.value.SetNone();
     s.hl.variable.SetNone();
+    s.hl.increased_by = 0;
     s.de.value.SetNone();
     s.de.variable.SetNone();
+    s.de.increased_by = 0;
 }
 
 static StateRegister *ResetState(State &s, AsmRegister reg, bool saveValue = false) {
@@ -70,6 +79,47 @@ static StateRegister *ResetState(State &s, AsmRegister reg, bool saveValue = fal
             if (!saveValue)
                 s.a.value.SetNone();
             s.a.variable.SetNone();
+            s.a.increased_by = 0;
+            return &s.a;
+        case R8_H:
+        case R8_L:
+            s.hl.value.SetNone();
+            s.hl.variable.SetNone();
+            s.hl.increased_by = 0;
+            return nullptr;
+        case R16_HL:
+            if (!saveValue)
+                s.hl.value.SetNone();
+            s.hl.variable.SetNone();
+            s.hl.increased_by = 0;
+            return &s.hl;
+        case R8_D:
+        case R8_E:
+            s.de.value.SetNone();
+            s.de.variable.SetNone();
+            s.de.increased_by = 0;
+            return nullptr;
+        case R16_DE:
+            if (!saveValue)
+                s.de.value.SetNone();
+            s.de.variable.SetNone();
+            s.de.increased_by = 0;
+            return &s.de;
+        case R8_B:
+        case R8_C:
+        case R16_BC:
+            return nullptr;
+        default:
+            assert(false);
+    }
+    return nullptr;
+}
+
+static StateRegister *IncreaseState(State &s, AsmRegister reg, int increased_by) {
+    switch (reg) {
+        case R16_AF:
+        case R8_A:
+            s.a.increased_by = (s.a.increased_by + increased_by) & 0xFF;
             return &s.a;
         case R8_H:
         case R8_L:
@@ -77,9 +127,7 @@ static StateRegister *ResetState(State &s, AsmRegister reg, bool saveValue = fal
             s.hl.variable.SetNone();
             return nullptr;
         case R16_HL:
-            if (!saveValue)
-                s.hl.value.SetNone();
-            s.hl.variable.SetNone();
+            s.hl.increased_by += increased_by;
             return &s.hl;
         case R8_D:
         case R8_E:
@@ -87,9 +135,7 @@ static StateRegister *ResetState(State &s, AsmRegister reg, bool saveValue = fal
             s.de.variable.SetNone();
             return nullptr;
         case R16_DE:
-            if (!saveValue)
-                s.de.value.SetNone();
-            s.de.variable.SetNone();
+            s.de.increased_by += increased_by;
             return &s.de;
         case R8_B:
         case R8_C:
@@ -146,15 +192,17 @@ static bool OptimizeMviA(State &s, AsmBase::Line &l) {
         return false;
 
     // Удаление LD REG, CONST, если регистр уже содержит нужное значение
-    if (reg_state->value == l.argument[1]) {
+    if (reg_state->increased_by == 0 && reg_state->value == l.argument[1]) {
         l.opcode = AC_REMOVED;
         l.argument[0] = AsmArgument();
         l.argument[1] = AsmArgument();
+        // TODO: Можно заменить на INC или DEC
         return true;
     }
 
     const AsmArgument prev_value = reg_state->value;
     reg_state->value = l.argument[1];
+    reg_state->increased_by = 0;
 
     if (l.argument[0].reg == R8_A) {
         // Замена LD A, 0 на XOR A
@@ -199,6 +247,67 @@ static bool OptimizeMviA(State &s, AsmBase::Line &l) {
     return false;
 }
 
+static bool OptimizeLhld(AsmBase &a, State &s, size_t start) {
+    assert(s.hl.variable == a.lines[start].argument[0]);
+
+    bool lxi_dad;
+    size_t command_count;
+    uint16_t increased_by;
+
+    // Обнаружение последовательности команд:
+    // LHLD адрес
+    // LXI  D
+    // DAD  D
+    if (start + 2 > 2 && start + 2 < a.lines.size() && a.lines[start + 1].opcode == AC_LXI &&
+        a.lines[start + 1].argument[0].type == AAT_REG && a.lines[start + 1].argument[0].reg == R16_DE &&
+        a.lines[start + 1].argument[1].type == AAT_NUMBER && a.lines[start + 2].opcode == AC_DAD &&
+        a.lines[start + 2].argument[0].type == AAT_REG && a.lines[start + 2].argument[0].reg == R16_DE) {
+        // Обнаружено
+        lxi_dad = true;
+        command_count = 3;
+        increased_by = a.lines[start + 1].argument[1].number;
+    } else {
+        // Обнаружение последовательности LHLD + INX H
+        auto f = a.lines.begin() + start + 1, i = f;
+        while (i != a.lines.end() && i->opcode == AC_INC && i->argument[0].reg == R16_HL &&
+               i->argument[0].type == AAT_REG)
+            i++;
+        lxi_dad = false;
+        increased_by = i - f;
+        command_count = increased_by + 1;
+    }
+
+    // Замена найденной последовательности на INC или DEC (без LHLD),
+    // если хватит места
+    const int16_t delta = increased_by - s.hl.increased_by;
+    unsigned inc_dec_new_opcodes = abs(delta);
+    if (inc_dec_new_opcodes <= command_count) {
+        assert(start + command_count <= a.lines.size());
+        for (auto i = a.lines.begin() + start, e = i + command_count; i != e; i++) {
+            if (inc_dec_new_opcodes != 0) {
+                i->opcode = delta < 0 ? AC_DEC : AC_INC;
+                i->argument[0] = AsmArgument{AAT_REG, R16_HL};
+                inc_dec_new_opcodes--;
+            } else {
+                i->opcode = AC_REMOVED;
+                i->argument[0] = AsmArgument();
+            }
+        }
+        return true;
+    }
+
+    // Удаляем LHLD и корректируем LXI
+    if (lxi_dad) {
+        a.lines[start].opcode = AC_REMOVED;
+        a.lines[start].argument[0] = AsmArgument();
+        a.lines[start].argument[1] = AsmArgument();
+        a.lines[start + 1].argument[1].number = uint16_t(delta);
+        return true;
+    }
+
+    return false;
+}
+
 bool LoadSave(AsmBase &a, std::map<size_t, StateItem> &states, bool jb) {
     bool changed = false;
     State s;
@@ -210,6 +319,7 @@ bool LoadSave(AsmBase &a, std::map<size_t, StateItem> &states, bool jb) {
         i++;
         if (noState && l.opcode != AC_LABEL)
             continue;
+    retry:
         switch (l.opcode) {
             case AC_RET:
                 ResetState(s);
@@ -253,18 +363,20 @@ bool LoadSave(AsmBase &a, std::map<size_t, StateItem> &states, bool jb) {
             case AC_STA:
                 changed |= AddSave(a, saves, l.argument[0], i);
                 s.a.variable = l.argument[0];  // TODO: Может изменить переменную. Можно удалить лишнее.
+                s.a.increased_by = 0;
 
                 // Замена LD (CONST), A на LD (HL), A
-                if (s.hl.value == s.a.variable) {
+                if (s.hl.increased_by == 0 && s.hl.value == s.a.variable) {
                     l.opcode = AC_MOV;
-                    l.argument[1].Set(R8_A);
                     l.argument[0].Set(R8_M);
+                    l.argument[1].Set(R8_A);
                     changed = true;
                 }
                 break;
             case AC_SHLD:
                 changed |= AddSave(a, saves, l.argument[0], i);
                 s.hl.variable = l.argument[0];  // TODO: Может изменить переменную. Можно удалить лишнее.
+                s.hl.increased_by = 0;
                 break;
             case AC_ALU_REG:
                 if (l.alu == ALU_CMP)
@@ -292,17 +404,18 @@ bool LoadSave(AsmBase &a, std::map<size_t, StateItem> &states, bool jb) {
                 ResetState(s, R8_A);
                 break;
             case AC_LHLD:
-                if (s.hl.variable == l.argument[0]) {  // Если HL содержит адрес переменной
-                    l.opcode = AC_REMOVED;
-                    changed = true;
-                    continue;
-                }
                 RemoveSave(saves, l.argument[0]);
+                if (s.hl.variable == l.argument[0]) {  // Если HL содержит адрес переменной + дельта
+                    if (OptimizeLhld(a, s, i)) {
+                        changed = true;
+                        goto retry;
+                    }
+                }
                 ResetState(s, R16_HL);
                 s.hl.variable = l.argument[0];
                 break;
             case AC_LDA:
-                if (s.a.variable == l.argument[0]) {  // Если A содержит адрес переменной
+                if (s.a.variable == l.argument[0] && s.a.increased_by == 0) {  // Если A содержит адрес переменной
                     l.opcode = AC_REMOVED;
                     changed = true;
                     continue;
@@ -323,13 +436,33 @@ bool LoadSave(AsmBase &a, std::map<size_t, StateItem> &states, bool jb) {
                 std::swap(s.hl, s.de);
                 break;
             case AC_DAD:
+                assert(l.argument[0].type == AAT_REG);
+                if (l.argument[0].reg == R16_DE && s.de.value.type == AAT_NUMBER) {
+                    s.hl.increased_by += s.de.increased_by + s.de.value.number;
+                    break;
+                }
+                // TOD: BC, HL
                 ResetState(s, R16_HL);  // TODO: Можно вычислить
                 break;
             case AC_INC:
-            case AC_DEC:
                 assert(l.argument[0].type == AAT_REG);
                 if (l.argument[0].reg != R16_SP)
-                    ResetState(s, l.argument[0].reg);  // TODO: Можно вычислить
+                    IncreaseState(s, l.argument[0].reg, 1);
+                break;
+            case AC_DEC:
+                assert(l.argument[0].type == AAT_REG);
+                // Удаление последовательности DEC HL + INC HL
+                if (l.argument[0].reg == R16_HL && i + 1 < a.lines.size()) {
+                    auto &n = a.lines[i + 1];
+                    if (n.opcode == AC_INC && l.argument[0] == n.argument[0]) {
+                        l.opcode = AC_REMOVED;
+                        n.opcode = AC_REMOVED;
+                        changed = true;
+                        continue;
+                    }
+                }
+                if (l.argument[0].reg != R16_SP)
+                    IncreaseState(s, l.argument[0].reg, -1);
                 break;
             case AC_MOV:
                 RemoveSave(saves, l.argument[1]);  // Конструкция: ld hl, var / add (hl)
