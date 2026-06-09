@@ -21,6 +21,7 @@
 #include <c8080/uint32tostring.h>
 #include <c8080/tolowercase.h>
 #include <c8080/zerobitcount.h>
+#include <c8080/console.h>
 #include "arch.h"
 #include "nc.h"
 #include "dir.h"
@@ -106,6 +107,9 @@ void PanelReloadOrCopy(void) {
 
 void PanelReload(void) {
     panel_a.count = 0;
+
+    // Что бы не прокручивался экран, если CP/M выводит тексты ошибок
+    MoveCursor(0, 0);
 
     if (CpmSetDrive(PanelGetDrive()) == 0xFF)
         return;  // TODO: Вывод ошибки
