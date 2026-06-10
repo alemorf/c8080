@@ -182,8 +182,8 @@ static void RemoveSave(Saves &saves, const AsmArgument &variable) {
         saves.erase(p);
 }
 
-static bool OptimizeMviA(State &s, AsmBase::Line &l) {
-    // MOV M, A невозможно ускорить
+static bool OptimizeLxiMvi(State &s, AsmBase::Line &l) {
+    // MVI M невозможно ускорить
     if (l.argument[0].reg == R8_M)
         return false;
 
@@ -258,7 +258,7 @@ static bool OptimizeLhld(AsmBase &a, State &s, size_t start) {
     // LHLD адрес
     // LXI  D
     // DAD  D
-    if (start + 2 > 2 && start + 2 < a.lines.size() && a.lines[start + 1].opcode == AC_LXI &&
+    if (start + 2 >= 2 && start + 2 < a.lines.size() && a.lines[start + 1].opcode == AC_LXI &&
         a.lines[start + 1].argument[0].type == AAT_REG && a.lines[start + 1].argument[0].reg == R16_DE &&
         a.lines[start + 1].argument[1].type == AAT_NUMBER && a.lines[start + 2].opcode == AC_DAD &&
         a.lines[start + 2].argument[0].type == AAT_REG && a.lines[start + 2].argument[0].reg == R16_DE) {
@@ -268,6 +268,7 @@ static bool OptimizeLhld(AsmBase &a, State &s, size_t start) {
         increased_by = a.lines[start + 1].argument[1].number;
     } else {
         // Обнаружение последовательности LHLD + INX H
+        assert(start < a.lines.size());
         auto f = a.lines.begin() + start + 1, i = f;
         while (i != a.lines.end() && i->opcode == AC_INC && i->argument[0].reg == R16_HL &&
                i->argument[0].type == AAT_REG)
@@ -287,10 +288,12 @@ static bool OptimizeLhld(AsmBase &a, State &s, size_t start) {
             if (inc_dec_new_opcodes != 0) {
                 i->opcode = delta < 0 ? AC_DEC : AC_INC;
                 i->argument[0] = AsmArgument{AAT_REG, R16_HL};
+                i->argument[1] = AsmArgument();
                 inc_dec_new_opcodes--;
             } else {
                 i->opcode = AC_REMOVED;
                 i->argument[0] = AsmArgument();
+                i->argument[1] = AsmArgument();
             }
         }
         return true;
@@ -428,7 +431,7 @@ bool LoadSave(AsmBase &a, std::map<size_t, StateItem> &states, bool jb) {
             case AC_MVI: {
                 assert(l.argument[0].type == AAT_REG);
                 RemoveSave(saves, l.argument[1]);  // Конструкция: ld hl, var / add (hl)
-                if (OptimizeMviA(s, l))
+                if (OptimizeLxiMvi(s, l))
                     changed = true;
                 break;
             }
