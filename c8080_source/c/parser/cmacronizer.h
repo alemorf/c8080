@@ -28,7 +28,7 @@
 #include "../cerrorposition.h"
 #include "ctokenizer.h"
 
-enum CMacroArgsMode { CMAM_FIXED, CMAM_VA_OPT, CMAM_VAR_LAST };
+enum CMacroArgsMode { CMAM_NONE, CMAM_FIXED, CMAM_VA_OPT, CMAM_VAR_LAST };
 
 class CMacroizer : public CTokenizer {
 protected:
@@ -39,7 +39,7 @@ protected:
         size_t disabled_level{};  // For nested calls of the same macro
         std::vector<std::string> args;
         std::shared_ptr<Macro> prev;
-        CMacroArgsMode args_mode{CMAM_FIXED};
+        CMacroArgsMode args_mode{CMAM_NONE};
         size_t is_macro_arg{};
     };
 

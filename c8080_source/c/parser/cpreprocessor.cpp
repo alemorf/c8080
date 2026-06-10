@@ -139,27 +139,30 @@ void CParserFile::PreprocessorDefine() {
         return;
 
     std::vector<std::string> args;
-    CMacroArgsMode args_mode = CMAM_FIXED;
+    CMacroArgsMode args_mode = CMAM_NONE;
     if (args_e) {
+        args_mode = CMAM_FIXED;
         if (!l.WantToken("("))
             return;
-        do {
-            if (l.IfToken("...")) {
-                args.push_back("__VA_ARGS__");
-                args_mode = CMAM_VA_OPT;
-                break;
-            }
-            std::string id;
-            if (!l.WantIdent(id))
+        if (!l.IfToken(")")) {
+            do {
+                if (l.IfToken("...")) {
+                    args.push_back("__VA_ARGS__");
+                    args_mode = CMAM_VA_OPT;
+                    break;
+                }
+                std::string id;
+                if (!l.WantIdent(id))
+                    return;
+                args.push_back(id);
+                if (l.IfToken("...")) {
+                    args_mode = CMAM_VAR_LAST;
+                    break;
+                }
+            } while (l.IfToken(","));
+            if (!l.WantToken(")"))
                 return;
-            args.push_back(id);
-            if (l.IfToken("...")) {
-                args_mode = CMAM_VAR_LAST;
-                break;
-            }
-        } while (l.IfToken(","));
-        if (!l.WantToken(")"))
-            return;
+        }
     }
 
     l.PreprocessorLeave();

@@ -74,7 +74,7 @@ std::string CType::ToString() const {
             }
             break;
         case CBT_FUNCTION:
-            assert(!function_args.empty());
+            // Может быть function_args.empty()
             result += (function_args.empty() ? "?" : function_args.front().type.ToString());
             break;
         case CBT_VOID:

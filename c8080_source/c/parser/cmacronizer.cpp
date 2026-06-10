@@ -131,32 +131,38 @@ void CMacroizer::NextToken0() {
             if (mp->disabled != 0 && mp->disabled_level != macro_arg_level)  // Macro should not call itself
                 break;
             Macro &m = *mp;
-            if (m.args.size() > 0) {
+            if (m.args_mode != CMAM_NONE) {
                 if (cursor[0] != '(')
                     ThrowSyntaxError();
                 NextToken();
 
                 bool no_more_args = false;
-                bool last_arg_is_empty = false;
-                for (size_t j = 0; j < m.args.size(); j++) {
+                if (m.args.size() == 0) {
                     std::string arg_body;
-                    const bool var_last = (m.args_mode != CMAM_FIXED && j + 1 == m.args.size());
-                    if (!no_more_args) {
-                        no_more_args = ReadRaw(arg_body, var_last ? '(' : ',', ')', '(');
-                    } else {
-                        last_arg_is_empty = true;
-                        if (!var_last)
-                            Error("not enough parameters in macro");
+                    no_more_args = ReadRaw(arg_body, '(', ')', '(');
+                    if (!arg_body.empty())
+                        no_more_args = false;
+                } else {
+                    bool last_arg_is_empty = false;
+                    for (size_t j = 0; j < m.args.size(); j++) {
+                        std::string arg_body;
+                        const bool var_last = (m.args_mode != CMAM_FIXED && j + 1 == m.args.size());
+                        if (!no_more_args) {
+                            no_more_args = ReadRaw(arg_body, var_last ? '(' : ',', ')', '(');
+                        } else {
+                            last_arg_is_empty = true;
+                            if (!var_last)
+                                Error("not enough parameters in macro");
+                        }
+                        AddMacro(m.args[j], arg_body.c_str(), arg_body.size(), nullptr, CMAM_NONE, true);
                     }
-                    AddMacro(m.args[j], arg_body.c_str(), arg_body.size(), nullptr, CMAM_FIXED, true);
-                }
 
-                if (m.args_mode == CMAM_VA_OPT) {
-                    static const std::vector<std::string> args = {"__VA_OPT__"};
-                    AddMacro("__VA_OPT__", "__VA_OPT__", last_arg_is_empty ? 0 : sizeof("__VA_OPT__") - 1, &args,
-                             CMAM_VAR_LAST, true);
+                    if (m.args_mode == CMAM_VA_OPT) {
+                        static const std::vector<std::string> args = {"__VA_OPT__"};
+                        AddMacro("__VA_OPT__", "__VA_OPT__", last_arg_is_empty ? 0 : sizeof("__VA_OPT__") - 1, &args,
+                                 CMAM_VAR_LAST, true);
+                    }
                 }
-
                 if (!no_more_args) {
                     Error("extra parameters in macro");
                     std::string temp;
