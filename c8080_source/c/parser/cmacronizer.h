@@ -61,6 +61,7 @@ protected:
     void Enter(Macro *macro_index, const char *contents, const char *name);
     void ReadDirective(std::string &result);
     bool Leave();
+    void NextToken0AsString();
     void NextToken0();
 
 public:

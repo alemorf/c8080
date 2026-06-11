@@ -105,6 +105,30 @@ void CMacroizer::NextToken() {
     }
 }
 
+void CMacroizer::NextToken0AsString() {
+    do {
+        NextToken2();
+    } while (token == CT_REMARK || token == CT_EOL);
+
+    if (token != CT_IDENT) {
+        SyntaxError();
+        return;
+    }
+
+    auto mi = macro.find(CString(token_data, token_size));
+    if (mi == macro.end() || mi->second->is_macro_arg != macro_arg_level) {
+        SyntaxError();
+        return;
+    }
+
+    temp.assign("\"");
+    temp.append(mi->second->body);  // gcc тоже обарабтывает esc последовательности
+    temp.append("\"");
+    token_data = save_string(temp.c_str(), temp.size());
+    token_size = temp.size();
+    token = CT_STRING2;
+}
+
 void CMacroizer::NextToken0() {
     for (;;) {
         NextToken2();
@@ -181,10 +205,15 @@ void CMacroizer::NextToken0() {
     }
 
     // Нужно выйти из параметра макроса, потому что вызывающая функция будет искать токен ##
+    // Но префикс # должен выполняться в том же макросе. Иначе будет работать:
+    //   #define C(S) #S #
+    //   #define B(S) C(S) S
+    //   const char* b = B(Hello);
 break2:
-    while (cursor[0] == 0)
-        if (!Leave())
-            break;
+    if (!(token_size == 1 && token_data[0] == '#'))
+        while (cursor[0] == 0)
+            if (!Leave())
+                break;
 }
 
 void CMacroizer::Enter(Macro *active_macro, const char *contents, const char *file_name_) {

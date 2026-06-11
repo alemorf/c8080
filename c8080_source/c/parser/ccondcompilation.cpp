@@ -32,8 +32,10 @@ void CCondCompilation::NextToken() {
         if (token_data[0] != '#' || token_data[1] == '#' || !preprocessor)
             break;
 
-        if (in_macro != 0)
-            Throw("# in macro");  // TODO
+        if (in_macro != 0) {
+            CMacroizer::NextToken0AsString();
+            break;
+        }
 
         preprocessor_mode = true;
         enable_macro_in_preprocessor = false;
