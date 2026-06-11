@@ -35,23 +35,41 @@ const char *CDecodeString(std::string &str, std::map<uint32_t, uint8_t> *codepag
                 return "unknown ESC sequence";
             char c = *src++;
             switch (c) {
+                case 'a':
+                    c = '\a';  // 0x07
+                    break;
+                case 'b':
+                    c = '\b';  // 0x08
+                    break;
                 case 'e':
-                    c = 0x1B;
+                    c = '\e';  // 0x1B
+                    break;
+                case 'f':
+                    c = '\f';  // 0x0C
                     break;
                 case 'n':
-                    c = '\n';
+                    c = '\n';  // 0x0A
                     break;
                 case 'r':
-                    c = '\r';
+                    c = '\r';  // 0x0D
+                    break;
+                case 't':
+                    c = '\t';  // 0x09
+                    break;
+                case 'v':
+                    c = '\v';  // 0x0B
                     break;
                 case '\\':
-                    c = '\\';
+                    c = '\\';  // 0x5C
                     break;
                 case '\'':
-                    c = '\'';
+                    c = '\'';  // 0x27
                     break;
                 case '"':
-                    c = '"';
+                    c = '"';  // 0x22
+                    break;
+                case '?':
+                    c = '?';  // 0x3F
                     break;
                 case '0':
                 case '1':
@@ -81,6 +99,7 @@ const char *CDecodeString(std::string &str, std::map<uint32_t, uint8_t> *codepag
                     c = uint8_t(result);
                     break;
                 }
+                // TODO: \u \U added in C99
                 default:
                     return "unknown ESC sequence";
             }
