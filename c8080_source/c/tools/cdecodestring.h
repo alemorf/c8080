@@ -19,5 +19,6 @@
 
 #include <string>
 #include <map>
+#include <stdint.h>
 
 const char *CDecodeString(std::string &str, std::map<uint32_t, uint8_t> *codepage);

@@ -17,7 +17,6 @@
 
 #include "cdecodestring.h"
 #include <limits.h>
-#include <stdint.h>
 #include "../../tools/parseutf8.h"
 
 const char *CDecodeString(std::string &str, std::map<uint32_t, uint8_t> *codepage) {
