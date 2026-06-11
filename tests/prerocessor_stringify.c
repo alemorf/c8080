@@ -3,7 +3,6 @@
 #define N(S) S
 
 #define A(S) #S
-    puts(A(  \x21  ) "TAB");
 
 #define C(S) #S #S
 #define B(S) C(S) #S
