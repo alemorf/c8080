@@ -746,6 +746,23 @@ CNodePtr CParserFile::ParseExpressionK() {
 
         CNodePtr a = ParseExpressionK();
 
+        // C FEATURE
+        // Function is already a pointer to a function, but it is also
+        // possible to specify a do-nothing &
+        //   void test(int) {}
+        //   void (*a)(int) = test;
+        //   void (*b)(int) = &test;
+        // Pointer to a function can be called, but it is also possible
+        // to specify a do-nothing *
+        //   a(1);
+        //   (*a)(1);
+
+        if (mo == MOP_ADDR && a->type == CNT_MONO_OPERATOR && a->mono_operator_code == MOP_ADDR &&
+            a->a->type == CNT_LOAD_VARIABLE && a->a->ctype.IsFunction())
+            return a;
+        if (mo == MOP_DEADDR && a->ctype.base_type == CBT_FUNCTION && a->ctype.pointers.size() == 1)
+            return a;
+
         CNodePtr result = CNODE({CNT_MONO_OPERATOR, a : a, ctype : a->ctype, mono_operator_code : mo, e : e});
 
         switch (mo) {
@@ -814,6 +831,9 @@ CNodePtr CParserFile::ParseExpressionCall(CNodePtr &f, CErrorPosition &e) {
     if (f->type == CNT_MONO_OPERATOR && f->mono_operator_code == MOP_ADDR && f->a->type == CNT_LOAD_VARIABLE) {
         call = CNODE({CNT_FUNCTION_CALL, a : args.first, variable : f->a->variable, e : e});
     } else {
+        CVariableMode cvm = programm.GetVariableMode(f->ctype);
+        if (cvm == CVM_GLOBAL)
+            programm.Error(e, "can't call __global functions by pointer");
         call = CNODE({CNT_FUNCTION_CALL_ADDR, a : args.first, b : f, e : e});
     }
 

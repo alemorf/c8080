@@ -17,6 +17,7 @@
 
 #include "asm.h"
 #include "../../c/tools/cthrow.h"
+#include "../prepare/prepare.h"
 
 namespace I8080 {
 
@@ -62,6 +63,14 @@ std::string Asm::GetConst(const CNodePtr &node, bool *error, std::vector<CVariab
                 for (auto &i : node->compiler.used_variables) {
                     if (i->c.use_counter == 0) {
                         i->c.use_counter++;
+
+                        // Add variables and functions to dependencies that will be
+                        // used when initializing the value of the global or static variable
+                        PrepareVariable(p, i, *this);
+                        for (CNodePtr j = i->body; j != nullptr; j = j->next_node)
+                            if (j->type == CNT_CONST)
+                                GetConst(j);
+
                         if (i->type.IsFunction() && !i->only_extern)
                             compile_queue.push_back(i);
                     }
