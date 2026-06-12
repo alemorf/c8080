@@ -20,17 +20,17 @@
 #include <string>
 
 enum CNodeType {
-    CNT_NUMBER,              // Exmaple: 12
-    CNT_LOAD_VARIABLE,       // Exmaple: a
-    CNT_RETURN,              // Exmaple: return [a]
+    CNT_NUMBER,              // Example: 12
+    CNT_LOAD_VARIABLE,       // Example: a
+    CNT_RETURN,              // Example: return [a]
     CNT_IF,                  // Example: if (a) b [ else c ]
-    CNT_DO,                  // Exmaple: do { a } while (b)
-    CNT_WHILE,               // Exmaple: while (a) b
-    CNT_BREAK,               // Exmaple: break
-    CNT_CONTINUE,            // Exmaple: continue
-    CNT_SWITCH,              // Exmaple: switch(a) { b }
-    CNT_CASE,                // Exmaple: case a:
-    CNT_DEFAULT,             // Exmaple: default:
+    CNT_DO,                  // Example: do { a } while (b)
+    CNT_WHILE,               // Example: while (a) b
+    CNT_BREAK,               // Example: break
+    CNT_CONTINUE,            // Example: continue
+    CNT_SWITCH,              // Example: switch(a) { b }
+    CNT_CASE,                // Example: case a:
+    CNT_DEFAULT,             // Example: default:
     CNT_LEVEL,               // Example: { a }
     CNT_DECLARE_VARIABLE,    // Example: int a [= b];
     CNT_OPERATOR,            // Example: a + b

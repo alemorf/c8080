@@ -49,8 +49,10 @@ enum COperatorCode {
     COP_SET_XOR,
     COP_IF,
     COP_COMMA,
-    COP_CMP_L_ADD_CONST,
-    COP_CMP_GE_ADD_CONST,
+    COP_CMP_L_ADD_CONST,  // Аналогичен COP_CMP_L, но один из аргументов негативный
+                          // для использования быстрой команды процессора DAD
+    COP_CMP_GE_ADD_CONST  // Аналогичен COP_CMP_GE, но один из аргументов негативный
+                          // для использования быстрой команды процессора DAD
 };
 
 bool IsSetOperator(COperatorCode code);
