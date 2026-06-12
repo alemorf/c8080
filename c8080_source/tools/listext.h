@@ -22,7 +22,7 @@
 
 template <class T>
 inline T *Add(std::list<T> &a) {
-    a.push_back(T());
+    a.emplace_back();
     return &a.back();
 }
 

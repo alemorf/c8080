@@ -71,10 +71,8 @@ void RegisterProhibitedOutputNames(CProgramm &programm) {
         "iyl",
     };
 
-    for (auto name : prohibited_output_names) {
-        const bool result = programm.AddOutputName(name);
-        assert(result);
-    }
+    for (auto name : prohibited_output_names)
+        programm.AddOutputName(name);
 }
 
 void Compile(CParser &parser, CProgramm &programm, OutputFormat output_format, CString output_file_bin,

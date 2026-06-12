@@ -147,7 +147,9 @@ CNodePtr CParserFile::ParseAsm(CErrorPosition &e) {
         l.ThrowSyntaxError();
     }
 
-    CParseAsmEqus(str, programm.asm_names);
+    const char *saved_string = programm.SaveString(str);
+
+    CParseAsmEqus(saved_string, programm.asm_names);
 
     return CNODE({CNT_ASM, text : str, e : e});
 }

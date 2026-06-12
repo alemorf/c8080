@@ -18,12 +18,6 @@
 #include "cprogramm.h"
 #include <stdexcept>
 #include <iostream>
-#include "../tools/listext.h"
-
-bool CProgramm::AddOutputName(CString name) {
-    output_names[name] = 1;
-    return true;
-}
 
 CVariablePtr CProgramm::FindVariable(CString name) {
     auto i = variables.find(name);
@@ -38,7 +32,7 @@ void CProgramm::AddVariable(CVariablePtr a) {
         lo_name.resize(max_string_size);
 
     for (char &c : lo_name)
-        c = tolower(c);
+        c = tolower(static_cast<unsigned char>(c));
 
     std::string alt_name = lo_name;
     if (!cmm || !a->is_label)
@@ -46,7 +40,7 @@ void CProgramm::AddVariable(CVariablePtr a) {
             alt_name = lo_name + "_" + std::to_string(unique_counter++);
     a->output_name = alt_name;
 
-    output_names[alt_name] = 0;
+    output_names.insert(alt_name);
 
     all_top_variables.push_back(a);
 
@@ -77,10 +71,4 @@ void CProgramm::Error(const CErrorPosition &e, CString text, const char *type) {
 
 void CProgramm::Note(const CErrorPosition &e, CString text) {
     Error(e, text, "note");
-}
-
-const char *CProgramm::SaveString(const char *data, size_t size) {
-    std::string &buffer = *Add(saved_strings);  // TODO: Big buffer
-    buffer.assign(data, size);
-    return buffer.c_str();
 }

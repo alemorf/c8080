@@ -17,21 +17,19 @@
 
 #include "cparseasmequs.h"
 
-void CParseAsmEqus(CString str, std::map<std::string, int> &out_values) {
-    const char *p = str.c_str();
+void CParseAsmEqus(const char *str, std::set<CString> &out_values) {
+    const char *p = str;
     for (;;) {
-        if (isalnum(*p) || *p == '_') {
+        if (isalnum(static_cast<unsigned char>(*p)) || *p == '_') {
             const char *line_start = p;
             do {
                 p++;
-            } while (isalnum(*p) || *p == '_');
+            } while (isalnum(static_cast<unsigned char>(*p)) || *p == '_');
             const char *is_end = p;
             while (*p == ' ')
                 p++;
-            if (*p == '=' || *p == ':') {
-                std::string id(line_start, is_end - line_start);
-                out_values[id] = 1;
-            }
+            if (*p == '=' || *p == ':')
+                out_values.insert(CString(line_start, is_end - line_start));
         }
         p = strchr(p, '\n');
         if (p == nullptr)

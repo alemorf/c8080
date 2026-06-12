@@ -81,7 +81,7 @@ const char *CDecodeString(std::string &str, std::map<uint32_t, uint8_t> *codepag
                 case '7': {
                     src--;
                     char *end = nullptr;
-                    const unsigned long long result = strtoull(src, &end, 8);
+                    const unsigned long long result = strtoull(src, &end, 8);  // TODO
                     if (result > UINT8_MAX || src == end)
                         return "octal escape sequence out of range";  // gcc
                     src = end;
@@ -90,7 +90,7 @@ const char *CDecodeString(std::string &str, std::map<uint32_t, uint8_t> *codepag
                 }
                 case 'x': {
                     char *end = nullptr;
-                    const unsigned long long result = strtoull(src, &end, 16);
+                    const unsigned long long result = strtoull(src, &end, 16);  // TODO
                     if (src == end)
                         return "\\x used with no following hex digits";  // gcc
                     if (result > UINT8_MAX)

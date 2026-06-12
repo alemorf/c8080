@@ -19,10 +19,13 @@
 
 #include <map>
 #include <list>
+#include <vector>
+#include <set>
 #include "cnode.h"
 #include "cconststring.h"
 #include "cvariable.h"
 #include "../8080/treeextensions/cprogramm8080.h"
+#include "../tools/stringstack.h"
 
 class CProgramm {
 public:
@@ -30,11 +33,11 @@ public:
     std::map<std::string, CConstStringPtr> const_strings;
     std::map<std::string, CStructPtr> structs;
     std::map<std::string, CStructPtr> unions;
-    std::list<std::string> saved_strings;           // TODO: Remove
+    StringStack string_stack;
     std::map<std::string, CVariablePtr> variables;  // no static
     std::vector<CVariablePtr> all_top_variables;    // with static
-    std::map<std::string, int> output_names;
-    std::map<std::string, int> asm_names;
+    std::set<std::string> output_names;
+    std::set<CString> asm_names;
     bool cmm{};  // cmm language mode
     bool error{};
     uint64_t unique_counter{};
@@ -43,15 +46,22 @@ public:
 
     CProgramm8080 c;
 
-    bool AddOutputName(CString name);
     CVariablePtr FindVariable(CString name);
     void AddVariable(CVariablePtr a);
     CConstStringPtr RegisterConstString(CString text);
     void Error(const CErrorPosition &e, CString text, const char *type = "error");
     void Note(const CErrorPosition &e, CString text);
-    const char *SaveString(const char *data, size_t size);
+
+    void AddOutputName(CString name) {
+        output_names.insert(name);
+    }
+
+    const char *SaveString(const char *data, size_t size) {
+        return string_stack.Save(data, size);
+    }
+
     const char *SaveString(const std::string &data) {
-        return SaveString(data.c_str(), data.size());
+        return string_stack.Save(data.c_str(), data.size());
     }
 
     CVariableMode GetVariableMode(CType &t) const {
