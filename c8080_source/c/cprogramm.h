@@ -50,6 +50,9 @@ public:
     void Error(const CErrorPosition &e, CString text, const char *type = "error");
     void Note(const CErrorPosition &e, CString text);
     const char *SaveString(const char *data, size_t size);
+    const char *SaveString(const std::string &data) {
+        return SaveString(data.c_str(), data.size());
+    }
 
     CVariableMode GetVariableMode(CType &t) const {
         return t.variables_mode == CVM_NOT_SET ? default_variables_mode : t.variables_mode;

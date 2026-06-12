@@ -56,6 +56,9 @@ CStructPtr CParserBase::BindStructUnion(CString name, bool is_union, bool is_glo
     auto &scope = is_union ? scope_unions : scope_structs;
     auto &global_map = is_union ? programm.unions : programm.structs;
 
+    if (name.empty())
+        name = programm.SaveString(e.ToString());
+
     if (!name.empty()) {
         // Check unique name in view scope
         for (auto i = scope.rbegin(); i != scope.rend(); i++)  // TODO: Use map
