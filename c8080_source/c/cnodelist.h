@@ -23,5 +23,5 @@ class CNodeList {
 public:
     CNodePtr first, last;
 
-    void PushBack(CNodePtr item);
+    void PushBack(const CNodePtr &item);
 };

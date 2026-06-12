@@ -17,20 +17,20 @@
 
 #pragma once
 
-#include <limits.h>
+#include <stdint.h>
 
-static const uint8_t C_SIZEOF_POINTER = 2;
-static const uint8_t C_SIZEOF_CHAR = 1;
-static const uint8_t C_SIZEOF_SHORT = 2;
-static const uint8_t C_SIZEOF_INT = 2;
-static const int16_t C_INT_MIN = SHRT_MIN;
-static const int16_t C_INT_MAX = SHRT_MAX;
-static const uint16_t C_UINT_MAX = USHRT_MAX;
-static const int32_t C_LONG_MAX = INT_MAX;
-static const uint32_t C_ULONG_MAX = UINT_MAX;
-static const uint8_t C_SIZEOF_LONG = 4;
-static const uint8_t C_SIZEOF_LONG_LONG = 8;
-static const uint8_t C_SIZEOF_FLOAT = 4;
-static const uint8_t C_SIZEOF_DOUBLE = 8;
-static const uint8_t C_SIZEOF_LONG_DOUBLE = 16;
-static const uint16_t C_SIZE_MAX = USHRT_MAX;
+static constexpr uint8_t C_SIZEOF_POINTER = 2;
+static constexpr uint8_t C_SIZEOF_CHAR = 1;
+static constexpr uint8_t C_SIZEOF_SHORT = 2;
+static constexpr uint8_t C_SIZEOF_INT = 2;
+static constexpr int16_t C_INT_MIN = (int16_t)-0x8000;
+static constexpr int16_t C_INT_MAX = 0x7FFF;
+static constexpr uint16_t C_UINT_MAX = 0xFFFFu;
+static constexpr int32_t C_LONG_MAX = 0x7FFFFFFF;
+static constexpr uint32_t C_ULONG_MAX = 0xFFFFFFFFu;
+static constexpr uint8_t C_SIZEOF_LONG = 4;
+static constexpr uint8_t C_SIZEOF_LONG_LONG = 8;
+static constexpr uint8_t C_SIZEOF_FLOAT = 4;
+static constexpr uint8_t C_SIZEOF_DOUBLE = 8;
+static constexpr uint8_t C_SIZEOF_LONG_DOUBLE = 16;
+static constexpr uint16_t C_SIZE_MAX = 0xFFFFu;

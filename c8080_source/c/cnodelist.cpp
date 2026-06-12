@@ -18,13 +18,13 @@
 #include "cnodelist.h"
 #include "cnode.h"
 
-void CNodeList::PushBack(CNodePtr item) {
+void CNodeList::PushBack(const CNodePtr &item) {
     if (first == nullptr) {
         first = item;
         last = item;
     } else {
+        last->next_node = item;
         while (last->next_node != nullptr)
             last = last->next_node;
-        last->next_node = item;
     }
 }
