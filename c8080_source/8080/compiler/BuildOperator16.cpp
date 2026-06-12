@@ -127,7 +127,7 @@ bool Compiler::Case_IncDec16_N(CNodePtr &node, AsmRegister reg) {
 }
 
 bool Compiler::Case_Mul16_MC(CNodePtr &node, AsmRegister reg) {
-    if (node->operator_code == COP_MUL && node->b->type == CNT_NUMBER && node->a->ctype.IsUnsigned()) {
+    if (node->operator_code == COP_MUL && node->b->type == CNT_NUMBER) {
         OutMul16(node->a, GetNumberAsUint64(node->b), reg);
         return true;
     }
@@ -135,8 +135,7 @@ bool Compiler::Case_Mul16_MC(CNodePtr &node, AsmRegister reg) {
 }
 
 bool Compiler::Case_Mul16_AC(CNodePtr &node, AsmRegister reg) {
-    if (node->operator_code == COP_MUL && node->b->type == CNT_NUMBER && node->a->compiler.alt.able &&
-        node->a->ctype.IsUnsigned()) {
+    if (node->operator_code == COP_MUL && node->b->type == CNT_NUMBER && node->a->compiler.alt.able) {
         OutMul16(node->a, GetNumberAsUint64(node->b), R16_DE);
         return true;
     }
@@ -144,7 +143,7 @@ bool Compiler::Case_Mul16_AC(CNodePtr &node, AsmRegister reg) {
 }
 
 bool Compiler::Case_Mul16_MCR(CNodePtr &node, AsmRegister reg) {
-    if (node->operator_code == COP_MUL && node->a->type == CNT_NUMBER && node->a->ctype.IsUnsigned()) {
+    if (node->operator_code == COP_MUL && node->a->type == CNT_NUMBER) {
         OutMul16(node->b, GetNumberAsUint64(node->a), R16_HL);
         return true;
     }
@@ -152,8 +151,7 @@ bool Compiler::Case_Mul16_MCR(CNodePtr &node, AsmRegister reg) {
 }
 
 bool Compiler::Case_Mul16_ACR(CNodePtr &node, AsmRegister reg) {
-    if (node->operator_code == COP_MUL && node->a->type == CNT_NUMBER && node->b->compiler.alt.able &&
-        node->a->ctype.IsUnsigned()) {
+    if (node->operator_code == COP_MUL && node->a->type == CNT_NUMBER && node->b->compiler.alt.able) {
         OutMul16(node->b, GetNumberAsUint64(node->a), R16_DE);
         return true;
     }

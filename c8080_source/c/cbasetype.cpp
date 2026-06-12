@@ -65,29 +65,7 @@ uint8_t SizeOf(CBaseType type, CConstErrorPosition &e) {
 // Check for integer base type
 
 bool IsInteger(CBaseType type) {
-    switch (type) {
-        case CBT_CHAR:
-        case CBT_UNSIGNED_CHAR:
-        case CBT_SIGNED_CHAR:
-        case CBT_SHORT:
-        case CBT_UNSIGNED_SHORT:
-        case CBT_INT:
-        case CBT_UNSIGNED_INT:
-        case CBT_LONG:
-        case CBT_UNSIGNED_LONG:
-        case CBT_LONG_LONG:
-        case CBT_UNSIGNED_LONG_LONG:
-            return true;
-        case CBT_STRUCT:
-        case CBT_FUNCTION:
-        case CBT_VOID:
-        case CBT_FLOAT:
-        case CBT_DOUBLE:
-        case CBT_LONG_DOUBLE:
-        case CBT_VA_LIST:
-            return false;
-    }
-    return false;
+    return type >= CBT_CHAR && type <= CBT_UNSIGNED_LONG_LONG;
 }
 
 // Check for unsigned base type
@@ -100,28 +78,18 @@ bool IsUnsigned(CBaseType type) {
         case CBT_UNSIGNED_LONG:
         case CBT_UNSIGNED_LONG_LONG:
             return true;
-        case CBT_STRUCT:
-        case CBT_FUNCTION:
-        case CBT_VOID:
-        case CBT_CHAR:
-        case CBT_SIGNED_CHAR:
-        case CBT_SHORT:
-        case CBT_INT:
-        case CBT_LONG:
-        case CBT_LONG_LONG:
-        case CBT_FLOAT:
-        case CBT_DOUBLE:
-        case CBT_LONG_DOUBLE:
-        case CBT_VA_LIST:
+        default:
             return false;
     }
-    return false;
 }
 
 // Base type of the result after an operation on values ​​of base types
-// Example: char + unsigned char => unsigned int
+// Example: char + unsigned int => unsigned int
 
 CBaseType CalcResultCBaseType(CBaseType a, CBaseType b) {
+    if (a < CBT_CHAR || a > CBT_LONG_DOUBLE || b < CBT_CHAR || b > CBT_LONG_DOUBLE)
+        return CBT_VOID;  // Error
+
     static_assert(CBT_CHAR < CBT_UNSIGNED_CHAR, "");
     static_assert(CBT_UNSIGNED_CHAR < CBT_SIGNED_CHAR, "");
     static_assert(CBT_SIGNED_CHAR < CBT_SHORT, "");
@@ -136,32 +104,21 @@ CBaseType CalcResultCBaseType(CBaseType a, CBaseType b) {
     static_assert(CBT_FLOAT < CBT_DOUBLE, "");
     static_assert(CBT_DOUBLE < CBT_LONG_DOUBLE, "");
 
-    switch (std::max(a, b)) {
-        case CBT_CHAR:
-        case CBT_UNSIGNED_CHAR:
-        case CBT_SIGNED_CHAR:
-        case CBT_SHORT:
-        case CBT_UNSIGNED_SHORT:
-        case CBT_INT:
-        case CBT_UNSIGNED_INT:
-            return (IsUnsigned(a) || IsUnsigned(b)) ? CBT_UNSIGNED_INT : CBT_INT;
-        case CBT_LONG:
-        case CBT_UNSIGNED_LONG:
-            return (IsUnsigned(a) || IsUnsigned(b)) ? CBT_UNSIGNED_LONG : CBT_LONG;
-        case CBT_LONG_LONG:
-        case CBT_UNSIGNED_LONG_LONG:
-            return (IsUnsigned(a) || IsUnsigned(b)) ? CBT_UNSIGNED_LONG_LONG : CBT_LONG_LONG;
-        case CBT_FLOAT:
-            return CBT_FLOAT;
-        case CBT_DOUBLE:
-            return CBT_DOUBLE;
-        case CBT_LONG_DOUBLE:
-            return CBT_LONG_DOUBLE;
-        case CBT_STRUCT:
-        case CBT_FUNCTION:
-        case CBT_VOID:
-        case CBT_VA_LIST:
-            return CBT_VOID;
-    }
-    return CBT_VOID;  // Error
+    static_assert(C_SIZEOF_CHAR < C_SIZEOF_SHORT, "");
+    static_assert(C_SIZEOF_SHORT == C_SIZEOF_INT, "");
+    static_assert(C_SIZEOF_INT < C_SIZEOF_LONG, "");
+    static_assert(C_SIZEOF_LONG < C_SIZEOF_LONG_LONG, "");
+
+    // CBT_CHAR is 1 byte
+    // CBT_SHORT is 2 byte
+    // CBT_INT is 2 byte
+    // CBT_LONG is 4 byte
+    // CBT_LONG_LONG is 8 byte
+
+    if (a < CBT_INT)
+        a = (a == CBT_UNSIGNED_SHORT ? CBT_UNSIGNED_INT : CBT_INT);
+    if (b < CBT_INT)
+        b = (b == CBT_UNSIGNED_SHORT ? CBT_UNSIGNED_INT : CBT_INT);
+
+    return std::max(a, b);
 }
