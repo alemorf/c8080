@@ -23,7 +23,6 @@ namespace I8080 {
 void Compiler::OutMul16(CNodePtr &var, uint16_t number, AsmRegister reg) {
     assert(var != nullptr);
     assert(var->ctype.Is16BitType());
-    assert(var->ctype.IsUnsigned());
     assert(reg == R16_HL || reg == R16_DE || reg == REG_NONE);
 
     if (reg == REG_NONE) {
