@@ -46,7 +46,7 @@ void DrawWindowText(uint8_t y, const char *text) {
 uint8_t DrawWindow(uint8_t x, uint8_t height, const char *title) {
     HideCursor();
     window_x = x;
-    uint8_t y = ((TEXT_HEIGHT - 6) - height) / 2;
+    uint8_t y = ((TEXT_HEIGHT - 6) - height) / 2U;
     const uint8_t result = y;
     DrawWindowText(y, "╔══════════════════════════╗");
     y++;

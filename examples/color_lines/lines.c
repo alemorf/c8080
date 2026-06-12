@@ -67,7 +67,7 @@ struct HiScore hiScores[] = {
 void *CellAddress(uint8_t x, uint8_t y) {
     x = PLAYFIELD_X + x * CELL_TILE_WIDTH;
 #ifdef CELL_HALF_HEIGHT
-    y = PLAYFIELD_Y + (y * (CELL_TILE_HEIGHT * 2 - 1) + 1) / 2;
+    y = PLAYFIELD_Y + (unsigned)(y * (CELL_TILE_HEIGHT * 2 - 1) + 1) / 2;
 #else
     y = PLAYFIELD_Y + y * CELL_TILE_HEIGHT;
 #endif
@@ -337,7 +337,7 @@ static uint8_t GameStep(uint8_t newGame) {
     uint8_t i;
     struct XY coords[NEW_BALL_COUNT];
     for (i = 0; i < newBallCount; i++) {
-        uint8_t n = rand() % freeCellCount;
+        uint8_t n = (unsigned)rand() % freeCellCount;
         freeCellCount--;
         uint8_t *p = &game[0][0];
         for (;;) {
