@@ -21,6 +21,16 @@
 #include <c8080/c8080.h>
 #include <stdarg.h>
 
+#define EOF (-1)
+
+typedef struct FILE {
+    int fd;
+} FILE;
+
+extern FILE *stdin __link("stdio_h/stdin.c");
+extern FILE *stdout __link("stdio_h/stdout.c");
+extern FILE *stderr __link("stdio_h/stderr.c");
+
 int vsnprintf(char *buffer, size_t buffer_size, const char *format, va_list va) __link("stdio_h/snprintf.c");
 int snprintf(char *buffer, size_t bufer_size, const char *format, ...) __link("stdio_h/snprintf.c");
 int vsprintf(char *buffer, const char *format, va_list va) __link("stdio_h/snprintf.c");
@@ -29,4 +39,4 @@ int printf(const char *format, ...) __link("stdio_h/printf.c");
 int vprintf(const char *format, va_list va) __link("stdio_h/printf.c");
 int puts(const char *text) __link("stdio_h/puts.c");
 int getchar(void) __link("stdio_h/getchar.c");
-int __global putchar(int c) __link("stdio_h/putchar.c");
+int putchar(int c) __link("stdio_h/putchar.c");
