@@ -61,6 +61,7 @@ bool PrepareFast8BitOptimization(Prepare &, CNodePtr &node) {
                     if (result) {
                         node->a = Convert(CTYPE_UNSIGNED_CHAR, node->a);  // The sign has no meaning on 8 bits
                         node->b = Convert(CTYPE_UNSIGNED_CHAR, node->b);
+                        return true;
                     }
                 }
                 return false;
