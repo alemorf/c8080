@@ -20,106 +20,94 @@
 #include "../tools/nodeisnumber.h"
 
 template <class T>
-T &GetNumber(CNodePtr &node);
-
-template <>
-int64_t &GetNumber(CNodePtr &node) {
-    return node->number.i;
-}
-
-template <>
-uint64_t &GetNumber(CNodePtr &node) {
-    return node->number.u;
-}
-
-template <>
-float &GetNumber(CNodePtr &node) {
-    return node->number.f;
-}
-
-template <>
-double &GetNumber(CNodePtr &node) {
-    return node->number.d;
-}
-
-template <>
-long double &GetNumber(CNodePtr &node) {
-    return node->number.ld;
+static T &GetNumber(CNodePtr &node) {
+    if constexpr (std::is_same_v<T, int64_t>)
+        return node->number.i;
+    else if constexpr (std::is_same_v<T, uint64_t>)
+        return node->number.u;
+    else if constexpr (std::is_same_v<T, float>)
+        return node->number.f;
+    else if constexpr (std::is_same_v<T, double>)
+        return node->number.d;
+    else if constexpr (std::is_same_v<T, long double>)
+        return node->number.ld;
+    else
+        return 0;
 }
 
 template <class T>
-static bool CalcOperatorInt(CNodePtr &node) {
-    switch (node->operator_code) {
-        case COP_ADD:
-            GetNumber<T>(node) = GetNumber<T>(node->a) + GetNumber<T>(node->b);
-            return true;
-        case COP_SUB:
-            GetNumber<T>(node) = GetNumber<T>(node->a) - GetNumber<T>(node->b);
-            return true;
-        case COP_MUL:
-            GetNumber<T>(node) = GetNumber<T>(node->a) * GetNumber<T>(node->b);
-            return true;
-        case COP_DIV:
-            if (GetNumber<T>(node->b) == 0)
-                CThrow(node, "division by zero");  // gcc
-            GetNumber<T>(node) = GetNumber<T>(node->a) / GetNumber<T>(node->b);
-            return true;
-        case COP_CMP_L:
-            node->number.u = (GetNumber<T>(node->a) < GetNumber<T>(node->b));
-            return true;
-        case COP_CMP_G:
-            node->number.u = (GetNumber<T>(node->a) > GetNumber<T>(node->b));
-            return true;
-        case COP_CMP_LE:
-            node->number.u = (GetNumber<T>(node->a) <= GetNumber<T>(node->b));
-            return true;
-        case COP_CMP_GE:
-            node->number.u = (GetNumber<T>(node->a) >= GetNumber<T>(node->b));
-            return true;
-        case COP_CMP_E:
-            node->number.u = (GetNumber<T>(node->a) == GetNumber<T>(node->b));
-            return true;
-        case COP_CMP_NE:
-            node->number.u = (GetNumber<T>(node->a) != GetNumber<T>(node->b));
-            return true;
-        case COP_LAND:
-            node->number.u = (GetNumber<T>(node->a) && GetNumber<T>(node->b));
-            return true;
-        case COP_LOR:
-            node->number.u = (GetNumber<T>(node->a) || GetNumber<T>(node->b));
-            return true;
-    }
-    return false;
-}
-
-template <class T>
-static bool CalcOperatorIntFixed(CNodePtr &node) {
+static bool CalcOperatorInternal(CNodePtr &node) {
+    auto &r = GetNumber<T>(node);
+    const auto a = GetNumber<T>(node->a);
+    const auto b = GetNumber<T>(node->b);
     switch (node->operator_code) {
         case COP_COMMA:
-            GetNumber<T>(node) = GetNumber<T>(node->b);
+            r = b;
             return true;
-        case COP_MOD:
-            if (GetNumber<T>(node->b) == 0)
+        case COP_ADD:
+            r = a + b;
+            return true;
+        case COP_SUB:
+            r = a - b;
+            return true;
+        case COP_MUL:
+            r = a * b;
+            return true;
+        case COP_DIV:
+            if (b == 0)
                 CThrow(node, "division by zero");  // gcc
-            GetNumber<T>(node) = GetNumber<T>(node->a) % GetNumber<T>(node->b);
+            r = a / b;
             return true;
-        case COP_OR:
-            GetNumber<T>(node) = GetNumber<T>(node->a) | GetNumber<T>(node->b);
+        case COP_CMP_L:
+            node->number.u = (a < b);
             return true;
-        case COP_AND:
-            GetNumber<T>(node) = GetNumber<T>(node->a) & GetNumber<T>(node->b);
+        case COP_CMP_G:
+            node->number.u = (a > b);
             return true;
-        case COP_XOR:
-            GetNumber<T>(node) = GetNumber<T>(node->a) ^ GetNumber<T>(node->b);
+        case COP_CMP_LE:
+            node->number.u = (a <= b);
             return true;
-        case COP_SHR:
-            GetNumber<T>(node) = GetNumber<T>(node->a) >> GetNumber<T>(node->b);
+        case COP_CMP_GE:
+            node->number.u = (a >= b);
             return true;
-        case COP_SHL:
-            GetNumber<T>(node) = GetNumber<T>(node->a) << GetNumber<T>(node->b);
+        case COP_CMP_E:
+            node->number.u = (a == b);
+            return true;
+        case COP_CMP_NE:
+            node->number.u = (a != b);
+            return true;
+        case COP_LAND:
+            node->number.u = (a && b);
+            return true;
+        case COP_LOR:
+            node->number.u = (a || b);
             return true;
     }
-    return CalcOperatorInt<T>(node);
+    if constexpr (!std::is_floating_point_v<T>) {
+        switch (node->operator_code) {
+            case COP_MOD:
+                if (b == 0)
+                    CThrow(node, "division by zero");  // gcc
+                r = a % b;
+                return true;
+            case COP_OR:
+                r = a | b;
+                return true;
+            case COP_AND:
+                r = a & b;
+                return true;
+            case COP_XOR:
+                r = a ^ b;
+                return true;
+            case COP_SHR:
+                r = a >> b;
+                return true;
+            case COP_SHL:
+                r = a << b;
+                return true;
+        }
+    }
+    return false;
 }
 
 static bool CalcOperator(CNodePtr &node) {
@@ -130,24 +118,24 @@ static bool CalcOperator(CNodePtr &node) {
         case CBT_INT16:
         case CBT_INT32:
         case CBT_INT64:
-            return CalcOperatorIntFixed<int64_t>(node);
+            return CalcOperatorInternal<int64_t>(node);
         case CBT_UINT8:
         case CBT_UINT16:
         case CBT_UINT32:
         case CBT_UINT64:
-            return CalcOperatorIntFixed<uint64_t>(node);
+            return CalcOperatorInternal<uint64_t>(node);
         case CBT_FLOAT:
-            return CalcOperatorInt<float>(node);
+            return CalcOperatorInternal<float>(node);
         case CBT_DOUBLE:
-            return CalcOperatorInt<double>(node);
+            return CalcOperatorInternal<double>(node);
         case CBT_LONG_DOUBLE:
-            return CalcOperatorInt<long double>(node);
+            return CalcOperatorInternal<long double>(node);
     }
     return false;
 }
 
 template <class T>
-static bool CalcMonoOperatorInt(CNodePtr &node) {
+static bool CalcMonoOperatorInternal(CNodePtr &node) {
     switch (node->mono_operator_code) {
         case MOP_PLUS:
             GetNumber<T>(node) = +GetNumber<T>(node->a);
@@ -159,17 +147,14 @@ static bool CalcMonoOperatorInt(CNodePtr &node) {
             node->number.u = !GetNumber<T>(node->a);
             return true;
     }
-    return false;
-}
-
-template <class T>
-static bool CalcMonoOperatorIntFixed(CNodePtr &node) {
-    switch (node->mono_operator_code) {
-        case MOP_NEG:
-            GetNumber<T>(node) = ~GetNumber<T>(node->a);
-            return true;
+    if constexpr (!std::is_floating_point_v<T>) {
+        switch (node->mono_operator_code) {
+            case MOP_NEG:
+                GetNumber<T>(node) = ~GetNumber<T>(node->a);
+                return true;
+        }
     }
-    return CalcMonoOperatorInt<T>(node);
+    return false;
 }
 
 static bool CalcMonoOperator(CNodePtr &node) {
@@ -178,24 +163,24 @@ static bool CalcMonoOperator(CNodePtr &node) {
         case CBT_INT16:
         case CBT_INT32:
         case CBT_INT64:
-            return CalcMonoOperatorIntFixed<int64_t>(node);
+            return CalcMonoOperatorInternal<int64_t>(node);
         case CBT_UINT8:
         case CBT_UINT16:
         case CBT_UINT32:
         case CBT_UINT64:
-            return CalcMonoOperatorIntFixed<uint64_t>(node);
+            return CalcMonoOperatorInternal<uint64_t>(node);
         case CBT_FLOAT:
-            return CalcMonoOperatorInt<float>(node);
+            return CalcMonoOperatorInternal<float>(node);
         case CBT_DOUBLE:
-            return CalcMonoOperatorInt<double>(node);
+            return CalcMonoOperatorInternal<double>(node);
         case CBT_LONG_DOUBLE:
-            return CalcMonoOperatorInt<long double>(node);
+            return CalcMonoOperatorInternal<long double>(node);
     }
     return false;
 }
 
 template <class A, class T>
-static bool CalcConvertInt(A &to, CNodePtr &node) {
+static bool CalcConvertInternal(A &to, CNodePtr &node) {
     switch (node->ctype.GetAsmType()) {
         case CBT_INT8:
         case CBT_INT16:
@@ -228,27 +213,27 @@ static bool CCalcConvert(CNodePtr &to_node, CNodePtr &node) {
 
     switch (to_node->ctype.GetAsmType()) {
         case CBT_INT8:
-            return CalcConvertInt<int64_t, int8_t>(to_node->number.i, node);
+            return CalcConvertInternal<int64_t, int8_t>(to_node->number.i, node);
         case CBT_UINT8:
-            return CalcConvertInt<uint64_t, uint8_t>(to_node->number.u, node);
+            return CalcConvertInternal<uint64_t, uint8_t>(to_node->number.u, node);
         case CBT_INT16:
-            return CalcConvertInt<int64_t, int16_t>(to_node->number.i, node);
+            return CalcConvertInternal<int64_t, int16_t>(to_node->number.i, node);
         case CBT_UINT16:
-            return CalcConvertInt<uint64_t, uint16_t>(to_node->number.u, node);
+            return CalcConvertInternal<uint64_t, uint16_t>(to_node->number.u, node);
         case CBT_INT32:
-            return CalcConvertInt<int64_t, int32_t>(to_node->number.i, node);
+            return CalcConvertInternal<int64_t, int32_t>(to_node->number.i, node);
         case CBT_UINT32:
-            return CalcConvertInt<uint64_t, uint32_t>(to_node->number.u, node);
+            return CalcConvertInternal<uint64_t, uint32_t>(to_node->number.u, node);
         case CBT_INT64:
-            return CalcConvertInt<int64_t, int64_t>(to_node->number.i, node);
+            return CalcConvertInternal<int64_t, int64_t>(to_node->number.i, node);
         case CBT_UINT64:
-            return CalcConvertInt<uint64_t, uint64_t>(to_node->number.u, node);
+            return CalcConvertInternal<uint64_t, uint64_t>(to_node->number.u, node);
         case CBT_FLOAT:
-            return CalcConvertInt<float, float>(to_node->number.f, node);
+            return CalcConvertInternal<float, float>(to_node->number.f, node);
         case CBT_DOUBLE:
-            return CalcConvertInt<double, double>(to_node->number.d, node);
+            return CalcConvertInternal<double, double>(to_node->number.d, node);
         case CBT_LONG_DOUBLE:
-            return CalcConvertInt<long double, long double>(to_node->number.ld, node);
+            return CalcConvertInternal<long double, long double>(to_node->number.ld, node);
     }
     return false;
 }
@@ -262,6 +247,7 @@ bool CCalcConst(CNodePtr &node, bool process_childs) {
                     if (!node->variable->c_calc_const_executed) {
                         node->variable->c_calc_const_executed = true;       // Prevent recursion
                         changed |= CCalcConst(node->variable->body, true);  // TODO: Don't call everytime
+                        node->variable->c_calc_const_executed = false;
                     }
                     if (node->variable->body->type == CNT_NUMBER) {
                         node->ctype = node->variable->body->ctype;
