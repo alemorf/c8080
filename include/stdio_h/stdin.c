@@ -17,5 +17,5 @@
 
 #include <stdio.h>
 
-static FILE __stdin = { 0 };
+static FILE __stdin = {0};
 FILE *stdin = &__stdin;

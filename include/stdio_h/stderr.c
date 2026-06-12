@@ -17,5 +17,5 @@
 
 #include <stdio.h>
 
-static FILE __stderr = { 2 };
+static FILE __stderr = {2};
 FILE *stderr = &__stderr;

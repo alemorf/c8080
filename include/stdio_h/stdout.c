@@ -17,5 +17,5 @@
 
 #include <stdio.h>
 
-static FILE __stdout = { 1 };
+static FILE __stdout = {1};
 FILE *stdout = &__stdout;
