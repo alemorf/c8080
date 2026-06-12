@@ -22,7 +22,7 @@
 #include "../8080/treeextensions/cconststringcomiler.h"
 
 struct CConstString {
-    std::string text;
+    CString text;
     I8080::CConstStringCompiler compiler;
 };
 

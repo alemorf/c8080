@@ -30,7 +30,7 @@
 class CProgramm {
 public:
     CNodePtr first_node;
-    std::map<std::string, CConstStringPtr> const_strings;
+    std::map<CString, CConstStringPtr> const_strings;
     std::map<std::string, CStructPtr> structs;
     std::map<std::string, CStructPtr> unions;
     StringStack string_stack;
