@@ -1418,19 +1418,23 @@ CNodePtr CParserFile::ParseInitBlock(CType &type, bool can_change_size) {
             return nullptr;
 
         CNodeList init;
-        bool stop = false;
+        unsigned stop = 0;
         for (auto &i : type.struct_object->items) {
             CErrorPosition e(l);
             if (stop) {
                 init.PushBack(CNODE({CNT_IMMEDIATE_STRING, ctype : i->type, e : e}));
+            } else if (l.IfToken("}")) {
+                stop = 2;
             } else {
                 CNodePtr e = ParseInitBlock(i->type, false);
                 if (e)
                     init.PushBack(e);
-                stop = !l.IfToken(",");
+                if (!l.IfToken(","))
+                    stop = 1;
             }
         }
-        l.CloseToken("}", "}");
+        if (stop != 2)
+            l.CloseToken("}", "}");
         return init.first;
     }
 
