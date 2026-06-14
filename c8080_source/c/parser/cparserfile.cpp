@@ -300,7 +300,7 @@ CNodePtr CParserFile::ParseLine(bool *out_break, bool global) {
         }
 
         CNodePtr node =
-            CNODE({typedef_flag ? CNT_TYPEDEF : CNT_DECLARE_VARIABLE, ctype : type, extern_flag : extern_flag, e : e});
+            CNODE({CNT_DECLARE_VARIABLE, ctype : type, extern_flag : extern_flag, e : e});
 
         bool is_function = type.base_type == CBT_FUNCTION && !type.IsPointer();
         if (is_function)
@@ -538,9 +538,9 @@ void CParserFile::ParseFunction(CNodePtr &node) {
     current_function->function_stack_frame_size = max_stack_size;
 
     // Check labels
-    for (auto &l : scope_labels)
-        if (l.second->only_extern)
-            programm.Error(l.second->e, "label '" + l.second->name + "'  used but not defined");  // gcc
+    for (auto &label : scope_labels)
+        if (label.second->only_extern)
+            programm.Error(label.second->e, "label '" + label.second->name + "'  used but not defined");  // gcc
 
     // Self check
     current_function = nullptr;
@@ -984,15 +984,16 @@ bool CParserFile::ParseTypeWoPointers(CType *out_type, bool can_empty_inital) {
     if (l.IfToken(scope_typedefs, n)) {
         CType flags = *out_type;
         *out_type = scope_typedefs[n].type;
-        out_type->flag_const = flags.flag_const;
-        out_type->flag_static = flags.flag_static;
-        out_type->flag_volatile = flags.flag_volatile;
-        out_type->variables_mode = flags.variables_mode;
+        out_type->flag_static = flags.flag_static; // No static in typedef
+        out_type->flag_const |= flags.flag_const;
+        out_type->flag_volatile |= flags.flag_volatile;
+        if (out_type->variables_mode == CVM_NOT_SET)
+            out_type->variables_mode = flags.variables_mode;
         return true;
     }
 
     out_type->base_type = ParseBaseType();
-    if (out_type->base_type != CBT_STRUCT)
+    if (out_type->base_type != CBT_NONE)
         return true;
 
     if (!can_empty)
@@ -1006,7 +1007,7 @@ CBaseType CParserFile::ParseBaseType() {
         "void", "char", "short", "int", "long", "float", "double", "__builtin_va_list", "signed", "unsigned", nullptr};
     size_t n = 0;
     if (!l.IfToken(strings0, n))
-        return CBT_STRUCT;
+        return CBT_NONE;
 
     static const char *const strings1[] = {"char", "short", "int", "long", nullptr};
     static const char *const strings2[] = {"double", "long", "unsigned", "signed", "int", nullptr};
@@ -1096,7 +1097,7 @@ CBaseType CParserFile::ParseBaseType() {
             break;
     }
     assert(false);
-    return CBT_STRUCT;
+    return CBT_NONE;
 }
 
 CNodePtr CParserFile::ParseExpressionStructItem(CMonoOperatorCode mo, CNodePtr &a, CErrorPosition &e) {
@@ -1242,7 +1243,7 @@ CNodePtr CParserFile::ParseFunctionBody() {
     }
     if (l.IfToken("case")) {
         CNodePtr node = CNODE({CNT_CASE, ParseExpressionComma(), e : e});
-        l.NeedToken(":");
+        l.WantToken(":");
         if (last_switch != nullptr) {
             node->case_link = last_switch->case_link;
             last_switch->case_link = node;
@@ -1259,9 +1260,9 @@ CNodePtr CParserFile::ParseFunctionBody() {
                 programm.Error(e, "multiple default labels in one switch");  // gcc
             last_switch->default_link = node;
         } else {
-            programm.Error(e, "case label not within a switch statement");  // gcc
+            programm.Error(e, "default label not within a switch statement");  // gcc
         }
-        l.NeedToken(":");
+        l.WantToken(":");
         return node;
     }
     if (l.IfToken("switch")) {
@@ -1275,7 +1276,7 @@ CNodePtr CParserFile::ParseFunctionBody() {
         Enter();
         l.NeedToken("{");
         CNodeList body;
-        while (!l.IfToken("}"))
+        while (!l.IfToken("}") && !l.IfToken(CT_EOF))
             body.PushBack(ParseFunctionBody());
         Leave();
         node->b = body.first;
@@ -1339,7 +1340,7 @@ CNodePtr CParserFile::ParseFunctionBody() {
                 l.NeedToken(",");
             }
         }
-        l.NeedToken("{");
+        l.WantToken("{");
         CNodeList body;
         while (!l.IfToken("}"))
             body.PushBack(ParseFunctionBody());
