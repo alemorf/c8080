@@ -16,49 +16,65 @@
  */
 
 #include "common.h"
+#include <stdexcept>
 
 namespace I8080 {
 
 bool UnrefLabel(AsmBase &a, AsmLabel *label) {
     assert(label != nullptr);
 
-    label->used--;
-    if (label->used != 1)
+    label->ref_count--;
+    if (label->ref_count != 1)
         return false;
 
-    label->used--;
+    // Now the label points only to itself and can be deleted
+
+    if (label->destination <= 0 || label->destination > a.lines.size())
+        throw std::runtime_error(std::string("Internal error 1 in ") + __PRETTY_FUNCTION__);
+
+    label->ref_count--;
     AsmBase::Line &labelLine = a.lines[label->destination - 1];
-    assert(labelLine.opcode == AC_LABEL);
+
+    if (labelLine.opcode != AC_LABEL)
+        throw std::runtime_error(std::string("Internal error 2 in ") + __PRETTY_FUNCTION__);
+
     labelLine.opcode = AC_REMOVED;
     return true;
 }
 
-AsmLabel *GetLastLabel(AsmBase &a, AsmLabel *label) {
-    std::vector<AsmLabel *> recursive;
+AsmLabel *GetLabelDestinationRecursive(AsmBase &a, AsmLabel *label, AsmBase::Line *&out_line) {
+    std::vector<AsmLabel *> path;
     for (;;) {
-        // Сломанная метка
+        // Prevent segmentation fault when internal structure is damaged
         if (label == nullptr || label->destination >= a.lines.size())
-            throw std::runtime_error("Incorrect label");
-        // Куда указываем метка
-        AsmBase::Line *destination_line = &a.lines[label->destination];
+            throw std::runtime_error(std::string("Internal error in ") + __PRETTY_FUNCTION__);
 
-        while (destination_line->opcode == AC_REMOVED) {
-            destination_line++;
-            if (destination_line == &*a.lines.end())
-                return label;
+        // Skip unnecessary lines
+        AsmBase::Line *line = &a.lines[label->destination];
+        line = SkipCommentsAndLabels(a, line);
+
+        // Detect jump to jump
+        if (line->opcode == AC_JMP && line->argument[0].label) {
+            // Prevent infinite loop
+            if (std::find(path.begin(), path.end(), label) == path.end()) {
+                path.push_back(label);
+                label = line->argument[0].label;
+                continue;
+            }
         }
 
-        if (destination_line->opcode == AC_JMP && destination_line->argument[0].label) {
-            // Обнаружена рекурсия
-            if (std::find(recursive.begin(), recursive.end(), label) != recursive.end())
-                break;
-            recursive.push_back(label);
-            label = destination_line->argument[0].label;
-        }
-
-        break;
+        out_line = line;
+        return label;
     }
-    return label;
+}
+
+AsmBase::Line *SkipCommentsAndLabels(AsmBase &a, AsmBase::Line *line) {
+    assert(line != nullptr);
+    AsmBase::Line *const lines_end = &*a.lines.end();
+    while (line + 1 < lines_end && (line->opcode == AC_REMOVED || line->opcode == AC_LINE ||
+                                    line->opcode == AC_REMARK || line->opcode == AC_LABEL))
+        line++;
+    return line;
 }
 
 AsmBase::Line *GetNextLine(AsmBase &a, AsmBase::Line *line) {
@@ -69,12 +85,13 @@ AsmBase::Line *GetNextLine(AsmBase &a, AsmBase::Line *line) {
         line++;
         if (line == lines_end)
             return nullptr;
-        if (line->opcode != AC_REMOVED && line->opcode != AC_LINE && line->opcode != AC_REMARK)
-            return line;
+        if (line->opcode == AC_REMOVED || line->opcode == AC_LINE || line->opcode == AC_REMARK)
+            continue;
+        return line;
     }
 }
 
-AsmBase::Line *GetNextLineNoLabel(AsmBase &a, AsmBase::Line *line) {
+AsmBase::Line *GetNextLineSkipLabel(AsmBase &a, AsmBase::Line *line) {
     if (line == nullptr)
         return nullptr;
     AsmBase::Line *const lines_end = &*a.lines.end();
@@ -82,30 +99,10 @@ AsmBase::Line *GetNextLineNoLabel(AsmBase &a, AsmBase::Line *line) {
         line++;
         if (line == lines_end)
             return nullptr;
-        if (line->opcode != AC_REMOVED && line->opcode != AC_LINE && line->opcode != AC_REMARK &&
-            line->opcode != AC_LABEL)
-            return line;
-    }
-}
-
-AsmBase::Line *GetLineNoLabel(AsmBase &a, AsmBase::Line *line) {
-    AsmBase::Line *const lines_end = &*a.lines.end();
-    while (line + 1 < lines_end && (line->opcode == AC_REMOVED || line->opcode == AC_LINE ||
-                                    line->opcode == AC_REMARK || line->opcode == AC_LABEL))
-        line++;
-    return line;
-}
-
-AsmBase::Line *GetCpuLineNoLabel(AsmBase::Line *line, AsmBase::Line *lines_end) {
-    if (line == nullptr)
-        return nullptr;
-    for (;;) {
-        line++;
-        if (line == lines_end)
-            return nullptr;
-        if (line->opcode != AC_REMOVED && line->opcode != AC_LINE && line->opcode != AC_REMARK &&
-            line->opcode != AC_LABEL)
-            return line;
+        if (line->opcode == AC_REMOVED || line->opcode == AC_LINE || line->opcode == AC_REMARK ||
+            line->opcode == AC_LABEL)
+            continue;
+        return line;
     }
 }
 

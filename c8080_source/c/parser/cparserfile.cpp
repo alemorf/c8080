@@ -299,8 +299,7 @@ CNodePtr CParserFile::ParseLine(bool *out_break, bool global) {
             continue;
         }
 
-        CNodePtr node =
-            CNODE({CNT_DECLARE_VARIABLE, ctype : type, extern_flag : extern_flag, e : e});
+        CNodePtr node = CNODE({CNT_DECLARE_VARIABLE, ctype : type, extern_flag : extern_flag, e : e});
 
         bool is_function = type.base_type == CBT_FUNCTION && !type.IsPointer();
         if (is_function)
@@ -984,7 +983,7 @@ bool CParserFile::ParseTypeWoPointers(CType *out_type, bool can_empty_inital) {
     if (l.IfToken(scope_typedefs, n)) {
         CType flags = *out_type;
         *out_type = scope_typedefs[n].type;
-        out_type->flag_static = flags.flag_static; // No static in typedef
+        out_type->flag_static = flags.flag_static;  // No static in typedef
         out_type->flag_const |= flags.flag_const;
         out_type->flag_volatile |= flags.flag_volatile;
         if (out_type->variables_mode == CVM_NOT_SET)

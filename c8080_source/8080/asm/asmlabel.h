@@ -25,7 +25,7 @@ class AsmLabel {
 public:
     size_t number{};
     size_t destination{SIZE_MAX};
-    size_t used{};
+    size_t ref_count{};
     bool jump_back{};
 };
 

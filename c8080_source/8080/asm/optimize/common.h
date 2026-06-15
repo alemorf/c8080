@@ -22,9 +22,9 @@
 namespace I8080 {
 
 bool UnrefLabel(AsmBase &a, AsmLabel *label);
-AsmLabel *GetLastLabel(AsmBase &a, AsmLabel *label);
+AsmLabel *GetLabelDestinationRecursive(AsmBase &a, AsmLabel *label, AsmBase::Line *&out_line);
+AsmBase::Line *SkipCommentsAndLabels(AsmBase &a, AsmBase::Line *line);
 AsmBase::Line *GetNextLine(AsmBase &a, AsmBase::Line *line);
-AsmBase::Line *GetNextLineNoLabel(AsmBase &a, AsmBase::Line *line);
-AsmBase::Line *GetLineNoLabel(AsmBase &a, AsmBase::Line *line);
+AsmBase::Line *GetNextLineSkipLabel(AsmBase &a, AsmBase::Line *line);
 
 }  // namespace I8080

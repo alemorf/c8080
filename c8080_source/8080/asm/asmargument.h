@@ -97,7 +97,7 @@ struct AsmArgument {
     void Set(AsmLabel *l) {
         type = AAT_LABEL;
         label = l;
-        label->used++;
+        label->ref_count++;
     }
 
     bool Is0() const {

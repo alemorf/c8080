@@ -73,7 +73,7 @@ static bool OraAfterAlu(AsmBase &a, AsmBase::Line &l, size_t i) {
 }
 
 static bool RemoveUnusedLabel(AsmBase &a, AsmBase::Line &l) {
-    if (l.opcode == AC_LABEL && l.argument[0].label && l.argument[0].label->used <= 1) {
+    if (l.opcode == AC_LABEL && l.argument[0].label && l.argument[0].label->ref_count <= 1) {
         l.argument[0].label = NULL;
         l.opcode = AC_REMOVED;
         return true;
@@ -93,6 +93,7 @@ static bool JumpToJump(AsmBase &a, AsmBase::Line &l, AsmBase::Line *l1) {
             if (l.argument[0].type == AAT_LABEL)
                 UnrefLabel(a, l.argument[0].label);
             l.opcode = AC_REMOVED;
+            l.argument[0].label = nullptr;
             return true;
         }
 
@@ -109,10 +110,12 @@ static bool JumpToJump(AsmBase &a, AsmBase::Line &l, AsmBase::Line *l1) {
             //     ret           ret
 
             AsmLabel *&s = l.argument[0].label;
-            AsmLabel *d = GetLastLabel(a, s);
-            if (GetLineNoLabel(a, &a.lines[d->destination])->opcode == AC_RET) {
+            AsmBase::Line *l2 = nullptr;
+            AsmLabel *d = GetLabelDestinationRecursive(a, s, l2);
+            if (l2->opcode == AC_RET) {
+                UnrefLabel(a, l.argument[0].label);
                 l.opcode = (l.opcode == AC_JMP) ? AC_RET : AC_RET_CONDITION;
-                UnrefLabel(a, d);
+                l.argument[0].label = nullptr;
                 return true;
             }
 
@@ -128,7 +131,7 @@ static bool JumpToJump(AsmBase &a, AsmBase::Line &l, AsmBase::Line *l1) {
             //     jp  label3    jp  label3
 
             if (s != d) {
-                d->used++;
+                d->ref_count++;
                 UnrefLabel(a, s);
                 s = d;
                 return true;
@@ -138,42 +141,18 @@ static bool JumpToJump(AsmBase &a, AsmBase::Line &l, AsmBase::Line *l1) {
     return false;
 }
 
-static bool LastCall(AsmBase &a, AsmBase::Line &l, AsmBase::Line *l1) {
+static bool LastCall(AsmBase &a, AsmBase::Line &l) {
+    // Replace
+    //     call function     call cc, function
+    //     some_label:       some_label:
+    //     ret               ret
+    // with
+    //     jp   function     jp   cc, function
+    //     some_label:       some_label:
+    //     ret               ret
+
     if (l.opcode == AC_CALL || l.opcode == AC_CALL_CONDITION) {
-        // Replace
-        //     call function
-        //     ret
-        // with
-        //     jp   function
-
-        if (l1 && l1->opcode == AC_RET && l.opcode == AC_CALL) {
-            l.opcode = AC_JMP;
-            l1->opcode = AC_REMOVED;
-            return true;
-        }
-
-        // Replace
-        //     call cc, function
-        //     ret
-        // with
-        //     jp   cc, function
-        //     ret
-
-        if (l1 && l1->opcode == AC_RET && l.opcode == AC_CALL_CONDITION) {
-            l.opcode = AC_JMP_CONDITION;
-            return true;
-        }
-
-        // Replace
-        //     call function
-        //     some_label:
-        //     ret
-        // with
-        //     jp   function
-        //     some_label:
-        //     ret
-
-        AsmBase::Line *l2 = GetNextLineNoLabel(a, &l);
+        AsmBase::Line *l2 = GetNextLineSkipLabel(a, &l);
         if (l2 && l2->opcode == AC_RET) {
             l.opcode = (l.opcode == AC_CALL) ? AC_JMP : AC_JMP_CONDITION;
             return true;
@@ -194,7 +173,7 @@ static bool JumpJump(AsmBase &a, AsmBase::Line &l, size_t i) {
         return true;
     if (JumpToJump(a, l, l1))
         return true;
-    if (LastCall(a, l, l1))
+    if (LastCall(a, l))
         return true;
 
     return false;

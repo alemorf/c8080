@@ -387,7 +387,7 @@ void Cmm::CompileLine(CNodePtr &n, Arg &out_arg) {
                 CompileLevel(n->c);
             }
             out.jmp_label(n->c ? for_label : continue_label);
-            if (break_label->used != 0)
+            if (break_label->ref_count != 0)
                 out.label(break_label);
             break_label = break_label_;
             continue_label = continue_label_;
@@ -408,7 +408,7 @@ void Cmm::CompileLine(CNodePtr &n, Arg &out_arg) {
             } else {
                 out.jmp_label(n->a ? loop_label : continue_label);
             }
-            if (break_label->used != 0)
+            if (break_label->ref_count != 0)
                 out.label(break_label);
             break_label = prev_break_label;
             continue_label = prev_continue_label;

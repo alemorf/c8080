@@ -22,6 +22,9 @@ void CNodeList::PushBack(const CNodePtr &item) {
     if (first == nullptr) {
         first = item;
         last = item;
+        if (last != nullptr)
+            while (last->next_node != nullptr)
+                last = last->next_node;
     } else {
         last->next_node = item;
         while (last->next_node != nullptr)
