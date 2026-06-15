@@ -24,7 +24,7 @@ bool UnrefLabel(AsmBase &a, AsmLabel *label) {
     assert(label != nullptr);
 
     label->ref_count--;
-    if (label->ref_count != 1)
+    if (label->ref_count > 1) // labels also increase ref_count
         return false;
 
     // Now the label points only to itself and can be deleted
@@ -32,13 +32,14 @@ bool UnrefLabel(AsmBase &a, AsmLabel *label) {
     if (label->destination <= 0 || label->destination > a.lines.size())
         throw std::runtime_error(std::string("Internal error 1 in ") + __PRETTY_FUNCTION__);
 
-    label->ref_count--;
+    label->ref_count = 0;
     AsmBase::Line &labelLine = a.lines[label->destination - 1];
 
     if (labelLine.opcode != AC_LABEL)
         throw std::runtime_error(std::string("Internal error 2 in ") + __PRETTY_FUNCTION__);
 
     labelLine.opcode = AC_REMOVED;
+    labelLine.argument[0].label = nullptr;
     return true;
 }
 

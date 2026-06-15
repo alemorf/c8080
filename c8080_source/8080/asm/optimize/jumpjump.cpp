@@ -73,9 +73,8 @@ static bool OraAfterAlu(AsmBase &a, AsmBase::Line &l, size_t i) {
 }
 
 static bool RemoveUnusedLabel(AsmBase &a, AsmBase::Line &l) {
-    if (l.opcode == AC_LABEL && l.argument[0].label && l.argument[0].label->ref_count <= 1) {
-        l.argument[0].label = NULL;
-        l.opcode = AC_REMOVED;
+    if (l.opcode == AC_LABEL && l.argument[0].label && l.argument[0].label->ref_count == 1) {
+        UnrefLabel(a, l.argument[0].label);
         return true;
     }
     return false;
@@ -113,9 +112,9 @@ static bool JumpToJump(AsmBase &a, AsmBase::Line &l, AsmBase::Line *l1) {
             AsmBase::Line *l2 = nullptr;
             AsmLabel *d = GetLabelDestinationRecursive(a, s, l2);
             if (l2->opcode == AC_RET) {
-                UnrefLabel(a, l.argument[0].label);
+                UnrefLabel(a, s);
+                s = nullptr;
                 l.opcode = (l.opcode == AC_JMP) ? AC_RET : AC_RET_CONDITION;
-                l.argument[0].label = nullptr;
                 return true;
             }
 
