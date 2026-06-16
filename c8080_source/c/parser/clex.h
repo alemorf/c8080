@@ -167,6 +167,13 @@ public:
         return false;
     }
 
+    bool WantIdent(CString &out_string) {
+        if (IfIdent(out_string))
+            return true;
+        SyntaxError();
+        return false;
+    }
+
     bool IfToken(const std::vector<std::string> &strings, size_t &out_index);
 
     size_t NeedToken(const std::vector<std::string> &strings) {

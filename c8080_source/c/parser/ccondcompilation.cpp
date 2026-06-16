@@ -82,26 +82,27 @@ bool CCondCompilation::PreprocessorIgnore(PreprocessorIgnoreMode mode) {
             return false;
         }
 
-        if (level == 1 && 0 == line.compare(0, 4, "elif")) {
-            if (mode == PIM_STOP_ON_ENDIF_ELSE_PROCESSED)
-                Error("#elif after #else");  // gcc
-            if (mode != PIM_STOP_ON_ELIF_OR_ELSE)
-                continue;
-            assert(endif_counter != 0);
-            endif_counter--;
-            PreprocessorEnter(line_line, line_column, save_string(line.c_str(), line.size()));
-            return true;
-        }
-
-        if (level == 1 && line == "else") {
-            if (mode == PIM_STOP_ON_ENDIF) {
-                mode = PIM_STOP_ON_ENDIF_ELSE_PROCESSED;
-                continue;
+        if (level == 1) {
+            if (0 == line.compare(0, 4, "elif")) {
+                if (mode == PIM_STOP_ON_ENDIF_ELSE_PROCESSED)
+                    Error("#elif after #else");  // gcc
+                if (mode != PIM_STOP_ON_ELIF_OR_ELSE)
+                    continue;
+                assert(endif_counter != 0);
+                endif_counter--;
+                PreprocessorEnter(line_line, line_column, save_string(line.c_str(), line.size()));
+                return true;
             }
-            if (mode == PIM_STOP_ON_ENDIF_ELSE_PROCESSED)
-                Error("#else after #else");  // gcc
-            assert(mode == PIM_STOP_ON_ELIF_OR_ELSE);
-            return false;
+            if (line == "else") {
+                if (mode == PIM_STOP_ON_ENDIF) {
+                    mode = PIM_STOP_ON_ENDIF_ELSE_PROCESSED;
+                    continue;
+                }
+                if (mode == PIM_STOP_ON_ENDIF_ELSE_PROCESSED)
+                    Error("#else after #else");  // gcc
+                assert(mode == PIM_STOP_ON_ELIF_OR_ELSE);
+                return false;
+            }
         }
 
         if (0 == line.compare(0, 2, "if"))

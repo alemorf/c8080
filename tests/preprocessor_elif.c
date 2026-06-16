@@ -18,8 +18,14 @@ typedef signed long long __int64_t;
 
 #ifdef B
 #warning B1
-#elif defined(B)
+#elifndef A
 #warning B2
+#elifdef A
+#warning B3
+#elifx defined(B)
+#warning B4
+#else
+#warning B5
 #endif
 
 int main(int, char **) {

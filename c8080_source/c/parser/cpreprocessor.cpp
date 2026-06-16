@@ -37,7 +37,7 @@ void CParserFile::Preprocessor() {
         return PreprocessorUndef();
     if (l.IfToken("else"))
         return PreprocessorElse();
-    if (l.IfToken("elif"))
+    if (l.IfToken("elif") || l.IfToken("elifdef") || l.IfToken("elifndef"))
         return PreprocessorElif();
     if (l.IfToken("endif"))
         return PreprocessorEndif();
@@ -53,7 +53,7 @@ void CParserFile::Preprocessor() {
         return l.Error(l.token_data);
     if (l.IfToken("warning"))
         return l.Warning(l.token_data);
-    // TODO: #elif #elifdef #elifndef #line #embed #error #warning
+    // TODO: #line #embed
     l.Error("invalid preprocessing directive #" + std::string(l.token_data, l.token_size));  // gcc
 }
 
@@ -183,13 +183,32 @@ void CParserFile::PreprocessorIf() {
 
 void CParserFile::PreprocessorIfAny(int64_t result) {
     while (l.PreprocessorIf(result)) {
+        if (l.IfToken("elifdef")) {
+            CString id;
+            if (l.WantIdent(id)) {
+                l.WantToken(CT_EOF);
+                result = PreprocessorIfdefCheck(id);
+            }
+            continue;
+        }
+        if (l.IfToken("elifndef")) {
+            CString id;
+            if (l.WantIdent(id)) {
+                l.WantToken(CT_EOF);
+                result = !PreprocessorIfdefCheck(id);
+            }
+            continue;
+        }
         l.enable_macro_in_preprocessor = true;
-        if (!l.WantToken("elif"))
-            return;
-        result = PreprocessorIf0();
+        if (l.WantToken("elif")) {
+            result = PreprocessorIf0();
+            l.enable_macro_in_preprocessor = false;
+            l.WantToken(CT_EOF);
+            continue;
+        }
         l.enable_macro_in_preprocessor = false;
-        if (!l.WantToken(CT_EOF))
-            return;
+        l.SyntaxError();
+        result = false;
     }
 }
 
