@@ -24,7 +24,7 @@ bool UnrefLabel(AsmBase &a, AsmLabel *label) {
     assert(label != nullptr);
 
     label->ref_count--;
-    if (label->ref_count > 1) // labels also increase ref_count
+    if (label->ref_count > 1)  // labels also increase ref_count
         return false;
 
     // Now the label points only to itself and can be deleted
