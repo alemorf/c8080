@@ -21,7 +21,12 @@
 
 class CCondCompilation : public CMacroizer {
 private:
-    void PreprocessorIgnore(bool can_else);
+    enum PreprocessorIgnoreMode {
+        PIM_STOP_ON_ELIF_OR_ELSE,
+        PIM_STOP_ON_ENDIF,
+        PIM_STOP_ON_ENDIF_ELSE_PROCESSED,
+    };
+    bool PreprocessorIgnore(PreprocessorIgnoreMode mode);
 
 public:
     bool preprocessor_mode{};
@@ -29,8 +34,9 @@ public:
 
     void NextToken();
 
-    void PreprocessorIf(bool cond);
-    bool PreprocessorElse();
+    void PreprocessorEnter(size_t directive_line, size_t directive_column, const char *directive);
+    bool PreprocessorIf(bool cond);
+    bool PreprocessorElse(bool elif);
     bool PreprocessorEndIf();
     void PreprocessorSkipFile();
     void PreprocessorLeave();

@@ -37,16 +37,12 @@ void CCondCompilation::NextToken() {
             break;
         }
 
-        preprocessor_mode = true;
-        enable_macro_in_preprocessor = false;
         std::string directive;
         size_t line1 = token_line;
         size_t column1 = token_column;
         ReadDirective(directive);
-        Include(save_string(directive.c_str(), directive.size()), file_name);
-        line = line1;
-        column = column1 + 1;
-        NextToken2();
+
+        PreprocessorEnter(line1, column1 + 1, save_string(directive.c_str(), directive.size()));
 
         preprocessor();
 
@@ -57,13 +53,24 @@ void CCondCompilation::NextToken() {
     }
 }
 
-void CCondCompilation::PreprocessorIgnore(bool can_else) {
+void CCondCompilation::PreprocessorEnter(size_t directive_line, size_t directive_column, const char *directive) {
+    preprocessor_mode = true;
+    enable_macro_in_preprocessor = false;
+    Include(directive, file_name);
+    line = directive_line;
+    column = directive_column;
+    NextToken2();
+}
+
+bool CCondCompilation::PreprocessorIgnore(PreprocessorIgnoreMode mode) {
     size_t level = 1;
     for (;;) {
         std::string line;
+        size_t line_line = token_line;
+        size_t line_column = token_column;
         if (!FindDirective(line)) {
             Error("unterminated #if");  // gcc
-            break;
+            return false;
         }
 
         if (line == "endif") {
@@ -72,13 +79,29 @@ void CCondCompilation::PreprocessorIgnore(bool can_else) {
                 continue;
             assert(endif_counter != 0);
             endif_counter--;
-            break;
+            return false;
+        }
+
+        if (level == 1 && 0 == line.compare(0, 4, "elif")) {
+            if (mode == PIM_STOP_ON_ENDIF_ELSE_PROCESSED)
+                Error("#elif after #else");  // gcc
+            if (mode != PIM_STOP_ON_ELIF_OR_ELSE)
+                continue;
+            assert(endif_counter != 0);
+            endif_counter--;
+            PreprocessorEnter(line_line, line_column, save_string(line.c_str(), line.size()));
+            return true;
         }
 
         if (level == 1 && line == "else") {
-            if (!can_else)
+            if (mode == PIM_STOP_ON_ENDIF) {
+                mode = PIM_STOP_ON_ENDIF_ELSE_PROCESSED;
+                continue;
+            }
+            if (mode == PIM_STOP_ON_ENDIF_ELSE_PROCESSED)
                 Error("#else after #else");  // gcc
-            break;
+            assert(mode == PIM_STOP_ON_ELIF_OR_ELSE);
+            return false;
         }
 
         if (0 == line.compare(0, 2, "if"))
@@ -86,11 +109,11 @@ void CCondCompilation::PreprocessorIgnore(bool can_else) {
     }
 }
 
-bool CCondCompilation::PreprocessorElse() {
+bool CCondCompilation::PreprocessorElse(bool elif) {
     PreprocessorLeave();
     if (endif_counter == 0)
         return false;
-    PreprocessorIgnore(false);
+    PreprocessorIgnore(elif ? PIM_STOP_ON_ENDIF : PIM_STOP_ON_ENDIF_ELSE_PROCESSED);
     return true;
 }
 
@@ -102,11 +125,12 @@ bool CCondCompilation::PreprocessorEndIf() {
     return true;
 }
 
-void CCondCompilation::PreprocessorIf(bool cond) {
+bool CCondCompilation::PreprocessorIf(bool cond) {
     PreprocessorLeave();
     endif_counter++;
     if (!cond)
-        PreprocessorIgnore(true);
+        return PreprocessorIgnore(PIM_STOP_ON_ELIF_OR_ELSE);
+    return false;
 }
 
 void CCondCompilation::PreprocessorSkipFile() {

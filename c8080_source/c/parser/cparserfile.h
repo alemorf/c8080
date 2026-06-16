@@ -63,6 +63,7 @@ private:
     void PreprocessorDefine();
     void PreprocessorIfdef();
     void PreprocessorIf();
+    void PreprocessorIfAny(int64_t result);
     int64_t PreprocessorIf0();
     int64_t PreprocessorIfA();
     int64_t PreprocessorIfB();
@@ -79,6 +80,7 @@ private:
     void PreprocessorUndef();
     void PreprocessorEndif();
     void PreprocessorElse();
+    void PreprocessorElif();
     bool PreprocessorIfdefCheck(CString id);
 
 public:

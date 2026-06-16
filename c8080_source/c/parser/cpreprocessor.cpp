@@ -37,6 +37,8 @@ void CParserFile::Preprocessor() {
         return PreprocessorUndef();
     if (l.IfToken("else"))
         return PreprocessorElse();
+    if (l.IfToken("elif"))
+        return PreprocessorElif();
     if (l.IfToken("endif"))
         return PreprocessorEndif();
     if (l.IfToken("ifdef"))
@@ -170,11 +172,25 @@ void CParserFile::PreprocessorDefine() {
 }
 
 void CParserFile::PreprocessorIf() {
+    assert(l.enable_macro_in_preprocessor);
     const int64_t result = PreprocessorIf0();
     l.enable_macro_in_preprocessor = false;
     if (!l.WantToken(CT_EOF))
         return;
-    l.PreprocessorIf(result);
+
+    PreprocessorIfAny(result);
+}
+
+void CParserFile::PreprocessorIfAny(int64_t result) {
+    while (l.PreprocessorIf(result)) {
+        l.enable_macro_in_preprocessor = true;
+        if (!l.WantToken("elif"))
+            return;
+        result = PreprocessorIf0();
+        l.enable_macro_in_preprocessor = false;
+        if (!l.WantToken(CT_EOF))
+            return;
+    }
 }
 
 int64_t CParserFile::PreprocessorIf0() {
@@ -420,7 +436,7 @@ void CParserFile::PreprocessorIfdef() {
     if (!l.WantToken(CT_EOF))
         return;
 
-    l.PreprocessorIf(PreprocessorIfdefCheck(id));
+    PreprocessorIfAny(PreprocessorIfdefCheck(id));
 }
 
 void CParserFile::PreprocessorIfndef() {
@@ -430,7 +446,7 @@ void CParserFile::PreprocessorIfndef() {
     if (!l.WantToken(CT_EOF))
         return;
 
-    l.PreprocessorIf(!PreprocessorIfdefCheck(id));
+    PreprocessorIfAny(!PreprocessorIfdefCheck(id));
 }
 
 void CParserFile::PreprocessorUndef() {
@@ -447,8 +463,13 @@ void CParserFile::PreprocessorUndef() {
 void CParserFile::PreprocessorElse() {
     if (!l.WantToken(CT_EOF))
         return;
-    if (!l.PreprocessorElse())
+    if (!l.PreprocessorElse(false))
         l.Error("#else without #if");  // gcc
+}
+
+void CParserFile::PreprocessorElif() {
+    if (!l.PreprocessorElse(true))
+        l.Error("#elif without #if");  // gcc
 }
 
 void CParserFile::PreprocessorEndif() {
