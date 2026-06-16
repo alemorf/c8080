@@ -1068,8 +1068,12 @@ CBaseType CParserFile::ParseBaseType() {
                 case 2:                      // int
                     return CBT_INT;          // "signed int"
                 case 3:                      // long
-                    l.IfToken("int");        // "signed long int"
-                    return CBT_LONG;         // "signed long"
+                    if (l.IfToken("long")) {
+                        l.IfToken("int");      // "signed long long int"
+                        return CBT_LONG_LONG;  // "signed long long"
+                    }
+                    l.IfToken("int");  // "signed long int"
+                    return CBT_LONG;   // "signed long"
             }
             assert(false);
             break;
