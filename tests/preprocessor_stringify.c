@@ -13,7 +13,7 @@
 #endif
 
 int main(int, char **) {
-    puts(A(  \x21  ) "TAB");
+    puts(A(  \x21) "TAB");
     puts(A(N(3)));
     puts(B(Hello));
 #ifdef FAIL
