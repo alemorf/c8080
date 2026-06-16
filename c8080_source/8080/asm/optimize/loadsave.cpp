@@ -332,8 +332,7 @@ bool LoadSave(AsmBase &a, std::map<size_t, StateItem> &states, bool jb) {
             case AC_JMP:
             case AC_JMP_CONDITION: {
                 saves.clear();  // Сохранить всё перед переходом
-                if (l.argument[0].type == AAT_LABEL) {
-                    //                    assert(l.argument[0].label->destination - 1 > i);  // Только переход вперед
+                if (l.argument[0].type == AAT_LABEL && l.argument[0].label) {
                     StateItem &ds = states[l.argument[0].label->destination - 1];
                     ds.used++;
                     if (ds.used == 1) {
@@ -428,13 +427,12 @@ bool LoadSave(AsmBase &a, std::map<size_t, StateItem> &states, bool jb) {
                 s.a.variable = l.argument[0];
                 break;
             case AC_LXI:
-            case AC_MVI: {
+            case AC_MVI:
                 assert(l.argument[0].type == AAT_REG);
                 RemoveSave(saves, l.argument[1]);  // Конструкция: ld hl, var / add (hl)
                 if (OptimizeLxiMvi(s, l))
                     changed = true;
                 break;
-            }
             case AC_XCHG:
                 std::swap(s.hl, s.de);
                 break;
