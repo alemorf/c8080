@@ -162,7 +162,7 @@ void CParserFile::ParseEnum() {
             break;
 
         CErrorPosition e(l);
-        std::string name;
+        CString name;
         l.NeedIdent(name);
         if (FindVariableCurrentScope(name) != nullptr)
             programm.Error(e, std::string("redefinition of '") + name + "'");  // gcc
@@ -548,7 +548,7 @@ void CParserFile::ParseFunction(CNodePtr &node) {
 void CParserFile::ParseTypeWoPointersStruct(CType *out_type, bool is_union, CErrorPosition &e) {
     out_type->base_type = CBT_STRUCT;
 
-    std::string name;
+    CString name;
     if (l.IfIdent(name)) {
         out_type->struct_object = BindStructUnion(name, is_union, true, e);
         CStruct &s = *out_type->struct_object;
@@ -859,7 +859,7 @@ CNodePtr CParserFile::ParseExpressionValue() {
                                             full_file_name))
                 l.Throw("file \"" + v->link_attribute.base_name + "\" not found, local path \"" +
                         v->link_attribute.name_for_path + "\"");
-            cparser.AddSourceFile(full_file_name);
+            cparser.AddSourceFile(programm.SaveString(full_file_name));
             v->link_attribute_processed = true;
         }
 
@@ -1104,7 +1104,7 @@ CBaseType CParserFile::ParseBaseType() {
 }
 
 CNodePtr CParserFile::ParseExpressionStructItem(CMonoOperatorCode mo, CNodePtr &a, CErrorPosition &e) {
-    std::string item_name;
+    CString item_name;
     l.NeedIdent(item_name);
 
     if (a->ctype.pointers.size() != (mo == MOP_STRUCT_ITEM ? 0 : 1) || a->ctype.base_type != CBT_STRUCT) {
@@ -1196,13 +1196,13 @@ CNodePtr CParserFile::ParseExpressionM(CNodePtr result) {
 CNodePtr CParserFile::ParseFunctionBody() {
     CErrorPosition e(l);
     if (l.token == CT_IDENT && l.cursor[0] == ':' && 0 != memcmp(l.token_data, "default", l.token_size)) {
-        std::string label_name;
+        CString label_name;
         l.NeedIdent(label_name);
         l.NeedToken(":");
         return CNODE({CNT_LABEL, variable : BindLabel(label_name, e, false), e : e});
     }
     if (l.IfToken("goto")) {
-        std::string label_name;
+        CString label_name;
         l.NeedIdent(label_name);
         l.CloseToken(";", ";");
         return CNODE({CNT_GOTO, variable : BindLabel(label_name, e, true), e : e});

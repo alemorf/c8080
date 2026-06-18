@@ -28,11 +28,8 @@ static bool FindIncludeFile(CString path, CString base_name, std::string &result
     return std::filesystem::is_regular_file(result);
 }
 
-bool CParser::GetFirstSourceFile(std::string &out_file_name) {
-    if (compile_queue.empty())
-        return false;
-    out_file_name = compile_queue[0];
-    return true;
+CString CParser::GetFirstSourceFile(std::string &out_file_name, const char *default_name) {
+    return compile_queue.empty() ? default_name : compile_queue[0];
 }
 
 bool CParser::FindAnyIncludeFile(CString file_name, CString local_path, std::string &result) {
@@ -57,7 +54,7 @@ const char *CParser::LoadGlobalIncludeFile(CString file_name) {
 
 void CParser::AddSourceFile(CString file_name) {
     if (compile_queue_index.find(file_name) == compile_queue_index.end()) {
-        compile_queue_index[file_name] = 1;
+        compile_queue_index.insert(file_name);
         compile_queue.push_back(file_name);
     }
 }
@@ -85,9 +82,8 @@ void CParser::ParseAll() {
     CNodeList list;
     list.PushBack(programm.first_node);
     for (size_t i = 0; i < compile_queue.size(); i++) {
-        std::string name_copy = compile_queue[i];  // vector<string> compile_queue can be chagned
         CParserFile c(*this);
-        c.Parse(list, name_copy.c_str());
+        c.Parse(list, compile_queue[i]);
     }
     programm.first_node = list.first;
 }

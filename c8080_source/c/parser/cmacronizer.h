@@ -74,8 +74,9 @@ public:
 
     void Open(const char *contents, const char *file_name);
     void Include(const char *contents, const char *file_name);
-    void AddMacro(const char *name, const char *body = "", size_t size = 0, const std::vector<std::string> *args = nullptr,
-                  CMacroArgsMode mode = CMAM_FIXED, bool is_arg = false);
+    void AddMacro(const char *name, const char *body = "", size_t size = 0,
+                  const std::vector<std::string> *args = nullptr, CMacroArgsMode mode = CMAM_FIXED,
+                  bool is_arg = false);
     bool FindMacro(CString name);
     bool DeleteMacro(CString name);
     void NextToken();

@@ -19,6 +19,7 @@
 
 #include "../cprogramm.h"
 #include "../../tools/cstring.h"
+#include <set>
 
 class CParser {
 public:
@@ -30,7 +31,7 @@ public:
     CParser(CProgramm &p) : programm(p) {
     }
     void AddSourceFile(CString file_name);
-    bool GetFirstSourceFile(std::string &out_file_name);
+    CString GetFirstSourceFile(std::string &out_file_name, const char *default_name);
     void ParseAll();
     const char *LoadFile(CString file_name, const char **out_file_name = nullptr);
     bool FindGlobalIncludeFile(CString file_name, std::string &result);
@@ -38,7 +39,7 @@ public:
     const char *LoadGlobalIncludeFile(CString file_name);
 
 private:
-    std::map<std::string, int> compile_queue_index;
-    std::vector<std::string> compile_queue;
+    std::set<CString> compile_queue_index;
+    std::vector<CString> compile_queue;
     std::map<std::string, std::string> loaded_files;  // TODO: Перенести в programm
 };

@@ -43,7 +43,7 @@ public:
     std::vector<CStructPtr> scope_unions;
     std::vector<CTypedef> scope_typedefs;
     std::vector<CVariablePtr> scope_variables;
-    std::map<std::string, CVariablePtr> scope_labels;
+    std::map<CString, CVariablePtr> scope_labels;
 
     CParserBase(CParser &p) : programm(p.programm), cparser(p) {
     }

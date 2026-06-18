@@ -208,8 +208,8 @@ int main(int argc, char **argv) {
             std::string base_name;
             if (!o.bin_file_name.empty())
                 base_name = o.bin_file_name;
-            else if (!c.GetFirstSourceFile(base_name))
-                base_name = "a";
+            else
+                base_name = c.GetFirstSourceFile(base_name, "a");
             base_name = RemoveExtension(base_name);
 
             if (o.asm_file_name.empty())
@@ -249,7 +249,7 @@ int main(int argc, char **argv) {
             std::string internal_c_file_name;
             if (!c.FindGlobalIncludeFile("c8080/internal.c", internal_c_file_name))
                 throw std::runtime_error("file \"c8080/internal.c\" not found");
-            c.AddSourceFile(internal_c_file_name);
+            c.AddSourceFile(programm.SaveString(internal_c_file_name));
         }
 
         c.ParseAll();

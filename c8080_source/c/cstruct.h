@@ -24,7 +24,7 @@
 #include "cerrorposition.h"
 
 struct CStruct {
-    std::string name;
+    CString name;
     std::vector<CStructItemPtr> items;
     uint64_t size_bytes{};
     bool inited{};

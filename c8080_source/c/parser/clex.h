@@ -160,6 +160,11 @@ public:
             ThrowSyntaxError();
     }
 
+    void NeedIdent(CString &out_string) {
+        if (!IfIdent(out_string))
+            ThrowSyntaxError();
+    }
+
     bool WantIdent(std::string &out_string) {
         if (IfIdent(out_string))
             return true;
