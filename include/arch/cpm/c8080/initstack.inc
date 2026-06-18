@@ -35,7 +35,7 @@
     __HEAP_INIT
 
     static char argv0[1];
-    static char *argv[] = { argv0, 0 };
+    static char *argv[] = { argv0, 0, 0 };
 
     asm {
         ld   hl, 81h
