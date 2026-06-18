@@ -44,7 +44,7 @@ bool AsmBase::ChangedReg(AsmRegister reg) {
 }
 
 void AsmBase::Write2(CString str) {
-    Write2(str.c_str(), str.size());
+    Write2(str.data(), str.size());
 }
 
 void AsmBase::Write2(const char *data, size_t size) {

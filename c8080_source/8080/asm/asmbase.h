@@ -52,7 +52,7 @@ private:
     }
 
     void Write(const CString &str) {
-        Write2(str.c_str(), str.size());
+        Write2(str.data(), str.size());
     }
 
     void Write(uint64_t value) {
@@ -208,7 +208,7 @@ public:
     }
 
     void const_string(const char *name, CString string) {
-        const char *p = string.c_str();
+        const char *p = string.data();
         const char *end = p + string.size();
         Write(name, ":\n");
         unsigned n = 0;

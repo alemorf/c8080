@@ -59,7 +59,7 @@ void LoadFile(CString file_name, std::function<void *(size_t)> allocate) {
         throw std::runtime_error(std::string(__func__) + std::string(": Incorrect parameter allocate = nullptr"));
     }
 
-    FILE *const file = fopen(file_name.c_str(), "rb");
+    FILE *const file = fopen(file_name.std().c_str(), "rb");
     if (file == nullptr) {
         throw std::runtime_error(std::string("Can't open file ") + std::string(file_name) + std::string(", errno ") +
                                  std::to_string(errno));
@@ -129,7 +129,7 @@ void SaveFile(CString file_name, const void *data, size_t size) {
         throw std::runtime_error(std::string(__func__) + std::string(": Incorrect parameter data = nullptr"));
     }
 
-    FILE *const file = fopen(file_name.c_str(), "wb");
+    FILE *const file = fopen(file_name.std().c_str(), "wb");
 
     if (file == nullptr) {
         throw std::runtime_error(std::string("Can't create file ") + std::string(file_name) + std::string(", errno ") +
@@ -145,8 +145,8 @@ void SaveFile(CString file_name, const void *data, size_t size) {
 
             auto_close_file.Close();
 
-            if (remove(file_name.c_str()) != 0) {
-                std::cerr << "Can't remove file " << file_name.c_str() << ", errno " << errno << std::endl;
+            if (remove(file_name.std().c_str()) != 0) {
+                std::cerr << "Can't remove file " << file_name.std() << ", errno " << errno << std::endl;
             }
 
             throw std::runtime_error(std::string("Can't  write file ") + std::string(file_name) +

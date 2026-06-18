@@ -33,7 +33,7 @@ enum CMacroArgsMode { CMAM_NONE, CMAM_FIXED, CMAM_VA_OPT, CMAM_VAR_LAST };
 class CMacroizer : public CTokenizer {
 protected:
     struct Macro {
-        std::string name;
+        const char *name;
         const char *body{};
         size_t disabled{};        // Macro should not call itself
         size_t disabled_level{};  // For nested calls of the same macro
@@ -74,7 +74,7 @@ public:
 
     void Open(const char *contents, const char *file_name);
     void Include(const char *contents, const char *file_name);
-    void AddMacro(CString name, const char *body = "", size_t size = 0, const std::vector<std::string> *args = nullptr,
+    void AddMacro(const char *name, const char *body = "", size_t size = 0, const std::vector<std::string> *args = nullptr,
                   CMacroArgsMode mode = CMAM_FIXED, bool is_arg = false);
     bool FindMacro(CString name);
     bool DeleteMacro(CString name);

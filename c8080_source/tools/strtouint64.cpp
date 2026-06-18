@@ -18,11 +18,9 @@
 #include "strtouint64.h"
 #include <stdlib.h>
 
-bool StrToUint64(CString str, uint64_t &out) {
-    if (str.empty())
-        return false;
+bool StrToUint64(const char *str, uint64_t &out) {
     char *end = nullptr;
     errno = 0;
-    out = strtoull(str.c_str(), &end, 0);
-    return end[0] == 0 && errno == 0;
+    out = strtoull(str, &end, 0);
+    return str != end && end[0] == 0 && errno == 0;
 }

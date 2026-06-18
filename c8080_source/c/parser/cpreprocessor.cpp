@@ -136,7 +136,7 @@ void CParserFile::PreprocessorPragmaOnce() {
 
 void CParserFile::PreprocessorDefine() {
     bool args_e = (l.cursor[-1] != ' ' && l.cursor[0] == '(');
-    std::string id;
+    CString id;
     if (!l.WantIdent(id))
         return;
 
@@ -168,7 +168,7 @@ void CParserFile::PreprocessorDefine() {
     }
 
     l.PreprocessorLeave();
-    l.AddMacro(id, l.token_data, strlen(l.token_data), &args, args_mode);
+    l.AddMacro(programm.SaveString(id), l.token_data, strlen(l.token_data), &args, args_mode);
 }
 
 void CParserFile::PreprocessorIf() {

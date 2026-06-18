@@ -79,10 +79,6 @@ public:
         return size() == 0;
     }
 
-    const char *c_str() const {
-        return string_start;
-    }
-
     const char *data() const {
         return string_start;
     }
@@ -240,6 +236,9 @@ public:
     }
 
     int CaseCmp(CString b) {
-        return strcasecmp(c_str(), b.c_str());
+        const size_t s = size(), bs = b.size();
+        if (s == bs)
+            return 0 < strncasecmp(string_start, b.string_start, s);
+        return s < bs;
     }
 };

@@ -178,7 +178,7 @@ void CMacroizer::NextToken0() {
                             if (!var_last)
                                 Error("not enough parameters in macro");
                         }
-                        AddMacro(m.args[j], arg_body.c_str(), arg_body.size(), nullptr, CMAM_NONE, true);
+                        AddMacro(m.args[j].c_str(), arg_body.c_str(), arg_body.size(), nullptr, CMAM_NONE, true);
                     }
 
                     if (m.args_mode == CMAM_VA_OPT) {
@@ -195,7 +195,7 @@ void CMacroizer::NextToken0() {
             }
             m.disabled++;                        // Macro should not call itself
             m.disabled_level = macro_arg_level;  // For nested calls of the same macro
-            Enter(&m, m.body, mi->first.c_str());
+            Enter(&m, m.body, m.name);
             if (m.is_macro_arg)
                 macro_arg_level -= 2;
             continue;
@@ -335,7 +335,7 @@ bool CMacroizer::ReadRaw(std::string &result, char terminator1, char terminator2
     }
 }
 
-void CMacroizer::AddMacro(CString name, const char *body, size_t size, const std::vector<std::string> *args,
+void CMacroizer::AddMacro(const char *name, const char *body, size_t size, const std::vector<std::string> *args,
                           CMacroArgsMode mode, bool is_macro_arg) {
     // TODO: assert(!in_macro);
     std::shared_ptr<Macro> m = std::make_shared<Macro>();

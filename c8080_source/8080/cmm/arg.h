@@ -81,7 +81,7 @@ public:
     }
 
     bool IsConstNumber(uint64_t &out) const {
-        return !addr && reg == REG_CONST && StrToUint64(text, out);
+        return !addr && reg == REG_CONST && StrToUint64(text.c_str(), out);
     }
 
     bool IsConstAddr() const {

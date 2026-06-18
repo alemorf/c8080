@@ -20,4 +20,4 @@
 #include <stdint.h>
 #include "cstring.h"
 
-bool StrToUint64(CString str, uint64_t &out);
+bool StrToUint64(const char *str, uint64_t &out);
