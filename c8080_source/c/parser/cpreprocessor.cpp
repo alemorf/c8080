@@ -135,7 +135,7 @@ void CParserFile::PreprocessorPragmaOnce() {
 }
 
 void CParserFile::PreprocessorDefine() {
-    bool args_e = (l.cursor[-1] != ' ' && l.cursor[0] == '(');
+    bool args_e = (!isspace(l.cursor[-1]) && l.cursor[0] == '(');
     CString id;
     if (!l.WantIdent(id))
         return;
