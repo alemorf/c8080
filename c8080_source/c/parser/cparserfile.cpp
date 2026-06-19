@@ -952,6 +952,11 @@ bool CParserFile::ParseTypeWoPointers(CType *out_type, bool can_empty_inital) {
             can_empty = false;
             continue;
         }
+        if (!out_type->flag_inline && l.IfToken("inline")) {
+            out_type->flag_inline = true;
+            can_empty = false;
+            continue;
+        }
         break;
     }
 

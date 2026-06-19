@@ -35,6 +35,7 @@ public:
     bool flag_const = false;
     bool flag_volatile = false;
     bool flag_static = false;
+    bool flag_inline = false;
     CVariableMode variables_mode = CVM_NOT_SET;
     std::vector<CPointer> pointers;
     std::vector<CStructItem> function_args;  // for CBT_FUNCTION
