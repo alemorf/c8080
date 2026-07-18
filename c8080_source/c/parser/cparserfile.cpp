@@ -892,7 +892,7 @@ CNodePtr CParserFile::ParseExpressionValue() {
         result->ctype.base_type = CBT_CHAR;
         result->ctype.flag_const = true;
         result->ctype.pointers.push_back(CPointer(str.size() + 1));
-        result->const_string = programm.RegisterConstString(programm.SaveString(str));
+        result->const_string = programm.RegisterConstString(CString(programm.SaveString(str), str.size()));
         return result;
     }
 
